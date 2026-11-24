@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { isFeatureEnabled } from "@/core/config/features";
 import { requireSubject } from "@/core/config/subjects";
 import { ResultDetailPage } from "@/features/results";
+
+export const metadata: Metadata = { title: "Test results", robots: { index: false } };
 
 export default function Page({ params }: PageProps<"/[subject]/results/[attemptId]">) {
   if (!isFeatureEnabled("results")) notFound();

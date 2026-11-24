@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isFeatureEnabled } from "@/core/config/features";
 import { requireSubject } from "@/core/config/subjects";
 import { TopicsPage } from "@/features/topics";
+
+export const metadata: Metadata = { title: "Topics" };
 
 export default async function Page({ params }: PageProps<"/[subject]/topics">) {
   if (!isFeatureEnabled("topics")) notFound();

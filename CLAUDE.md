@@ -41,8 +41,17 @@ steps, and run `npm run check` before saying something is done.
 - The GitHub repo is public (since 25 Nov 2026): Vercel's free plan only publishes a private repo's commits when the owner wrote them. Keep secrets out of the repo; only the Supabase URL and publishable key are committed. Never sign commits as the owner.
 
 ## Database
-- Supabase project `greenbook` (ref `pgpotvnyomwrlmnhzcmy`, Frankfurt). Migrations are applied with Claude's Supabase connector, then the security and performance advisors are re-run and `core/db/types.ts` is regenerated.
+- Supabase project `greenbook` (ref `pgpotvnyomwrlmnhzcmy`, Frankfurt). Migrations are applied with Claude's Supabase connector, then the security and performance advisors are re-run and `core/db/types.ts` is updated.
+- Anything that writes student activity or reveals answers is a database function (test engine 0007, admin tools 0009, practice and mistakes 0010). Pages call them with `supabase.rpc(...)`. Answers reach the browser only after a question is finished.
+- `tests/db/` runs every migration in an in-memory Postgres (PGlite) and checks the rules as a student and as an admin. Add a check there for every new database function.
+- Question content and answer keys never go in this public repo; they live only in the database.
+- Destructive SQL (deletes) through the connector asks the owner to confirm; don't run it while they're away.
 - Login uses email sign-in links. Supabase's built-in email allows only a few emails per hour; set up custom SMTP before launch.
+
+## Feature map
+- `test-runner` (/test/[id]): timed Bluebook screen. `full-tests`, `results`, `practice` (/practice/[id], used by `topics` and `monthly`), `mistakes`, `dashboard`, `admin` (/admin), `auth`, `marketing`.
+- Shared question display lives in `core/question` (RichText format, QuestionView, AnswerCheck, highlights).
+- Scores are estimated while `ESTIMATED_SCORES` is true in `core/config/subjects.ts`.
 
 ## Commands
 - `npm run dev` local site at http://localhost:3000
