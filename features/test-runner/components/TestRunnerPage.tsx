@@ -28,6 +28,7 @@ async function Runner({ attemptId }: { attemptId: Promise<string> }) {
       sectionName={SUBJECTS[subject].name}
       studentName={user.name}
       resultsHref={resultsHref}
+      tools={SUBJECTS[subject].tools}
     />
   );
 }

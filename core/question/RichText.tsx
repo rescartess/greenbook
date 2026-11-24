@@ -68,8 +68,12 @@ function renderBlock(block: Block, i: number): ReactNode {
 }
 
 /** Draws question text in GreenBook's text format (see rich-text.ts). */
-export function RichText({ source, className }: { source: string; className?: string }) {
-  return <div className={cn("space-y-4", className)}>{parseRichText(source).map(renderBlock)}</div>;
+export function RichText({ source, className, ...rest }: { source: string; className?: string; "data-passage"?: boolean }) {
+  return (
+    <div className={cn("space-y-4", className)} {...rest}>
+      {parseRichText(source).map(renderBlock)}
+    </div>
+  );
 }
 
 /** One line of formatted text without paragraph spacing, e.g. an answer choice. */

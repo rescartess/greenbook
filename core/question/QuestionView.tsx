@@ -54,7 +54,7 @@ export function QuestionView({
       <div className={cn("grid", hasPassage && "@2xl:grid-cols-2")}>
         {hasPassage ? (
           <div className="border-hairline px-6 py-7 text-[17px] leading-[1.75] @2xl:border-r @2xl:px-10 @2xl:py-9">
-            <RichText source={question.passage!} />
+            <RichText source={question.passage!} data-passage />
           </div>
         ) : null}
 

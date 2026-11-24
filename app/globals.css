@@ -20,6 +20,7 @@
   --gb-pine-soft: #8db9ad;
   --gb-pine-tint: #eef4f2;
   --gb-wash: rgba(26, 31, 30, 0.06);
+  --gb-mark: rgba(141, 185, 173, 0.55);
 
   --gb-glass-bg: rgba(255, 255, 255, 0.62);
   --gb-glass-edge: rgba(255, 255, 255, 0.9);
@@ -42,6 +43,7 @@
   --gb-pine-soft: #4f7f74;
   --gb-pine-tint: #1b2b28;
   --gb-wash: rgba(231, 239, 237, 0.08);
+  --gb-mark: rgba(79, 127, 116, 0.7);
 
   --gb-glass-bg: rgba(30, 42, 40, 0.55);
   --gb-glass-edge: rgba(255, 255, 255, 0.12);
@@ -65,6 +67,7 @@
     --gb-pine-soft: #4f7f74;
     --gb-pine-tint: #1b2b28;
     --gb-wash: rgba(231, 239, 237, 0.08);
+  --gb-mark: rgba(79, 127, 116, 0.7);
 
     --gb-glass-bg: rgba(30, 42, 40, 0.55);
     --gb-glass-edge: rgba(255, 255, 255, 0.12);
@@ -121,6 +124,12 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.32),
     0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+/* Passage highlights on the test screen (CSS Custom Highlight API). */
+::highlight(gb-mark) {
+  background-color: var(--gb-mark);
+  color: inherit;
 }
 
 @layer base {
