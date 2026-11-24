@@ -6,6 +6,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import { Button, cn, Icon } from "@/core/design/ui";
@@ -75,6 +76,13 @@ export function TestRunner({
     }
   });
   const mainRef = useRef<HTMLElement>(null);
+  // False while the server draws the page and during hydration, true once running in the browser.
+  // The clock and highlights wait for it, so the server's and the browser's first drawing match.
+  const mounted = useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false,
+  );
 
   // ---- clock: the server's deadline, corrected for this computer's clock ----
   const [offset] = useState(
@@ -162,6 +170,7 @@ export function TestRunner({
 
   // Tick the clock; when time is up, finish the module (the server would close it anyway).
   const finishRef = useRef(finish);
+  const lastTry = useRef(0);
   useEffect(() => {
     finishRef.current = finish;
   }, [finish]);
@@ -170,7 +179,11 @@ export function TestRunner({
     const id = window.setInterval(() => {
       const t = Date.now() + offset;
       setNow(t);
-      if (deadline !== null && t >= deadline) void finishRef.current();
+      // Time is up: finish, retrying at most every 5 seconds if the connection is down.
+      if (deadline !== null && t >= deadline && Date.now() - lastTry.current > 5000) {
+        lastTry.current = Date.now();
+        void finishRef.current();
+      }
     }, 500);
     return () => window.clearInterval(id);
   }, [offset, deadline]);
@@ -225,7 +238,9 @@ export function TestRunner({
             <span className="text-graphite">{moduleLabel}</span>
           </div>
           <div className="flex items-center gap-2.5" aria-live="polite">
-            {remaining === null ? null : hideClock ? (
+            {remaining === null ? null : !mounted ? (
+              <span className="inline-block w-14" aria-hidden="true" />
+            ) : hideClock ? (
               <span className="text-sm text-graphite">Timer hidden</span>
             ) : (
               <span
@@ -356,7 +371,7 @@ export function TestRunner({
                     ? "Marked for review"
                     : "Mark for review"}
                 </button>
-                {marks[current.id]?.length ? (
+                {mounted && marks[current.id]?.length ? (
                   <button
                     type="button"
                     onClick={() =>
@@ -691,3 +706,5 @@ function ToolButton({
     </button>
   );
 }
+
+const noopSubscribe = () => () => {};
