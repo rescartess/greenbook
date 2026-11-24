@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { safeNextPath, HOME_AFTER_LOGIN } from "@/core/config/supabase";
-import { parseLoginForm } from "@/features/auth/schema";
+import { parseLoginForm } from "./schema";
 
 function form(values: Record<string, string>) {
   const f = new FormData();
