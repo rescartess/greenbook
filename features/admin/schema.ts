@@ -12,7 +12,11 @@ export function difficultyLabel(difficulty: string): string {
 }
 
 export function statusLabel(status: string): string {
-  return status === "published" ? "Published" : status === "retired" ? "Retired" : "Draft";
+  return status === "published"
+    ? "Published"
+    : status === "retired"
+      ? "Retired"
+      : "Draft";
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -25,4 +29,147 @@ export const isExternalId = (value: string) => /^[a-z0-9-]{3,64}$/.test(value);
 export function shorten(text: string, max = 110): string {
   const clean = text.replace(/\s+/g, " ").trim();
   return clean.length <= max ? clean : `${clean.slice(0, max - 1).trimEnd()}…`;
+}
+
+// ---- Question editing ----
+
+export const CHOICE_IDS = ["A", "B", "C", "D"] as const;
+export const DIFFICULTIES = ["easy", "medium", "hard"] as const;
+export const STATUSES = ["draft", "published", "retired"] as const;
+
+export type QuestionInput = {
+  passage: string | null;
+  prompt: string;
+  choices: { id: string; text: string }[];
+  correct: string;
+  explanation: string | null;
+  skillId: number;
+  difficulty: (typeof DIFFICULTIES)[number];
+  status: (typeof STATUSES)[number];
+};
+
+export type QuestionField =
+  | "passage"
+  | "prompt"
+  | "choices"
+  | "correct"
+  | "explanation"
+  | "skillId"
+  | "difficulty"
+  | "status";
+
+export type QuestionFormState =
+  | { status: "idle" }
+  | {
+      status: "error";
+      message: string;
+      fields: Partial<Record<QuestionField, string>>;
+    };
+
+const text = (formData: FormData, name: string) =>
+  String(formData.get(name) ?? "")
+    .replace(/\r\n/g, "\n")
+    .trim();
+
+/** Reads and checks the edit form. Returns the clean values or a message per field. */
+export function parseQuestionForm(
+  formData: FormData,
+):
+  | { ok: true; value: QuestionInput }
+  | { ok: false; fields: Partial<Record<QuestionField, string>> } {
+  const fields: Partial<Record<QuestionField, string>> = {};
+
+  const passage = text(formData, "passage");
+  const prompt = text(formData, "prompt");
+  const explanation = text(formData, "explanation");
+  const choices = CHOICE_IDS.map((id) => ({
+    id,
+    text: text(formData, `choice_${id}`),
+  }));
+  const correct = text(formData, "correct");
+  const skillId = Number(text(formData, "skillId"));
+  const difficulty = text(formData, "difficulty");
+  const status = text(formData, "status");
+
+  if (passage.length > 6000)
+    fields.passage = "The passage is too long (6,000 characters at most).";
+  if (!prompt) fields.prompt = "Write the question.";
+  else if (prompt.length > 2000)
+    fields.prompt = "The question is too long (2,000 characters at most).";
+
+  if (choices.some((c) => !c.text))
+    fields.choices = "Fill in all four choices.";
+  else if (choices.some((c) => c.text.length > 600))
+    fields.choices = "Each choice can be 600 characters at most.";
+  else if (
+    new Set(choices.map((c) => c.text.toLowerCase())).size !== choices.length
+  )
+    fields.choices = "Two choices are the same.";
+
+  if (!(CHOICE_IDS as readonly string[]).includes(correct))
+    fields.correct = "Pick the correct answer.";
+  if (explanation.length > 3000)
+    fields.explanation =
+      "The explanation is too long (3,000 characters at most).";
+  if (!Number.isInteger(skillId) || skillId <= 0)
+    fields.skillId = "Pick a topic.";
+  if (!(DIFFICULTIES as readonly string[]).includes(difficulty))
+    fields.difficulty = "Pick a difficulty.";
+  if (!(STATUSES as readonly string[]).includes(status))
+    fields.status = "Pick a status.";
+
+  if (Object.keys(fields).length > 0) return { ok: false, fields };
+  return {
+    ok: true,
+    value: {
+      passage: passage || null,
+      prompt,
+      choices,
+      correct,
+      explanation: explanation || null,
+      skillId,
+      difficulty: difficulty as QuestionInput["difficulty"],
+      status: status as QuestionInput["status"],
+    },
+  };
+}
+
+// ---- Publishing ----
+
+export type ModuleCheck = {
+  moduleNumber: number;
+  tier: string;
+  questions: number;
+  withoutAnswer: number;
+};
+
+/** What still blocks a test from being published. Empty list = ready. */
+export function publishProblems(
+  isAdaptive: boolean,
+  modules: ModuleCheck[],
+): string[] {
+  const problems: string[] = [];
+  const find = (n: number, tier?: string) =>
+    modules.find((m) => m.moduleNumber === n && (!tier || m.tier === tier));
+  const needed: { label: string; module: ModuleCheck | undefined }[] =
+    isAdaptive
+      ? [
+          { label: "Module 1", module: find(1) },
+          { label: "Module 2 (easier)", module: find(2, "easier") },
+          { label: "Module 2 (harder)", module: find(2, "harder") },
+        ]
+      : [
+          { label: "Module 1", module: find(1) },
+          { label: "Module 2", module: find(2) },
+        ];
+  for (const { label, module } of needed) {
+    if (!module || module.questions === 0)
+      problems.push(`${label} has no questions yet.`);
+  }
+  const missingAnswers = modules.reduce((sum, m) => sum + m.withoutAnswer, 0);
+  if (missingAnswers > 0)
+    problems.push(
+      `${missingAnswers} question${missingAnswers === 1 ? " has" : "s have"} no correct answer.`,
+    );
+  return problems;
 }

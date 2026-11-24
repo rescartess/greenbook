@@ -8,7 +8,11 @@ import { getQuestionPreview } from "../queries";
 import { difficultyLabel, statusLabel } from "../schema";
 import { LoadingBlock } from "./AdminShell";
 
-export function AdminQuestionPage({ externalId }: { externalId: Promise<string> }) {
+export function AdminQuestionPage({
+  externalId,
+}: {
+  externalId: Promise<string>;
+}) {
   return (
     <Suspense fallback={<LoadingBlock height={560} />}>
       <QuestionPreview externalId={externalId} />
@@ -16,7 +20,11 @@ export function AdminQuestionPage({ externalId }: { externalId: Promise<string> 
   );
 }
 
-async function QuestionPreview({ externalId }: { externalId: Promise<string> }) {
+async function QuestionPreview({
+  externalId,
+}: {
+  externalId: Promise<string>;
+}) {
   await requireAdmin();
   const q = await getQuestionPreview(await externalId);
   if (!q) notFound();
@@ -35,24 +43,49 @@ async function QuestionPreview({ externalId }: { externalId: Promise<string> }) 
             </Link>
           ) : null}
           <h1 className="text-3xl font-extrabold tracking-tight sm:text-[38px] sm:leading-tight">
-            {place ? `Question ${place.position} of ${place.total}` : q.externalId}
+            {place
+              ? `Question ${place.position} of ${place.total}`
+              : q.externalId}
           </h1>
-          {place ? <p className="mt-1 text-[17px] text-graphite">{place.moduleLabel}</p> : null}
+          {place ? (
+            <p className="mt-1 text-[17px] text-graphite">
+              {place.moduleLabel}
+            </p>
+          ) : null}
         </div>
-        {place ? (
-          <nav className="flex gap-2" aria-label="Move between questions">
-            {place.previousId ? (
-              <ButtonLink href={`/admin/questions/${place.previousId}`} variant="quiet">
-                Previous
-              </ButtonLink>
-            ) : null}
-            {place.nextId ? <ButtonLink href={`/admin/questions/${place.nextId}`}>Next</ButtonLink> : null}
-          </nav>
-        ) : null}
+        <div className="flex flex-wrap gap-2">
+          <ButtonLink
+            href={`/admin/questions/${q.externalId}/edit`}
+            variant="quiet"
+          >
+            Edit question
+          </ButtonLink>
+          {place ? (
+            <nav className="flex gap-2" aria-label="Move between questions">
+              {place.previousId ? (
+                <ButtonLink
+                  href={`/admin/questions/${place.previousId}`}
+                  variant="quiet"
+                >
+                  Previous
+                </ButtonLink>
+              ) : null}
+              {place.nextId ? (
+                <ButtonLink href={`/admin/questions/${place.nextId}`}>
+                  Next
+                </ButtonLink>
+              ) : null}
+            </nav>
+          ) : null}
+        </div>
       </header>
 
       <div className="overflow-hidden rounded-card border border-hairline bg-paper">
-        <QuestionView number={place?.position ?? 1} question={q.content} correctId={q.correctId} />
+        <QuestionView
+          number={place?.position ?? 1}
+          question={q.content}
+          correctId={q.correctId}
+        />
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_20rem]">
@@ -61,7 +94,10 @@ async function QuestionPreview({ externalId }: { externalId: Promise<string> }) 
             {q.correctId ? `Answer: ${q.correctId}` : "No answer saved yet"}
           </h2>
           {q.explanation ? (
-            <RichText source={q.explanation} className="mt-3 text-[17px] leading-relaxed text-ink-soft" />
+            <RichText
+              source={q.explanation}
+              className="mt-3 text-[17px] leading-relaxed text-ink-soft"
+            />
           ) : (
             <p className="mt-3 text-graphite">No explanation yet.</p>
           )}

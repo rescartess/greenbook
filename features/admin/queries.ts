@@ -1,7 +1,11 @@
 import "server-only";
-import { parseChoices, toPlainText, type QuestionContent } from "@/core/question";
+import {
+  parseChoices,
+  toPlainText,
+  type QuestionContent,
+} from "@/core/question";
 import { createDbClient } from "@/core/db/server";
-import { isExternalId, isUuid, moduleLabel } from "./schema";
+import { isExternalId, isUuid, moduleLabel, publishProblems } from "./schema";
 
 // Admin reads go through the admin's own login, so the database rules decide what they can see.
 
@@ -17,7 +21,9 @@ export async function listTests(): Promise<AdminTestSummary[]> {
   const supabase = await createDbClient();
   const { data, error } = await supabase
     .from("question_sets")
-    .select("id, title, subject, published, modules(module_number, tier, sort_order, module_questions(count))")
+    .select(
+      "id, title, subject, published, modules(module_number, tier, sort_order, module_questions(count))",
+    )
     .order("created_at");
   if (error) throw new Error(`Could not load tests: ${error.message}`);
 
@@ -28,7 +34,10 @@ export async function listTests(): Promise<AdminTestSummary[]> {
     published: set.published,
     modules: [...set.modules]
       .sort((a, b) => a.sort_order - b.sort_order)
-      .map((m) => ({ label: moduleLabel(m.module_number, m.tier), count: m.module_questions[0]?.count ?? 0 })),
+      .map((m) => ({
+        label: moduleLabel(m.module_number, m.tier),
+        count: m.module_questions[0]?.count ?? 0,
+      })),
   }));
 }
 
@@ -37,10 +46,19 @@ export type AdminTestDetail = {
   title: string;
   subject: string;
   published: boolean;
+  /** Reasons the test can't be published yet; empty when it's ready. */
+  problems: string[];
   modules: {
     label: string;
     minutes: number | null;
-    questions: { position: number; externalId: string; preview: string; skill: string; difficulty: string; answer: string }[];
+    questions: {
+      position: number;
+      externalId: string;
+      preview: string;
+      skill: string;
+      difficulty: string;
+      answer: string;
+    }[];
   }[];
 };
 
@@ -50,18 +68,28 @@ export async function getTest(setId: string): Promise<AdminTestDetail | null> {
   const { data, error } = await supabase
     .from("question_sets")
     .select(
-      "id, title, subject, published, modules(module_number, tier, sort_order, time_limit_sec, module_questions(position, questions(external_id, difficulty, passage, prompt, skills(name), question_answers(correct_answer))))",
+      "id, title, subject, published, is_adaptive, modules(module_number, tier, sort_order, time_limit_sec, module_questions(position, questions(external_id, difficulty, passage, prompt, skills(name), question_answers(correct_answer))))",
     )
     .eq("id", setId)
     .maybeSingle();
   if (error) throw new Error(`Could not load the test: ${error.message}`);
   if (!data) return null;
 
+  const checks = data.modules.map((m) => ({
+    moduleNumber: m.module_number,
+    tier: m.tier,
+    questions: m.module_questions.length,
+    withoutAnswer: m.module_questions.filter(
+      (mq) => !mq.questions?.question_answers?.correct_answer,
+    ).length,
+  }));
+
   return {
     id: data.id,
     title: data.title,
     subject: data.subject,
     published: data.published,
+    problems: publishProblems(data.is_adaptive, checks),
     modules: [...data.modules]
       .sort((a, b) => a.sort_order - b.sort_order)
       .map((m) => ({
@@ -89,6 +117,9 @@ export async function getTest(setId: string): Promise<AdminTestDetail | null> {
 
 export type AdminQuestionPreview = {
   externalId: string;
+  subject: string;
+  type: string;
+  skillId: number | null;
   content: QuestionContent;
   correctId: string | null;
   explanation: string | null;
@@ -108,13 +139,15 @@ export type AdminQuestionPreview = {
   } | null;
 };
 
-export async function getQuestionPreview(externalId: string): Promise<AdminQuestionPreview | null> {
+export async function getQuestionPreview(
+  externalId: string,
+): Promise<AdminQuestionPreview | null> {
   if (!isExternalId(externalId)) return null;
   const supabase = await createDbClient();
   const { data: q, error } = await supabase
     .from("questions")
     .select(
-      "external_id, passage, prompt, choices, difficulty, status, version, skills(name, domains(name)), question_answers(correct_answer, explanation), module_questions(position, module_id, modules(module_number, tier, question_sets(id, title)))",
+      "external_id, subject, type, skill_id, passage, prompt, choices, difficulty, status, version, skills(name, domains(name)), question_answers(correct_answer, explanation), module_questions(position, module_id, modules(module_number, tier, question_sets(id, title)))",
     )
     .eq("external_id", externalId)
     .maybeSingle();
@@ -130,12 +163,18 @@ export async function getQuestionPreview(externalId: string): Promise<AdminQuest
       .select("position, questions(external_id)")
       .eq("module_id", membership.module_id)
       .order("position");
-    if (siblingsError) throw new Error(`Could not load the module: ${siblingsError.message}`);
-    const idAt = (position: number) => siblings.find((s) => s.position === position)?.questions?.external_id ?? null;
+    if (siblingsError)
+      throw new Error(`Could not load the module: ${siblingsError.message}`);
+    const idAt = (position: number) =>
+      siblings.find((s) => s.position === position)?.questions?.external_id ??
+      null;
     place = {
       testId: set.id,
       testTitle: set.title,
-      moduleLabel: moduleLabel(membership.modules.module_number, membership.modules.tier),
+      moduleLabel: moduleLabel(
+        membership.modules.module_number,
+        membership.modules.tier,
+      ),
       position: membership.position,
       total: siblings.length,
       previousId: idAt(membership.position - 1),
@@ -145,7 +184,14 @@ export async function getQuestionPreview(externalId: string): Promise<AdminQuest
 
   return {
     externalId: q.external_id,
-    content: { passage: q.passage, prompt: q.prompt, choices: parseChoices(q.choices) },
+    subject: q.subject,
+    type: q.type,
+    skillId: q.skill_id,
+    content: {
+      passage: q.passage,
+      prompt: q.prompt,
+      choices: parseChoices(q.choices),
+    },
     correctId: q.question_answers?.correct_answer ?? null,
     explanation: q.question_answers?.explanation ?? null,
     skill: q.skills?.name ?? "No topic",
@@ -155,4 +201,26 @@ export async function getQuestionPreview(externalId: string): Promise<AdminQuest
     version: q.version,
     place,
   };
+}
+
+export type SkillGroup = {
+  domain: string;
+  skills: { id: number; name: string }[];
+};
+
+/** Topics for one subject, grouped by area, in the official order. */
+export async function listSkills(subject: string): Promise<SkillGroup[]> {
+  const supabase = await createDbClient();
+  const { data, error } = await supabase
+    .from("domains")
+    .select("name, sort_order, skills(id, name, sort_order)")
+    .eq("subject", subject)
+    .order("sort_order");
+  if (error) throw new Error(`Could not load topics: ${error.message}`);
+  return data.map((d) => ({
+    domain: d.name,
+    skills: [...d.skills]
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((k) => ({ id: k.id, name: k.name })),
+  }));
 }
