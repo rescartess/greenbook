@@ -20,3 +20,10 @@ After a migration, regenerate `core/db/types.ts`.
 Automated checks for the database live in `tests/db/` and run with `npm test`: every migration is applied to a throwaway in-memory Postgres and the rules are tested as a student and as an admin.
 - 0009 admin tools: admin_create_test, admin_add_questions (all-or-nothing), admin_remove_from_module, admin_move_in_module (run with the admin's own rights)
 - 0010 practice and mistakes: start_practice, get_practice_state, check_practice_answer (instant feedback), finish_practice, get_mistakes, retry_mistake (two right in a row clears it), admin_create_set (topic/monthly). Practice only grades questions from published topic/monthly sets or the student's own mistakes, so full-test answers stay secret.
+
+## About the security advisor
+It lists the student-facing functions (start_full_test, save_response, finish_module, get_test_state,
+get_test_results, start_practice, get_practice_state, check_practice_answer, finish_practice, get_mistakes,
+retry_mistake) as "signed-in users can execute a SECURITY DEFINER function". That is on purpose: they are the
+only way students write activity, and each one checks the caller owns the attempt before doing anything.
+Helper functions live in the `private` schema and can't be called from the website.
