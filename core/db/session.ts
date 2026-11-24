@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "@/core/config/supabase";
+import type { Database } from "./types";
 
 /**
  * Used by proxy.ts on every request: refreshes the login cookies if needed and
@@ -9,7 +10,7 @@ import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "@/core/config/supabase";
 export async function refreshSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
-  const supabase = createServerClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  const supabase = createServerClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     cookies: {
       getAll() {
         return request.cookies.getAll();

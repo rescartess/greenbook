@@ -3,11 +3,17 @@
  * public by design: security comes from the database's Row Level Security
  * rules, not from hiding these values.
  *
- * Until both are set, login is switched off and the app shows sample data,
- * so the live site keeps working while the database is being set up.
+ * The defaults point at the live project (greenbook, Frankfurt). Environment
+ * variables can override them, for example to use a test project. Setting
+ * NEXT_PUBLIC_SUPABASE_URL to "off" switches login off and shows sample data.
  */
-export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-export const SUPABASE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+const LIVE_URL = "https://pgpotvnyomwrlmnhzcmy.supabase.co";
+const LIVE_PUBLISHABLE_KEY = "sb_publishable_PnGwMmSZwM1AI-_GrUH1Gg_UDPdldiJ";
+
+const urlSetting = process.env.NEXT_PUBLIC_SUPABASE_URL || LIVE_URL;
+export const SUPABASE_URL = urlSetting === "off" ? "" : urlSetting;
+export const SUPABASE_PUBLISHABLE_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || LIVE_PUBLISHABLE_KEY;
 
 export const AUTH_ENABLED = SUPABASE_URL !== "" && SUPABASE_PUBLISHABLE_KEY !== "";
 
