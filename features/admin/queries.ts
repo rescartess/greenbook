@@ -48,17 +48,13 @@ export type AdminTestDetail = {
   published: boolean;
   /** Reasons the test can't be published yet; empty when it's ready. */
   problems: string[];
+  /** Module 2 versions an adaptive test still needs ("easier", "harder"). */
+  missingTiers: string[];
   modules: {
+    id: string;
     label: string;
     minutes: number | null;
-    questions: {
-      position: number;
-      externalId: string;
-      preview: string;
-      skill: string;
-      difficulty: string;
-      answer: string;
-    }[];
+    questions: { id: string; position: number; externalId: string; preview: string; skill: string; difficulty: string; answer: string }[];
   }[];
 };
 
@@ -68,7 +64,7 @@ export async function getTest(setId: string): Promise<AdminTestDetail | null> {
   const { data, error } = await supabase
     .from("question_sets")
     .select(
-      "id, title, subject, published, is_adaptive, modules(module_number, tier, sort_order, time_limit_sec, module_questions(position, questions(external_id, difficulty, passage, prompt, skills(name), question_answers(correct_answer))))",
+      "id, title, subject, published, is_adaptive, modules(id, module_number, tier, sort_order, time_limit_sec, module_questions(position, questions(id, external_id, difficulty, passage, prompt, skills(name), question_answers(correct_answer))))",
     )
     .eq("id", setId)
     .maybeSingle();
@@ -90,9 +86,13 @@ export async function getTest(setId: string): Promise<AdminTestDetail | null> {
     subject: data.subject,
     published: data.published,
     problems: publishProblems(data.is_adaptive, checks),
+    missingTiers: data.is_adaptive
+      ? ["easier", "harder"].filter((tier) => !data.modules.some((m) => m.module_number === 2 && m.tier === tier))
+      : [],
     modules: [...data.modules]
       .sort((a, b) => a.sort_order - b.sort_order)
       .map((m) => ({
+        id: m.id,
         label: moduleLabel(m.module_number, m.tier),
         minutes: m.time_limit_sec ? Math.round(m.time_limit_sec / 60) : null,
         questions: [...m.module_questions]
@@ -102,6 +102,7 @@ export async function getTest(setId: string): Promise<AdminTestDetail | null> {
             if (!q) return [];
             return [
               {
+                id: q.id,
                 position: mq.position,
                 externalId: q.external_id,
                 preview: toPlainText(q.passage || q.prompt),
@@ -213,7 +214,7 @@ export async function listSkills(subject: string): Promise<SkillGroup[]> {
   const supabase = await createDbClient();
   const { data, error } = await supabase
     .from("domains")
-    .select("name, sort_order, skills(id, name, sort_order)")
+    .select("name, sort_order, skills(id, name, slug, sort_order)")
     .eq("subject", subject)
     .order("sort_order");
   if (error) throw new Error(`Could not load topics: ${error.message}`);
@@ -223,4 +224,26 @@ export async function listSkills(subject: string): Promise<SkillGroup[]> {
       .sort((a, b) => a.sort_order - b.sort_order)
       .map((k) => ({ id: k.id, name: k.name })),
   }));
+}
+
+export type ModuleInfo = { id: string; label: string; setId: string; testTitle: string; subject: string; count: number };
+
+export async function getModuleInfo(moduleId: string): Promise<ModuleInfo | null> {
+  if (!isUuid(moduleId)) return null;
+  const supabase = await createDbClient();
+  const { data, error } = await supabase
+    .from("modules")
+    .select("id, module_number, tier, set_id, question_sets(title, subject), module_questions(count)")
+    .eq("id", moduleId)
+    .maybeSingle();
+  if (error) throw new Error(`Could not load the module: ${error.message}`);
+  if (!data || !data.question_sets) return null;
+  return {
+    id: data.id,
+    label: moduleLabel(data.module_number, data.tier),
+    setId: data.set_id,
+    testTitle: data.question_sets.title,
+    subject: data.question_sets.subject,
+    count: data.module_questions[0]?.count ?? 0,
+  };
 }

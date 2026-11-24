@@ -519,6 +519,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_add_questions: { Args: { p_items: Json; p_module_id: string }; Returns: string[] }
+      admin_create_test: { Args: { p_minutes: number; p_subject: string; p_title: string }; Returns: string }
+      admin_move_in_module: {
+        Args: { p_direction: number; p_module_id: string; p_question_id: string }
+        Returns: undefined
+      }
+      admin_remove_from_module: { Args: { p_module_id: string; p_question_id: string }; Returns: undefined }
       finish_module: { Args: { p_attempt_module_id: string }; Returns: string }
       get_test_results: { Args: { p_attempt_id: string }; Returns: Json }
       get_test_state: { Args: { p_attempt_id: string }; Returns: Json }

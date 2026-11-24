@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseQuestionForm, publishProblems } from "./schema";
+import { checkImport, parseQuestionForm, publishProblems } from "./schema";
 
 function form(overrides: Record<string, string> = {}) {
   const data = new FormData();
@@ -105,5 +105,38 @@ describe("publishProblems", () => {
     expect(publishProblems(false, [m1, { ...hard, withoutAnswer: 2 }])).toEqual(
       ["2 questions have no correct answer."],
     );
+  });
+});
+
+
+describe("checkImport", () => {
+  const skills = [
+    { id: 1, name: "Words in Context", slug: "english-words-in-context" },
+    { id: 2, name: "Transitions", slug: "english-transitions" },
+  ];
+  const good = { question: "Pick one.", choices: ["a", "b", "c", "d"], answer: "c", topic: "words in context" };
+
+  it("accepts a clean list and fills in defaults", () => {
+    const r = checkImport(JSON.stringify([good, { ...good, topic: "english-transitions", difficulty: "Hard" }]), skills);
+    expect(r.problems).toEqual([]);
+    expect(r.items[0]).toMatchObject({ answer: "C", skill_id: 1, difficulty: "medium", passage: null });
+    expect(r.items[1]).toMatchObject({ skill_id: 2, difficulty: "hard" });
+  });
+
+  it("accepts choices written as A/B/C/D", () => {
+    const r = checkImport(JSON.stringify([{ ...good, choices: { A: "1", B: "2", C: "3", D: "4" } }]), skills);
+    expect(r.items[0].choices[3]).toEqual({ id: "D", text: "4" });
+  });
+
+  it("reports every problem with its number and imports nothing", () => {
+    const r = checkImport(JSON.stringify([good, { question: "", choices: ["a"], answer: "E", topic: "Poetry" }]), skills);
+    expect(r.items).toEqual([]);
+    expect(r.problems).toEqual([
+      "Question 2: no question text, needs exactly four choices, answer must be A, B, C or D, unknown topic “Poetry”.",
+    ]);
+  });
+
+  it("explains broken JSON in plain words", () => {
+    expect(checkImport("[{", skills).problems[0]).toMatch(/isn’t valid JSON/);
   });
 });

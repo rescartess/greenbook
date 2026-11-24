@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { EmptyState, Panel } from "@/core/design/ui";
+import { ButtonLink, EmptyState, Panel } from "@/core/design/ui";
 import { SUBJECTS, isSubjectSlug } from "@/core/config/subjects";
 import { requireAdmin } from "@/features/auth";
 import { listTests } from "../queries";
@@ -9,10 +9,15 @@ import { AdminTitle, LoadingBlock } from "./AdminShell";
 export function AdminTestsPage() {
   return (
     <>
-      <AdminTitle
-        title="Tests"
-        subtitle="Everything you have added, including drafts students can’t see yet."
-      />
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <AdminTitle
+          title="Tests"
+          subtitle="Everything you have added, including drafts students can’t see yet."
+        />
+        <div className="mb-6">
+          <ButtonLink href="/admin/tests/new">New test</ButtonLink>
+        </div>
+      </div>
       <Suspense fallback={<LoadingBlock />}>
         <TestsList />
       </Suspense>

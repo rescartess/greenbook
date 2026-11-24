@@ -173,3 +173,82 @@ export function publishProblems(
     );
   return problems;
 }
+
+// ---- Bulk import ----
+
+export type SkillRef = { id: number; name: string; slug?: string };
+
+export type ImportItem = {
+  passage: string | null;
+  prompt: string;
+  choices: { id: string; text: string }[];
+  answer: string;
+  explanation: string | null;
+  skill_id: number;
+  difficulty: (typeof DIFFICULTIES)[number];
+};
+
+export type ImportCheck = { items: ImportItem[]; problems: string[] };
+
+const asText = (v: unknown) => (typeof v === "string" ? v.replace(/\r\n/g, "\n").trim() : "");
+
+/**
+ * Reads pasted JSON: a list of questions like
+ * { "passage": "...", "question": "...", "choices": ["...", "...", "...", "..."], "answer": "B",
+ *   "explanation": "...", "topic": "Words in Context", "difficulty": "medium" }.
+ * Every problem is reported with its question number; nothing is imported unless all are fine.
+ */
+export function checkImport(text: string, skills: SkillRef[]): ImportCheck {
+  let data: unknown;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    return { items: [], problems: ["This isn’t valid JSON. Check for a missing comma or quote."] };
+  }
+  const list = Array.isArray(data) ? data : data && typeof data === "object" && Array.isArray((data as { questions?: unknown }).questions) ? (data as { questions: unknown[] }).questions : null;
+  if (!list) return { items: [], problems: ["Paste a list of questions: [ {…}, {…} ]."] };
+  if (list.length === 0) return { items: [], problems: ["The list is empty."] };
+  if (list.length > 60) return { items: [], problems: ["Import 60 questions at most at a time."] };
+
+  const findSkill = (value: string) => {
+    const v = value.toLowerCase();
+    return skills.find((s) => s.name.toLowerCase() === v || s.slug?.toLowerCase() === v || s.slug?.toLowerCase().endsWith(`-${v.replace(/\s+/g, "-")}`));
+  };
+
+  const items: ImportItem[] = [];
+  const problems: string[] = [];
+  list.forEach((raw, i) => {
+    const n = i + 1;
+    const q = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+    const prompt = asText(q.question ?? q.prompt);
+    const rawChoices = q.choices;
+    let texts: string[] = [];
+    if (Array.isArray(rawChoices)) texts = rawChoices.map((c) => (typeof c === "string" ? c : asText((c as { text?: unknown })?.text)));
+    else if (rawChoices && typeof rawChoices === "object") texts = CHOICE_IDS.map((id) => asText((rawChoices as Record<string, unknown>)[id]));
+    texts = texts.map((t) => t.trim());
+    const answer = asText(q.answer).toUpperCase();
+    const skill = findSkill(asText(q.topic ?? q.skill));
+    const difficulty = (asText(q.difficulty) || "medium").toLowerCase();
+
+    const mine: string[] = [];
+    if (!prompt) mine.push("no question text");
+    if (texts.length !== 4 || texts.some((t) => !t)) mine.push("needs exactly four choices");
+    if (!(CHOICE_IDS as readonly string[]).includes(answer)) mine.push("answer must be A, B, C or D");
+    if (!skill) mine.push(q.topic || q.skill ? `unknown topic “${asText(q.topic ?? q.skill)}”` : "no topic");
+    if (!(DIFFICULTIES as readonly string[]).includes(difficulty)) mine.push("difficulty must be easy, medium or hard");
+    if (mine.length) {
+      problems.push(`Question ${n}: ${mine.join(", ")}.`);
+      return;
+    }
+    items.push({
+      passage: asText(q.passage) || null,
+      prompt,
+      choices: CHOICE_IDS.map((id, j) => ({ id, text: texts[j] })),
+      answer,
+      explanation: asText(q.explanation) || null,
+      skill_id: skill!.id,
+      difficulty: difficulty as ImportItem["difficulty"],
+    });
+  });
+  return { items: problems.length ? [] : items, problems };
+}

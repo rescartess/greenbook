@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createDbClient } from "@/core/db/server";
 import { requireAdmin } from "@/features/auth";
 import {
+  checkImport,
   isExternalId,
   isUuid,
   parseQuestionForm,
@@ -157,5 +158,114 @@ export async function setTestPublished(
     .update({ published: publish })
     .eq("id", setId);
   if (setError) throw new Error(`Saving failed: ${setError.message}`);
+  revalidatePath("/admin", "layout");
+}
+
+// ---- Creating tests and adding questions ----
+
+export type SimpleState = { message: string | null };
+
+export async function createTest(_prev: SimpleState, formData: FormData): Promise<SimpleState> {
+  await requireAdmin();
+  const title = String(formData.get("title") ?? "").trim();
+  const subject = String(formData.get("subject") ?? "");
+  const minutes = Number(formData.get("minutes"));
+  if (!title) return { message: "Give the test a name." };
+  if (subject !== "english" && subject !== "math") return { message: "Pick a subject." };
+  if (!Number.isInteger(minutes) || minutes < 1 || minutes > 180) return { message: "Minutes per module must be a whole number from 1 to 180." };
+
+  const supabase = await createDbClient();
+  const { data, error } = await supabase.rpc("admin_create_test", { p_title: title, p_subject: subject, p_minutes: minutes });
+  if (error || !data) return { message: `The test couldn’t be created: ${error?.message ?? "unknown error"}` };
+  revalidatePath("/admin", "layout");
+  redirect(`/admin/tests/${data}`);
+}
+
+/** Adds the missing easier or harder module 2 to an adaptive test. */
+export async function addModule(setId: string, tier: string): Promise<void> {
+  await requireAdmin();
+  if (!isUuid(setId) || (tier !== "easier" && tier !== "harder")) throw new Error("That module can’t be added.");
+  const supabase = await createDbClient();
+  const { data: first } = await supabase.from("modules").select("time_limit_sec").eq("set_id", setId).eq("module_number", 1).maybeSingle();
+  const { error } = await supabase.from("modules").insert({
+    set_id: setId,
+    module_number: 2,
+    tier,
+    time_limit_sec: first?.time_limit_sec ?? null,
+    sort_order: tier === "easier" ? 2 : 3,
+  });
+  if (error) throw new Error(`The module couldn’t be added: ${error.message}`);
+  revalidatePath("/admin", "layout");
+}
+
+export async function addQuestion(moduleId: string, _prev: QuestionFormState, formData: FormData): Promise<QuestionFormState> {
+  await requireAdmin();
+  if (!isUuid(moduleId)) return { status: "error", message: "This module doesn’t exist.", fields: {} };
+  const parsed = parseQuestionForm(formData);
+  if (!parsed.ok) return { status: "error", message: "Fix the marked fields, then save again.", fields: parsed.fields };
+  const v = parsed.value;
+
+  const supabase = await createDbClient();
+  const { data, error } = await supabase.rpc("admin_add_questions", {
+    p_module_id: moduleId,
+    p_items: [
+      {
+        passage: v.passage,
+        prompt: v.prompt,
+        choices: v.choices,
+        answer: v.correct,
+        explanation: v.explanation,
+        skill_id: v.skillId,
+        difficulty: v.difficulty,
+      },
+    ],
+  });
+  if (error || !data?.[0]) return { status: "error", message: `The question couldn’t be added: ${error?.message ?? "unknown error"}`, fields: {} };
+  revalidatePath("/admin", "layout");
+  redirect(`/admin/questions/${data[0]}`);
+}
+
+export type ImportState =
+  | { step: "paste"; message: string | null; problems: string[] }
+  | { step: "ready"; count: number; json: string }
+  | { step: "done"; count: number; firstId: string };
+
+/** Checks pasted questions first; imports them only when every one is fine and the admin confirms. */
+export async function importQuestions(moduleId: string, _prev: ImportState, formData: FormData): Promise<ImportState> {
+  await requireAdmin();
+  const text = String(formData.get("json") ?? "");
+  const confirm = formData.get("confirm") === "yes";
+  const supabase = await createDbClient();
+
+  const { data: mod } = await supabase.from("modules").select("question_sets(subject)").eq("id", moduleId).maybeSingle();
+  const subject = mod?.question_sets?.subject;
+  if (!subject) return { step: "paste", message: "This module doesn’t exist.", problems: [] };
+
+  const { data: skillRows } = await supabase.from("skills").select("id, name, slug, domains!inner(subject)").eq("domains.subject", subject);
+  const result = checkImport(text, (skillRows ?? []).map((s) => ({ id: s.id, name: s.name, slug: s.slug })));
+  if (result.problems.length > 0) return { step: "paste", message: "Nothing was imported. Fix these and check again:", problems: result.problems };
+  if (!confirm) return { step: "ready", count: result.items.length, json: text };
+
+  const { data, error } = await supabase.rpc("admin_add_questions", { p_module_id: moduleId, p_items: result.items });
+  if (error || !data) return { step: "paste", message: `Nothing was imported: ${error?.message ?? "unknown error"}`, problems: [] };
+  revalidatePath("/admin", "layout");
+  return { step: "done", count: data.length, firstId: data[0] };
+}
+
+export async function removeFromModule(moduleId: string, questionId: string): Promise<void> {
+  await requireAdmin();
+  if (!isUuid(moduleId) || !isUuid(questionId)) return;
+  const supabase = await createDbClient();
+  const { error } = await supabase.rpc("admin_remove_from_module", { p_module_id: moduleId, p_question_id: questionId });
+  if (error) throw new Error(`The question couldn’t be removed: ${error.message}`);
+  revalidatePath("/admin", "layout");
+}
+
+export async function moveInModule(moduleId: string, questionId: string, direction: number): Promise<void> {
+  await requireAdmin();
+  if (!isUuid(moduleId) || !isUuid(questionId)) return;
+  const supabase = await createDbClient();
+  const { error } = await supabase.rpc("admin_move_in_module", { p_module_id: moduleId, p_question_id: questionId, p_direction: direction < 0 ? -1 : 1 });
+  if (error) throw new Error(`The question couldn’t be moved: ${error.message}`);
   revalidatePath("/admin", "layout");
 }

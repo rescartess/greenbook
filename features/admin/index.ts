@@ -4,3 +4,4 @@ export { AdminTestsPage } from "./components/AdminTestsPage";
 export { AdminTestPage } from "./components/AdminTestPage";
 export { AdminQuestionPage } from "./components/AdminQuestionPage";
 export { AdminQuestionEditPage } from "./components/AdminQuestionEditPage";
+export { AdminNewTestPage, AdminAddQuestionPage, AdminImportPage } from "./components/AdminModulePages";

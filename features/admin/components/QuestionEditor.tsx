@@ -26,6 +26,9 @@ type Props = {
     state: QuestionFormState,
     formData: FormData,
   ) => Promise<QuestionFormState>;
+  /** New questions always start as drafts, so the status picker is hidden. */
+  showStatus?: boolean;
+  submitLabel?: string;
 };
 
 const inputClass =
@@ -65,6 +68,8 @@ export function QuestionEditor({
   initial,
   skills,
   action,
+  showStatus = true,
+  submitLabel = "Save changes",
 }: Props) {
   const [state, formAction, pending] = useActionState(action, {
     status: "idle",
@@ -203,17 +208,21 @@ export function QuestionEditor({
               <option value="hard">Hard</option>
             </select>
           </Field>
-          <Field label="Status" error={errors.status}>
-            <select
-              name="status"
-              defaultValue={initial.status}
-              className={inputClass}
-            >
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-              <option value="retired">Retired</option>
-            </select>
-          </Field>
+          {showStatus ? (
+            <Field label="Status" error={errors.status}>
+              <select
+                name="status"
+                defaultValue={initial.status}
+                className={inputClass}
+              >
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+                <option value="retired">Retired</option>
+              </select>
+            </Field>
+          ) : (
+            <input type="hidden" name="status" value="draft" />
+          )}
         </div>
 
         {state.status === "error" ? (
@@ -227,7 +236,7 @@ export function QuestionEditor({
 
         <div className="flex flex-wrap gap-2.5 border-t border-hairline pt-5">
           <Button type="submit" disabled={pending}>
-            {pending ? "Saving…" : "Save changes"}
+            {pending ? "Saving…" : submitLabel}
           </Button>
           <ButtonLink href={cancelHref} variant="quiet">
             Discard changes

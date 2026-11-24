@@ -18,3 +18,4 @@ After a migration, regenerate `core/db/types.ts`.
 - 0008 ESTIMATED score tables (replace the rows when real tables exist)
 
 Automated checks for the database live in `tests/db/` and run with `npm test`: every migration is applied to a throwaway in-memory Postgres and the rules are tested as a student and as an admin.
+- 0009 admin tools: admin_create_test, admin_add_questions (all-or-nothing), admin_remove_from_module, admin_move_in_module (run with the admin's own rights)
