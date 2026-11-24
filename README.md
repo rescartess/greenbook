@@ -1,36 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GreenBook
 
-## Getting Started
+Free SAT practice with a Bluebook-style test screen. Built with Next.js, Tailwind CSS and (from milestone 2) Supabase.
 
-First, run the development server:
+## Run it on your Mac
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. Open this folder in the Claude desktop app's **Code** tab, or in Terminal.
+2. Install the packages once: `npm install`
+3. Start the site: `npm run dev`
+4. Open http://localhost:3000
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Useful pages:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Page | Address |
+| --- | --- |
+| Homepage | http://localhost:3000 |
+| Log in (design only until milestone 2) | http://localhost:3000/login |
+| Dashboard | http://localhost:3000/english/dashboard |
+| Design system | http://localhost:3000/dev/design |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Before every change goes live
 
-## Learn More
+Run `npm run check`. It checks types, the folder and design rules, the unit tests and a full production build. GitHub runs the same check on every push (`.github/workflows/checks.yml`).
 
-To learn more about Next.js, take a look at the following resources:
+## Where things live
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `app/` web addresses (thin files only)
+- `features/` one folder per feature (dashboard, full tests, topics...)
+- `core/` shared design system, layout, settings and scoring
+- `CLAUDE.md` the project rules Claude follows in every session

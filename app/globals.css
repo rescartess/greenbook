@@ -1,26 +1,143 @@
 @import "tailwindcss";
 
+/*
+ * GreenBook design tokens.
+ * Change a value here and every screen updates. Features must use these
+ * names (bg-paper, text-ink, bg-pine...), never raw hex values.
+ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --gb-paper: #ffffff;
+  --gb-mist: #f4f6f5;
+  --gb-canvas: #eef2f0;
+  --gb-ink: #1a1f1e;
+  --gb-ink-soft: #3e4745;
+  --gb-graphite: #5e6765;
+  --gb-hairline: #e6eae8;
+  --gb-control: #d5dcd9;
+  --gb-pine: #2d5652;
+  --gb-pine-ink: #ffffff;
+  --gb-pine-soft: #8db9ad;
+  --gb-pine-tint: #eef4f2;
+  --gb-wash: rgba(26, 31, 30, 0.06);
+
+  --gb-glass-bg: rgba(255, 255, 255, 0.62);
+  --gb-glass-edge: rgba(255, 255, 255, 0.9);
+  --gb-glass-highlight: rgba(255, 255, 255, 0.95);
+  --gb-glass-shadow: 0 1px 1px rgba(16, 24, 22, 0.05), 0 10px 28px rgba(16, 24, 22, 0.1);
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-theme="dark"] {
+  --gb-paper: #0f1716;
+  --gb-mist: #16201e;
+  --gb-canvas: #0b1211;
+  --gb-ink: #e7efed;
+  --gb-ink-soft: #c3cfcc;
+  --gb-graphite: #a3b1ae;
+  --gb-hairline: #26332f;
+  --gb-control: #34433f;
+  --gb-pine: #7fb5a8;
+  --gb-pine-ink: #0f1716;
+  --gb-pine-soft: #4f7f74;
+  --gb-pine-tint: #1b2b28;
+  --gb-wash: rgba(231, 239, 237, 0.08);
+
+  --gb-glass-bg: rgba(30, 42, 40, 0.55);
+  --gb-glass-edge: rgba(255, 255, 255, 0.12);
+  --gb-glass-highlight: rgba(255, 255, 255, 0.14);
+  --gb-glass-shadow: 0 1px 1px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    --gb-paper: #0f1716;
+    --gb-mist: #16201e;
+    --gb-canvas: #0b1211;
+    --gb-ink: #e7efed;
+    --gb-ink-soft: #c3cfcc;
+    --gb-graphite: #a3b1ae;
+    --gb-hairline: #26332f;
+    --gb-control: #34433f;
+    --gb-pine: #7fb5a8;
+    --gb-pine-ink: #0f1716;
+    --gb-pine-soft: #4f7f74;
+    --gb-pine-tint: #1b2b28;
+    --gb-wash: rgba(231, 239, 237, 0.08);
+
+    --gb-glass-bg: rgba(30, 42, 40, 0.55);
+    --gb-glass-edge: rgba(255, 255, 255, 0.12);
+    --gb-glass-highlight: rgba(255, 255, 255, 0.14);
+    --gb-glass-shadow: 0 1px 1px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.35);
+    color-scheme: dark;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@theme inline {
+  --color-paper: var(--gb-paper);
+  --color-mist: var(--gb-mist);
+  --color-canvas: var(--gb-canvas);
+  --color-ink: var(--gb-ink);
+  --color-ink-soft: var(--gb-ink-soft);
+  --color-graphite: var(--gb-graphite);
+  --color-hairline: var(--gb-hairline);
+  --color-control: var(--gb-control);
+  --color-pine: var(--gb-pine);
+  --color-pine-ink: var(--gb-pine-ink);
+  --color-pine-soft: var(--gb-pine-soft);
+  --color-pine-tint: var(--gb-pine-tint);
+  --color-wash: var(--gb-wash);
+  /* The homepage hero stays deep green in both themes. */
+  --color-brand: #2d5652;
+  --color-brand-up: #36645f;
+  --color-brand-down: #264b47;
+
+  --font-sans: "Nunito Variable", "Nunito", system-ui, -apple-system, sans-serif;
+
+  --radius-panel: 24px;
+  --radius-card: 28px;
+  --radius-choice: 14px;
+}
+
+/* Liquid glass: only for things that float (nav, side tabs, switch, test bars, sheets). */
+@utility glass {
+  background: var(--gb-glass-bg);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--gb-glass-edge);
+  box-shadow: inset 0 1px 0 var(--gb-glass-highlight), var(--gb-glass-shadow);
+}
+
+/* Glass on the deep green hero. */
+@utility glass-on-brand {
+  background: rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  backdrop-filter: blur(22px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.32),
+    0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--gb-paper);
+    color: var(--gb-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--gb-pine);
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
 }
