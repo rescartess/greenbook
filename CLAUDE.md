@@ -36,6 +36,10 @@ steps, and run `npm run check` before saying something is done.
 - Never: decorative gradients, identical card grids, emoji, rows of icons, ALL-CAPS labels, "→" on buttons, sales phrases. Copy is sentence case with plain verbs; buttons say what happens.
 - Check every screen at 390 px and 1440 px wide, in light and dark mode.
 
+## Publishing
+- Push to `main` on GitHub (rescartess/greenbook). GitHub Actions runs `npm run check`; only if it passes, the `publish` job calls the Vercel deploy hook (secret `VERCEL_DEPLOY_HOOK`). Live site: https://greenbook-alpha.vercel.app
+- Vercel's own per-commit status shows "blocked" for commits not authored by the owner. That is expected; the deploy hook publishes instead. Never sign commits as the owner.
+
 ## Commands
 - `npm run dev` local site at http://localhost:3000
 - `npm run check` typecheck + lint + unit tests + production build (must pass before merging)
