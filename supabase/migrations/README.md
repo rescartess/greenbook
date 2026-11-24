@@ -14,3 +14,7 @@ Never edit a migration that has already run. Add a new file instead.
 ## Applying a migration
 Each file is applied to the live project (greenbook, ref `pgpotvnyomwrlmnhzcmy`, Frankfurt) with Claude's Supabase connector, then the security and performance advisors are re-run.
 After a migration, regenerate `core/db/types.ts`.
+- 0007 test engine: start_full_test, get_test_state, save_response, finish_module, get_test_results (server keeps the clock, grades, picks the easier/harder module 2, records mistakes)
+- 0008 ESTIMATED score tables (replace the rows when real tables exist)
+
+Automated checks for the database live in `tests/db/` and run with `npm test`: every migration is applied to a throwaway in-memory Postgres and the rules are tested as a student and as an admin.
