@@ -38,7 +38,11 @@ steps, and run `npm run check` before saying something is done.
 
 ## Publishing
 - Push to `main` on GitHub (rescartess/greenbook). GitHub Actions runs `npm run check`; only if it passes, the `publish` job calls the Vercel deploy hook (secret `VERCEL_DEPLOY_HOOK`). Live site: https://greenbook-alpha.vercel.app
-- Vercel's own per-commit status shows "blocked" for commits not authored by the owner. That is expected; the deploy hook publishes instead. Never sign commits as the owner.
+- The GitHub repo is public (since 25 Nov 2026): Vercel's free plan only publishes a private repo's commits when the owner wrote them. Keep secrets out of the repo; only the Supabase URL and publishable key are committed. Never sign commits as the owner.
+
+## Database
+- Supabase project `greenbook` (ref `pgpotvnyomwrlmnhzcmy`, Frankfurt). Migrations are applied with Claude's Supabase connector, then the security and performance advisors are re-run and `core/db/types.ts` is regenerated.
+- Login uses email sign-in links. Supabase's built-in email allows only a few emails per hour; set up custom SMTP before launch.
 
 ## Commands
 - `npm run dev` local site at http://localhost:3000
