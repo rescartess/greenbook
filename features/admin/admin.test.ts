@@ -101,6 +101,11 @@ describe("publishProblems", () => {
     expect(publishProblems(true, [m1, hard, easy])).toEqual([]);
   });
 
+  it("needs just one answered question for a topic or monthly set", () => {
+    expect(publishProblems(false, [{ ...m1, questions: 0 }], "topic")).toEqual(["The set has no questions yet."]);
+    expect(publishProblems(false, [m1], "monthly")).toEqual([]);
+  });
+
   it("counts questions without an answer", () => {
     expect(publishProblems(false, [m1, { ...hard, withoutAnswer: 2 }])).toEqual(
       ["2 questions have no correct answer."],

@@ -117,7 +117,7 @@ export async function setTestPublished(
     const { data: test, error } = await supabase
       .from("question_sets")
       .select(
-        "is_adaptive, modules(module_number, tier, module_questions(question_id, questions(question_answers(correct_answer))))",
+        "kind, is_adaptive, modules(module_number, tier, module_questions(question_id, questions(question_answers(correct_answer))))",
       )
       .eq("id", setId)
       .single();
@@ -133,6 +133,7 @@ export async function setTestPublished(
           (mq) => !mq.questions?.question_answers?.correct_answer,
         ).length,
       })),
+      test.kind,
     );
     if (problems.length > 0)
       throw new Error(
@@ -167,16 +168,33 @@ export type SimpleState = { message: string | null };
 
 export async function createTest(_prev: SimpleState, formData: FormData): Promise<SimpleState> {
   await requireAdmin();
+  const kind = String(formData.get("kind") ?? "full_test");
   const title = String(formData.get("title") ?? "").trim();
   const subject = String(formData.get("subject") ?? "");
   const minutes = Number(formData.get("minutes"));
-  if (!title) return { message: "Give the test a name." };
+  const skillId = Number(formData.get(`skillId_${subject}`));
+  const month = String(formData.get("month") ?? "");
+  if (!title) return { message: "Give it a name." };
   if (subject !== "english" && subject !== "math") return { message: "Pick a subject." };
-  if (!Number.isInteger(minutes) || minutes < 1 || minutes > 180) return { message: "Minutes per module must be a whole number from 1 to 180." };
 
   const supabase = await createDbClient();
-  const { data, error } = await supabase.rpc("admin_create_test", { p_title: title, p_subject: subject, p_minutes: minutes });
-  if (error || !data) return { message: `The test couldn’t be created: ${error?.message ?? "unknown error"}` };
+  let result;
+  if (kind === "topic" || kind === "monthly") {
+    if (kind === "topic" && !(skillId > 0)) return { message: "Pick the topic this set practises." };
+    if (kind === "monthly" && !/^\d{4}-\d{2}$/.test(month)) return { message: "Pick the month." };
+    result = await supabase.rpc("admin_create_set", {
+      p_kind: kind,
+      p_title: title,
+      p_subject: subject,
+      p_skill_id: kind === "topic" ? skillId : null,
+      p_month: kind === "monthly" ? `${month}-01` : null,
+    });
+  } else {
+    if (!Number.isInteger(minutes) || minutes < 1 || minutes > 180) return { message: "Minutes per module must be a whole number from 1 to 180." };
+    result = await supabase.rpc("admin_create_test", { p_title: title, p_subject: subject, p_minutes: minutes });
+  }
+  const { data, error } = result;
+  if (error || !data) return { message: `It couldn’t be created: ${error?.message ?? "unknown error"}` };
   revalidatePath("/admin", "layout");
   redirect(`/admin/tests/${data}`);
 }

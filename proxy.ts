@@ -15,7 +15,7 @@ export async function proxy(request: NextRequest) {
 
   const { response, signedIn } = await refreshSession(request);
   const path = request.nextUrl.pathname;
-  const inApp = [...SUBJECT_SLUGS, "admin", "test"].some((s) => path === `/${s}` || path.startsWith(`/${s}/`));
+  const inApp = [...SUBJECT_SLUGS, "admin", "test", "practice"].some((s) => path === `/${s}` || path.startsWith(`/${s}/`));
 
   if (inApp && !signedIn) {
     const url = request.nextUrl.clone();

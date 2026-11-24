@@ -1,6 +1,5 @@
-# Mistakes
+# features/mistakes
 
-Every question you missed, waiting until you get it right twice.
-
-- Built in milestone 10.
-- Page: `app/(app)/[subject]/mistakes/page.tsx`. Switch: `mistakes` in `core/config/features.ts`.
+Every question the student got wrong (in full tests or practice), grouped by area and topic.
+Open one to try it again; the database (`retry_mistake`) checks it and clears it after two right answers in a row.
+The tab badge counts open mistakes per subject.

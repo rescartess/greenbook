@@ -15,7 +15,7 @@ export function AdminTestsPage() {
           subtitle="Everything you have added, including drafts students can’t see yet."
         />
         <div className="mb-6">
-          <ButtonLink href="/admin/tests/new">New test</ButtonLink>
+          <ButtonLink href="/admin/tests/new">New test or set</ButtonLink>
         </div>
       </div>
       <Suspense fallback={<LoadingBlock />}>
@@ -47,6 +47,7 @@ async function TestsList() {
               <div className="min-w-48 flex-1">
                 <p className="text-lg font-bold">{test.title}</p>
                 <p className="text-[15px] text-graphite">
+                  {test.kindLabel},{" "}
                   {isSubjectSlug(test.subject)
                     ? SUBJECTS[test.subject].name
                     : test.subject}

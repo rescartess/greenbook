@@ -144,11 +144,15 @@ export type ModuleCheck = {
 };
 
 /** What still blocks a test from being published. Empty list = ready. */
-export function publishProblems(
-  isAdaptive: boolean,
-  modules: ModuleCheck[],
-): string[] {
+export function publishProblems(isAdaptive: boolean, modules: ModuleCheck[], kind: string = "full_test"): string[] {
   const problems: string[] = [];
+  if (kind !== "full_test") {
+    const total = modules.reduce((sum, m) => sum + m.questions, 0);
+    if (total === 0) problems.push("The set has no questions yet.");
+    const missing = modules.reduce((sum, m) => sum + m.withoutAnswer, 0);
+    if (missing > 0) problems.push(`${missing} question${missing === 1 ? " has" : "s have"} no correct answer.`);
+    return problems;
+  }
   const find = (n: number, tier?: string) =>
     modules.find((m) => m.moduleNumber === n && (!tier || m.tier === tier));
   const needed: { label: string; module: ModuleCheck | undefined }[] =
@@ -251,4 +255,10 @@ export function checkImport(text: string, skills: SkillRef[]): ImportCheck {
     });
   });
   return { items: problems.length ? [] : items, problems };
+}
+
+/** "2025-11-01" -> "November 2025" */
+export function monthName(isoDate: string): string {
+  const [y, m] = isoDate.split("-").map(Number);
+  return new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(Date.UTC(y, m - 1, 1)));
 }

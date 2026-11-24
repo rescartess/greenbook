@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { Suspense, type ReactNode } from "react";
+import { Suspense } from "react";
 import { requireAdmin } from "@/features/auth";
 import { addQuestion } from "../actions";
 import { getModuleInfo, listSkills } from "../queries";
@@ -11,19 +11,18 @@ import { QuestionEditor } from "./QuestionEditor";
 export function AdminNewTestPage() {
   return (
     <>
-      <AdminTitle back={{ href: "/admin", label: "All tests" }} title="New test" />
+      <AdminTitle back={{ href: "/admin", label: "All tests" }} title="New test or practice set" />
       <Suspense fallback={<LoadingBlock />}>
-        <Guarded>
-          <NewTestForm />
-        </Guarded>
+        <NewTestWithSkills />
       </Suspense>
     </>
   );
 }
 
-async function Guarded({ children }: { children: ReactNode }) {
+async function NewTestWithSkills() {
   await requireAdmin();
-  return <>{children}</>;
+  const [english, math] = await Promise.all([listSkills("english"), listSkills("math")]);
+  return <NewTestForm skills={{ english, math }} />;
 }
 
 export function AdminAddQuestionPage({ moduleId }: { moduleId: Promise<string> }) {

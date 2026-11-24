@@ -520,7 +520,20 @@ export type Database = {
     }
     Functions: {
       admin_add_questions: { Args: { p_items: Json; p_module_id: string }; Returns: string[] }
+      admin_create_set: {
+        Args: { p_kind: string; p_month: string | null; p_skill_id: number | null; p_subject: string; p_title: string }
+        Returns: string
+      }
       admin_create_test: { Args: { p_minutes: number; p_subject: string; p_title: string }; Returns: string }
+      check_practice_answer: {
+        Args: { p_answer: string; p_attempt_module_id: string; p_question_id: string }
+        Returns: Json
+      }
+      finish_practice: { Args: { p_attempt_id: string }; Returns: undefined }
+      get_mistakes: { Args: { p_subject: string }; Returns: Json }
+      get_practice_state: { Args: { p_attempt_id: string }; Returns: Json }
+      retry_mistake: { Args: { p_answer: string; p_question_id: string }; Returns: Json }
+      start_practice: { Args: { p_set_id: string }; Returns: string }
       admin_move_in_module: {
         Args: { p_direction: number; p_module_id: string; p_question_id: string }
         Returns: undefined
