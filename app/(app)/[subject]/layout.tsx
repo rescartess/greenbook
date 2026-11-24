@@ -11,7 +11,7 @@ export function generateStaticParams() {
 async function SignedInNav() {
   const [user, mistakes] = await Promise.all([getCurrentUser(), getMistakeCounts()]);
   const badges = { english: { mistakes: mistakes.english }, math: { mistakes: mistakes.math } };
-  return <SideNav user={user} badges={badges} signOutAction={signOut} />;
+  return <SideNav user={{ ...user, isAdmin: user.role === "admin" }} badges={badges} signOutAction={signOut} />;
 }
 
 export default function SubjectLayout({ children }: LayoutProps<"/[subject]">) {

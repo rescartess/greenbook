@@ -88,13 +88,20 @@ export function SideNav({
             </span>
             <span className="hidden min-w-0 nav:block">
               <span className="block truncate text-[15px] font-bold">{user.name}</span>
-              {signOutAction ? (
-                <form action={signOutAction}>
-                  <button type="submit" className="text-[13px] text-graphite hover:text-ink">
-                    Log out
-                  </button>
-                </form>
-              ) : null}
+              <span className="flex gap-3">
+                {user.isAdmin ? (
+                  <Link href="/admin" className="text-[13px] font-semibold text-pine hover:underline">
+                    Admin
+                  </Link>
+                ) : null}
+                {signOutAction ? (
+                  <form action={signOutAction}>
+                    <button type="submit" className="text-[13px] text-graphite hover:text-ink">
+                      Log out
+                    </button>
+                  </form>
+                ) : null}
+              </span>
             </span>
           </div>
         ) : (
