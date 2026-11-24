@@ -15,3 +15,21 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
+
+  # Publishes main to Vercel, but only after every check above has passed.
+  # Needs a VERCEL_DEPLOY_HOOK repository secret (Vercel > Settings > Git > Deploy Hooks).
+  publish:
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ask Vercel to publish the site
+        env:
+          HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "No VERCEL_DEPLOY_HOOK secret yet, so nothing was published."
+            exit 0
+          fi
+          curl -fsS -X POST "$HOOK" > /dev/null
+          echo "Vercel is publishing the latest version."
