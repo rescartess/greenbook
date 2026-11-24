@@ -24,7 +24,7 @@ export function DashboardPage({ subject, data, firstName }: { subject: SubjectSl
       <PageHeader title={`Welcome back, ${firstName}`} subtitle={SUBJECTS[subject].name} />
       <p className="-mt-3 mb-5 text-[13px] text-graphite">Sample numbers until your results are connected.</p>
 
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         {data.resume ? (
           <AccentPanel className="flex min-h-[220px] flex-col justify-between gap-6">
             <div>

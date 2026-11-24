@@ -20,8 +20,8 @@ export function AppShell({
     <div className="min-h-dvh bg-canvas">
       <div className="mx-auto flex max-w-[1480px] gap-6 p-3 sm:p-5">
         <SideNav user={user} badges={badges} />
-        <div className="min-w-0 flex-1 pb-28 lg:pb-6">
-          <div className="mb-5 flex items-center justify-between lg:hidden">
+        <div className="min-w-0 flex-1 pb-28 sm:pb-6">
+          <div className="mb-5 flex items-center justify-between sm:hidden">
             <Link href="/" className="text-ink">
               <Logo size={30} />
             </Link>
@@ -38,7 +38,7 @@ export function AppShell({
 /** Page title + the English/Math switch, top of every logged-in page. */
 export function PageHeader({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
-    <header className="mb-6 flex flex-wrap items-center justify-between gap-4 pt-1 lg:pt-3">
+    <header className="mb-6 flex flex-wrap items-center justify-between gap-4 pt-1 sm:pt-3">
       <div>
         <h1 className="text-3xl font-extrabold tracking-tight sm:text-[40px] sm:leading-tight">{title}</h1>
         {subtitle ? <p className="mt-1 text-[17px] text-graphite">{subtitle}</p> : null}

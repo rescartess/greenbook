@@ -95,6 +95,9 @@
 
   --font-sans: "Nunito Variable", "Nunito", system-ui, -apple-system, sans-serif;
 
+  /* Laptop layout (full side tabs) starts here; sm (640px) shows the slim icon rail. */
+  --breakpoint-nav: 56rem;
+
   --radius-panel: 24px;
   --radius-card: 28px;
   --radius-choice: 14px;
