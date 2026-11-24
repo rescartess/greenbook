@@ -306,6 +306,7 @@ export type Database = {
           kind: string
           month: string | null
           published: boolean
+          route_threshold: number | null
           skill_id: number | null
           subject: string
           title: string
@@ -317,6 +318,7 @@ export type Database = {
           kind: string
           month?: string | null
           published?: boolean
+          route_threshold?: number | null
           skill_id?: number | null
           subject: string
           title: string
@@ -328,6 +330,7 @@ export type Database = {
           kind?: string
           month?: string | null
           published?: boolean
+          route_threshold?: number | null
           skill_id?: number | null
           subject?: string
           title?: string
@@ -516,7 +519,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      finish_module: { Args: { p_attempt_module_id: string }; Returns: string }
+      get_test_results: { Args: { p_attempt_id: string }; Returns: Json }
+      get_test_state: { Args: { p_attempt_id: string }; Returns: Json }
+      save_response: {
+        Args: {
+          p_answer: string
+          p_attempt_module_id: string
+          p_eliminated: string[]
+          p_marked: boolean
+          p_question_id: string
+          p_seconds?: number
+        }
+        Returns: undefined
+      }
+      start_full_test: { Args: { p_set_id: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never

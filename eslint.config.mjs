@@ -27,6 +27,8 @@ const eslintConfig = defineConfig([
     files: ["**/*.{ts,tsx}"],
     rules: {
       "no-restricted-imports": ["error", { patterns: [featureBoundary] }],
+      // A leading underscore marks an argument that must exist but isn't used (e.g. form actions).
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
     },
   },
   {

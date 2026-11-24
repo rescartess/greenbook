@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { Logo } from "@/core/design/ui";
 import { BottomTabs } from "./SideNav";
 import { SubjectSwitch } from "./SubjectSwitch";
@@ -24,7 +24,9 @@ export function AppShell({ nav, children }: { nav: ReactNode; children: ReactNod
           {children}
         </div>
       </div>
-      <BottomTabs />
+      <Suspense fallback={null}>
+        <BottomTabs />
+      </Suspense>
     </div>
   );
 }

@@ -76,3 +76,9 @@ export function requireSubject(value: string): SubjectSlug {
   if (isSubjectSlug(value)) return value;
   notFound();
 }
+
+/**
+ * Scores come from estimated tables until the owner adds real ones
+ * (supabase/migrations/..._estimated_scores.sql). While true, every score says "estimated".
+ */
+export const ESTIMATED_SCORES = true;

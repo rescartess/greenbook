@@ -141,3 +141,13 @@ export function BottomTabs() {
     </nav>
   );
 }
+
+/** Shown while the side tabs load: the same glass panel, without links. Reads nothing from the URL. */
+export function SideNavPlaceholder() {
+  return (
+    <aside
+      aria-hidden="true"
+      className="glass sticky top-5 hidden h-[calc(100dvh-40px)] w-[76px] shrink-0 rounded-card sm:block nav:w-64"
+    />
+  );
+}

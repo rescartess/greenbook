@@ -6,7 +6,7 @@ import { refreshSession } from "@/core/db/session";
 /**
  * The login wall. Runs before every page:
  * - keeps the login cookies fresh,
- * - sends signed-out visitors from /english/..., /math/... and /admin/... to /login,
+ * - sends signed-out visitors from /english/..., /math/..., /admin/... and /test/... to /login,
  * - sends signed-in students away from /login to their dashboard.
  * Pages check again on the server (getCurrentUser), so this is a fast first gate, not the only one.
  */
@@ -15,7 +15,7 @@ export async function proxy(request: NextRequest) {
 
   const { response, signedIn } = await refreshSession(request);
   const path = request.nextUrl.pathname;
-  const inApp = [...SUBJECT_SLUGS, "admin"].some((s) => path === `/${s}` || path.startsWith(`/${s}/`));
+  const inApp = [...SUBJECT_SLUGS, "admin", "test"].some((s) => path === `/${s}` || path.startsWith(`/${s}/`));
 
   if (inApp && !signedIn) {
     const url = request.nextUrl.clone();
