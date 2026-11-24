@@ -47,11 +47,17 @@ async function DashboardContent({ subject }: { subject: SubjectSlug }) {
 }
 
 function DashboardView({ subject, data, firstName }: { subject: SubjectSlug; data: DashboardData; firstName: string }) {
-  const weakest = Math.min(...data.domains.map((d) => d.accuracy));
+  const measured = data.domains.filter((d) => d.accuracy !== null).map((d) => d.accuracy!);
+  const weakest = measured.length > 1 ? Math.min(...measured) : null;
+  const firstTime = !data.resume && !data.score && measured.length === 0;
   return (
     <>
       <PageHeader title={`Welcome back, ${firstName}`} subtitle={SUBJECTS[subject].name} />
-      <p className="-mt-3 mb-5 text-[13px] text-graphite">Sample numbers until your results are connected.</p>
+      {firstTime ? (
+        <p className="-mt-2 mb-6 max-w-2xl text-[17px] leading-relaxed text-ink-soft">
+          Start with a full test or a short topic set. Your score, accuracy and mistakes will show up here as you go.
+        </p>
+      ) : null}
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         {data.resume ? (
@@ -78,11 +84,17 @@ function DashboardView({ subject, data, firstName }: { subject: SubjectSlug; dat
             <div className="flex items-end justify-between gap-4">
               <div>
                 <p className="text-[56px] font-extrabold leading-none tracking-tight">{data.score.value}</p>
-                <p className="mt-2 text-[15px] font-bold text-pine">+{data.score.changeSinceFirst} since your first test</p>
+                <p className="mt-2 text-[15px] font-bold text-pine">
+                  {data.score.changeSinceFirst === null
+                    ? "Your first full test"
+                    : `${data.score.changeSinceFirst >= 0 ? "+" : "−"}${Math.abs(data.score.changeSinceFirst)} since your first test`}
+                </p>
               </div>
-              <span className="text-pine">
-                <Trend values={data.score.trend} />
-              </span>
+              {data.score.trend.length > 1 ? (
+                <span className="text-pine">
+                  <Trend values={data.score.trend} />
+                </span>
+              ) : null}
             </div>
             <p className="text-sm text-graphite">{data.score.detail}</p>
           </Panel>
@@ -94,12 +106,14 @@ function DashboardView({ subject, data, firstName }: { subject: SubjectSlug; dat
             <div key={d.name} className="flex flex-col gap-2">
               <div className="flex justify-between gap-3 text-[15px]">
                 <span className="font-semibold">{d.name}</span>
-                <span className="font-bold tabular-nums">{d.accuracy}%</span>
+                <span className={cn("tabular-nums", d.accuracy === null ? "text-graphite" : "font-bold")}>
+                  {d.accuracy === null ? "Not yet" : `${d.accuracy}%`}
+                </span>
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-mist">
                 <div
                   className={cn("h-2 rounded-full", d.accuracy === weakest ? "bg-pine-soft" : "bg-pine")}
-                  style={{ width: `${d.accuracy}%` }}
+                  style={{ width: `${d.accuracy ?? 0}%` }}
                 />
               </div>
             </div>
