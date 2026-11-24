@@ -1,4 +1,5 @@
 import { ThemeToggle } from "@/core/layout";
+import { QuestionView } from "@/core/question";
 import { AccentPanel, ButtonLink, EmptyState, Icon, Logo, LogoMark, Panel, PillSwitch } from "./ui";
 
 const TOKENS = [
@@ -108,7 +109,26 @@ export function StyleGuide() {
             ))}
           </div>
         </Panel>
+        <Panel>
+          <h2 className="mb-5 text-xl font-extrabold">Question</h2>
+          <div className="overflow-hidden rounded-card border border-hairline">
+            <QuestionView number={4} correctId="B" question={SAMPLE_QUESTION} />
+          </div>
+        </Panel>
       </div>
     </main>
   );
 }
+
+const SAMPLE_QUESTION = {
+  passage:
+    "**Rainfall in Two Towns (mm)**\n\n| Month | Hillview | Lakeside |\n|---|---|---|\n| April | 61 | 48 |\n| May | 74 | 52 |\n\nIn *Field Notes*, a student compares two towns. <u>Hillview, the higher town, received more rain in both months</u>, a pattern the student calls ______.",
+  prompt: "Which choice completes the text with the most logical and precise word?",
+  choices: [
+    { id: "A", text: "arbitrary" },
+    { id: "B", text: "consistent" },
+    { id: "C", text: "accidental" },
+    { id: "D", text: "*temporary*" },
+  ],
+};
+

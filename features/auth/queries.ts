@@ -1,5 +1,5 @@
 import "server-only";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { AUTH_ENABLED } from "@/core/config/supabase";
 import { createDbClient } from "@/core/db/server";
 
@@ -35,4 +35,14 @@ export async function getCurrentUser(): Promise<CurrentUser> {
   const email = typeof data?.claims?.email === "string" ? data.claims.email : "";
   const name = profile?.display_name || email.split("@")[0] || "Student";
   return { id: userId, name, initials: initialsOf(name), role: profile?.role === "admin" ? "admin" : "student" };
+}
+
+/**
+ * For admin pages: the signed-in admin, or a plain "not found" page for everyone else,
+ * so students can't even tell the admin area exists. The database rules check again.
+ */
+export async function requireAdmin(): Promise<CurrentUser> {
+  const user = await getCurrentUser();
+  if (user.role !== "admin") notFound();
+  return user;
 }
