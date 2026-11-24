@@ -20,7 +20,16 @@ function useNavState() {
  * Narrow windows and tablets (640-900px): the same panel as a slim icon rail.
  * Phones use BottomTabs instead.
  */
-export function SideNav({ user, badges }: { user: ShellUser; badges: ShellBadges }) {
+export function SideNav({
+  user,
+  badges = {},
+  signOutAction,
+}: {
+  /** null while the signed-in student is still loading. */
+  user: ShellUser | null;
+  badges?: ShellBadges;
+  signOutAction?: () => Promise<void>;
+}) {
   const { subject, activePath } = useNavState();
   return (
     <aside className="glass sticky top-5 hidden h-[calc(100dvh-40px)] w-[76px] shrink-0 flex-col items-center rounded-card px-2.5 pb-4 pt-5 sm:flex nav:w-64 nav:items-stretch nav:px-3.5">
@@ -69,15 +78,28 @@ export function SideNav({ user, badges }: { user: ShellUser; badges: ShellBadges
       <div className="flex-1" />
 
       <div className="flex w-full flex-col items-center gap-2 border-t border-hairline pt-3 nav:flex-row nav:gap-2.5 nav:px-2">
-        <Link href="#" aria-label={`${user.name}, view profile`} className="flex min-w-0 items-center gap-2.5 text-ink nav:flex-1">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-pine-tint text-[15px] font-extrabold text-pine">
-            {user.initials}
-          </span>
-          <span className="hidden min-w-0 nav:block">
-            <span className="block truncate text-[15px] font-bold">{user.name}</span>
-            <span className="block text-[13px] text-graphite">View profile</span>
-          </span>
-        </Link>
+        {user ? (
+          <div className="flex min-w-0 items-center gap-2.5 text-ink nav:flex-1">
+            <span
+              title={user.name}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-pine-tint text-[15px] font-extrabold text-pine"
+            >
+              {user.initials}
+            </span>
+            <span className="hidden min-w-0 nav:block">
+              <span className="block truncate text-[15px] font-bold">{user.name}</span>
+              {signOutAction ? (
+                <form action={signOutAction}>
+                  <button type="submit" className="text-[13px] text-graphite hover:text-ink">
+                    Log out
+                  </button>
+                </form>
+              ) : null}
+            </span>
+          </div>
+        ) : (
+          <span aria-hidden="true" className="h-10 w-10 shrink-0 rounded-full bg-wash nav:flex-1 nav:rounded-full" />
+        )}
         <ThemeToggle />
       </div>
     </aside>

@@ -1,3 +1,4 @@
 # core/db
 
-Supabase clients (browser, server, admin) and generated database types. Added in milestone 2.
+Supabase clients: `server.ts` for pages, actions and route handlers; `session.ts` for proxy.ts.
+Database tables are defined only by the numbered files in `supabase/migrations/`.

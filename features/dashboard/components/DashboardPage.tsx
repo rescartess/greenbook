@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { AccentPanel, ButtonLink, Panel, cn } from "@/core/design/ui";
 import { PageHeader } from "@/core/layout";
 import { SUBJECTS, type SubjectSlug } from "@/core/config/subjects";
-import type { DashboardData } from "../queries";
+import { getDashboard, type DashboardData } from "../queries";
+import { getCurrentUser } from "@/features/auth";
 
 function Trend({ values }: { values: number[] }) {
   const min = Math.min(...values) - 10;
@@ -17,7 +19,34 @@ function Trend({ values }: { values: number[] }) {
   );
 }
 
-export function DashboardPage({ subject, data, firstName }: { subject: SubjectSlug; data: DashboardData; firstName: string }) {
+/** The dashboard frame shows at once; the student's own numbers stream in. */
+export function DashboardPage({ subject }: { subject: SubjectSlug }) {
+  return (
+    <Suspense fallback={<DashboardLoading subject={subject} />}>
+      <DashboardContent subject={subject} />
+    </Suspense>
+  );
+}
+
+function DashboardLoading({ subject }: { subject: SubjectSlug }) {
+  return (
+    <>
+      <PageHeader title="Welcome back" subtitle={SUBJECTS[subject].name} />
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2" aria-busy="true">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="h-[220px] rounded-panel border border-hairline bg-paper" />
+        ))}
+      </div>
+    </>
+  );
+}
+
+async function DashboardContent({ subject }: { subject: SubjectSlug }) {
+  const [user, data] = await Promise.all([getCurrentUser(), getDashboard(subject)]);
+  return <DashboardView subject={subject} data={data} firstName={user.name.split(" ")[0]} />;
+}
+
+function DashboardView({ subject, data, firstName }: { subject: SubjectSlug; data: DashboardData; firstName: string }) {
   const weakest = Math.min(...data.domains.map((d) => d.accuracy));
   return (
     <>
