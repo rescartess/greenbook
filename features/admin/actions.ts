@@ -287,3 +287,23 @@ export async function moveInModule(moduleId: string, questionId: string, directi
   if (error) throw new Error(`The question couldn’t be moved: ${error.message}`);
   revalidatePath("/admin", "layout");
 }
+
+// ---- Invite code ----
+
+export type InviteCodeState = { message: string | null; saved: boolean };
+
+/** Sets the invite code students log in with. Empty turns invite-code login off. */
+export async function setInviteCode(_prev: InviteCodeState, formData: FormData): Promise<InviteCodeState> {
+  await requireAdmin();
+  const code = String(formData.get("code") ?? "").trim();
+  const supabase = await createDbClient();
+  const { error } = await supabase.rpc("admin_set_invite_code", { p_code: code });
+  if (error) {
+    return {
+      saved: false,
+      message: error.code === "P0014" ? "Use 6 to 40 characters." : `It couldn’t be saved: ${error.message}`,
+    };
+  }
+  revalidatePath("/admin");
+  return { saved: true, message: code ? "Saved. Students can log in with this code now." : "Invite-code login is off." };
+}

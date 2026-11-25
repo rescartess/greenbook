@@ -1,4 +1,5 @@
 import { PGlite } from "@electric-sql/pglite";
+import { pgcrypto } from "@electric-sql/pglite/contrib/pgcrypto";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -7,11 +8,12 @@ import { join } from "node:path";
  * stand-in for Supabase's auth schema. Lets tests act as a student or an admin.
  */
 export async function freshDatabase() {
-  const db = new PGlite();
+  const db = new PGlite({ extensions: { pgcrypto } });
   await db.exec(`
     create role authenticated; create role anon;
-    create schema auth;
-    create table auth.users (id uuid primary key default gen_random_uuid(), email text, raw_user_meta_data jsonb default '{}'::jsonb);
+    create schema auth; create schema extensions;
+    create table auth.users (id uuid primary key default gen_random_uuid(), email text, raw_user_meta_data jsonb default '{}'::jsonb,
+      encrypted_password text, email_confirmed_at timestamptz);
     create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
     grant usage on schema public, auth to authenticated;
     -- Like Supabase: new tables are open to signed-in users by default; migrations then narrow this down.

@@ -31,3 +31,19 @@ describe("safeNextPath", () => {
     expect(safeNextPath(null)).toBe(HOME_AFTER_LOGIN);
   });
 });
+
+describe("parseCodeForm", () => {
+  it("needs an email and a code", async () => {
+    const { parseCodeForm } = await import("./schema");
+    expect(parseCodeForm(form({ email: "A@b.co", code: " sat2026 " }))).toEqual({
+      ok: true,
+      email: "a@b.co",
+      code: "sat2026",
+      next: null,
+    });
+    expect(parseCodeForm(form({ email: "a@b.co", code: "" }))).toEqual({
+      ok: false,
+      message: "Enter the invite code you were given.",
+    });
+  });
+});

@@ -255,3 +255,11 @@ export async function getModuleInfo(moduleId: string): Promise<ModuleInfo | null
     count: data.module_questions[0]?.count ?? 0,
   };
 }
+
+/** The invite code students log in with, or null when that login is off. */
+export async function getInviteCode(): Promise<string | null> {
+  const supabase = await createDbClient();
+  const { data, error } = await supabase.rpc("admin_get_invite_code");
+  if (error) throw new Error(`Could not load the invite code: ${error.message}`);
+  return data ?? null;
+}

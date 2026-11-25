@@ -43,12 +43,12 @@ steps, and run `npm run check` before saying something is done.
 
 ## Database
 - Supabase project `greenbook` (ref `pgpotvnyomwrlmnhzcmy`, Frankfurt). Migrations are applied with Claude's Supabase connector, then the security and performance advisors are re-run and `core/db/types.ts` is updated.
-- Anything that writes student activity or reveals answers is a database function (test engine 0007, admin tools 0009, practice and mistakes 0010, topic practice 0012, results and review 0013, pictures and import 0014). Pages call them with `supabase.rpc(...)`. Answers reach the browser only after a question is finished.
+- Anything that writes student activity or reveals answers is a database function (test engine 0007, admin tools 0009, practice and mistakes 0010, topic practice 0012, results and review 0013, pictures and import 0014, invite code 0016). Pages call them with `supabase.rpc(...)`. Answers reach the browser only after a question is finished.
 - `tests/db/` runs every migration in an in-memory Postgres (PGlite) and checks the rules as a student and as an admin. Add a check there for every new database function.
 - Question content and answer keys never go in this public repo; they live only in the database.
 - Big imports: Claude turns a book into an import file (format `greenbook-import-1`, see `features/admin/import-book.ts`); the owner uploads it at /admin/import, which sends pictures to the `question-images` storage bucket and questions to `admin_import_questions` (migration 0014) in batches. Re-running is safe (same `source` is skipped). Pictures are `questions.image_path`, shown above the passage.
 - Destructive SQL (deletes) through the connector asks the owner to confirm; don't run it while they're away.
-- Login uses email sign-in links. Supabase's built-in email allows only a few emails per hour; set up custom SMTP before launch.
+- Students log in with their email + one shared invite code (migration 0016, owner sets it under Admin › Student login). The database turns email+code into that student's password (keyed hash); the server then signs in, or signs up on first use. Needs "Confirm email" OFF in Supabase Auth. Admins can't use the code; they log in with the emailed link (Supabase's built-in email only reaches team members, about 2 an hour; set up custom SMTP before students rely on links).
 
 ## Feature map
 - `test-runner` (/test/[id]): timed Bluebook screen. `full-tests`, `results`, `practice` (/practice/[id]: Bluebook screen, check as you go or at the end, optional timer, results with an "Incorrect" review; used by `topics` and `monthly`), `topics` (/[subject]/topics and /[subject]/topics/[setId] setup page), `mistakes`, `dashboard`, `admin` (/admin), `auth`, `marketing`.

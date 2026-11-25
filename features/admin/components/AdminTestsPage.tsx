@@ -3,7 +3,8 @@ import { Suspense } from "react";
 import { ButtonLink, EmptyState, Panel } from "@/core/design/ui";
 import { SUBJECTS, isSubjectSlug } from "@/core/config/subjects";
 import { requireAdmin } from "@/features/auth";
-import { listTests } from "../queries";
+import { getInviteCode, listTests } from "../queries";
+import { InviteCodeForm } from "./InviteCodeForm";
 import { AdminTitle, LoadingBlock } from "./AdminShell";
 
 export function AdminTestsPage() {
@@ -24,7 +25,25 @@ export function AdminTestsPage() {
       <Suspense fallback={<LoadingBlock />}>
         <TestsList />
       </Suspense>
+      <Suspense fallback={null}>
+        <InviteCode />
+      </Suspense>
     </>
+  );
+}
+
+async function InviteCode() {
+  await requireAdmin();
+  const code = await getInviteCode();
+  return (
+    <Panel className="mt-8">
+      <h2 className="text-lg font-extrabold tracking-tight">Student login</h2>
+      <p className="mb-4 mt-1 text-[15px] text-graphite">
+        Students log in with their email and this code. Anyone with the code can make an account, so change it if it
+        spreads.
+      </p>
+      <InviteCodeForm code={code} />
+    </Panel>
   );
 }
 

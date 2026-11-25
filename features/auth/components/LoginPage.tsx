@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { Logo } from "@/core/design/ui";
 import { LoginForm } from "./LoginForm";
 
-/** Sign-in screen: one email field, a one-time link, no passwords to remember. */
+/** Sign-in screen: email plus the class invite code, or an emailed one-time link. No passwords to remember. */
 export function LoginPage() {
   return (
     <main className="flex min-h-dvh items-center justify-center bg-canvas px-5 py-16">
@@ -19,7 +19,7 @@ export function LoginPage() {
           </Suspense>
         </section>
         <p className="mt-6 text-center text-[13px] text-graphite">
-          New here? The same link creates your free account.
+          New here? Logging in the first time creates your free account.
         </p>
       </div>
     </main>
