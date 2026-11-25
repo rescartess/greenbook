@@ -6,6 +6,7 @@ export type RunnerQuestion = {
   position: number;
   type: "mcq" | "spr";
   passage: string | null;
+  image: string | null;
   prompt: string;
   choices: QuestionChoice[];
 };
@@ -53,6 +54,7 @@ export function parseTestState(json: unknown): TestState {
       position: typeof q.position === "number" ? q.position : i + 1,
       type: q.type === "spr" ? "spr" : "mcq",
       passage: typeof q.passage === "string" ? q.passage : null,
+      image: typeof q.imagePath === "string" ? q.imagePath : null,
       prompt: str(q.prompt),
       choices: parseChoices(q.choices),
     };

@@ -16,6 +16,7 @@ export type PracticeQuestion = {
   position: number;
   type: string;
   passage: string | null;
+  image: string | null;
   prompt: string;
   choices: QuestionChoice[];
   skill: string | null;
@@ -91,6 +92,7 @@ export function parsePracticeState(json: unknown): PracticeState {
         position: num(q.position) ?? i + 1,
         type: str(q.type) ?? "mcq",
         passage: str(q.passage),
+        image: str(q.image),
         prompt: str(q.prompt) ?? "",
         choices: parseChoices(q.choices),
         skill: str(q.skill),

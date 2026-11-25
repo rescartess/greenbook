@@ -3,6 +3,7 @@ import { parseChoices, type CheckFeedback, type QuestionChoice } from "@/core/qu
 export type Mistake = {
   id: string;
   passage: string | null;
+  image: string | null;
   prompt: string;
   choices: QuestionChoice[];
   type: string;
@@ -23,6 +24,7 @@ export function parseMistakes(json: unknown): Mistake[] {
     return {
       id: str(m.id),
       passage: typeof m.passage === "string" ? m.passage : null,
+      image: typeof m.image === "string" ? m.image : null,
       prompt: str(m.prompt),
       choices: parseChoices(m.choices),
       type: str(m.type, "mcq"),

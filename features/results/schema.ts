@@ -4,6 +4,7 @@ export type ResultQuestion = {
   id: string;
   position: number;
   passage: string | null;
+  image: string | null;
   prompt: string;
   choices: QuestionChoice[];
   skill: string;
@@ -55,6 +56,7 @@ export function parseResults(json: unknown): TestResults {
             id: str(q.id) ?? String(i),
             position: num(q.position, i + 1),
             passage: str(q.passage),
+            image: str(q.image),
             prompt: str(q.prompt) ?? "",
             choices: parseChoices(q.choices),
             skill: str(q.skill) ?? "Other",

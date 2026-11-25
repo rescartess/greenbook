@@ -37,3 +37,4 @@ export {
   type ReviewFilter,
   type ReviewItem,
 } from "./ReviewScreen";
+export { questionImageUrl, QUESTION_IMAGE_BUCKET } from "./image";

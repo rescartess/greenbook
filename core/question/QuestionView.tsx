@@ -1,10 +1,13 @@
 import type { CSSProperties, PointerEvent, ReactNode } from "react";
 import { cn } from "@/core/design/ui";
 import type { QuestionChoice } from "./choices";
+import { questionImageUrl } from "./image";
 import { RichLine, RichText } from "./RichText";
 
 export type QuestionContent = {
   passage: string | null;
+  /** A table or graph shown above the passage (stored path, see image.ts). */
+  image?: string | null;
   prompt: string;
   choices: QuestionChoice[];
 };
@@ -63,7 +66,7 @@ export function QuestionView({
   fillHeight,
   className,
 }: Props) {
-  const hasPassage = Boolean(question.passage?.trim());
+  const hasPassage = Boolean(question.passage?.trim() || question.image);
   const reviewing = Boolean(correctId);
 
   const drag = (e: PointerEvent<HTMLDivElement>) => {
@@ -85,7 +88,16 @@ export function QuestionView({
         {hasPassage ? (
           <>
             <div className="px-6 py-7 text-[17px] leading-[1.7] @2xl:w-[var(--pw)] @2xl:shrink-0 @2xl:px-10 @2xl:py-8">
-              <RichText source={question.passage!} data-passage />
+              {question.image ? (
+                // eslint-disable-next-line @next/next/no-img-element -- stored pictures of any size; no resizing service needed
+                <img
+                  src={questionImageUrl(question.image)}
+                  alt="Table or graph for this question"
+                  className="mb-6 h-auto w-full rounded-md bg-white"
+                  loading="eager"
+                />
+              ) : null}
+              {question.passage?.trim() ? <RichText source={question.passage} data-passage /> : null}
             </div>
             <div
               className={cn(

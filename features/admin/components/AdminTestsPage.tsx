@@ -14,7 +14,10 @@ export function AdminTestsPage() {
           title="Tests"
           subtitle="Everything you have added, including drafts students can’t see yet."
         />
-        <div className="mb-6">
+        <div className="mb-6 flex gap-2">
+          <ButtonLink href="/admin/import" variant="quiet">
+            Import a book
+          </ButtonLink>
           <ButtonLink href="/admin/tests/new">New test or set</ButtonLink>
         </div>
       </div>

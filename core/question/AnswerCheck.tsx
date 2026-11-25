@@ -15,7 +15,7 @@ export type CheckFeedback = {
 
 type Props = {
   number: number;
-  question: { passage: string | null; prompt: string; choices: QuestionChoice[]; type?: string };
+  question: { passage: string | null; image?: string | null; prompt: string; choices: QuestionChoice[]; type?: string };
   /** Feedback already given earlier (e.g. after reloading the page). */
   initialFeedback?: CheckFeedback | null;
   /** Sends the answer to the server and returns its verdict. Throw to show an error. */

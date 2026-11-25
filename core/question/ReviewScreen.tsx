@@ -17,6 +17,7 @@ export type ReviewItem = {
   group?: string;
   type?: string;
   passage: string | null;
+  image?: string | null;
   prompt: string;
   choices: QuestionChoice[];
   answer: string | null;

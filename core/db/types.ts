@@ -551,6 +551,7 @@ export type Database = {
       start_practice: { Args: { p_set_id: string }; Returns: string }
       list_topics: { Args: { p_subject: string }; Returns: Json }
       remove_attempt: { Args: { p_attempt_id: string }; Returns: undefined }
+      admin_import_questions: { Args: { p_items: Json; p_topic_id: string }; Returns: number }
       get_topic: { Args: { p_set_id: string }; Returns: Json }
       start_topic_practice: {
         Args: {

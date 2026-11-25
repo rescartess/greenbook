@@ -108,6 +108,7 @@ export function ResultsView({ r, subject, studentName }: { r: TestResults; subje
             group: moduleLabel(m),
             type: q.type,
             passage: q.passage,
+            image: q.image,
             prompt: q.prompt,
             choices: q.choices,
             answer: q.answer,

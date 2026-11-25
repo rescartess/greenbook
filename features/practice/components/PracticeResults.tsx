@@ -39,6 +39,7 @@ export function PracticeResults({ state, studentName, backHref, backLabel }: Pro
     number: i + 1,
     type: q.type,
     passage: q.passage,
+    image: q.image,
     prompt: q.prompt,
     choices: q.choices,
     answer: q.feedback?.answer ?? q.answer,
