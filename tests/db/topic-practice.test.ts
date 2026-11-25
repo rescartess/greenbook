@@ -114,7 +114,7 @@ describe("practice from a topic", () => {
     await expect(start("hard", 2, 5, "each")).rejects.toThrow(/no questions in that range/);
     await expect(start("tricky", 1, 5, "each")).rejects.toThrow(/Pick a difficulty/);
     await expect(start("all", 1, 5, "sometimes")).rejects.toThrow(/when to check/);
-    await expect(start("all", 1, 500, "each")).rejects.toThrow(/between 1 and 200/);
+    await expect(start("all", 1, 700, "each")).rejects.toThrow(/between 1 and 600/);
   });
 
   it("check as you go: nothing is graded until Check, then the answer is final", async () => {

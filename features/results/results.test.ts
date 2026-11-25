@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { accuracyByArea, parseResults } from "./schema";
+import { accuracyByArea, filledSegments, moduleLabel, parseResults } from "./schema";
 
 const sample = {
   attemptId: "a1",
@@ -34,5 +34,19 @@ describe("results", () => {
       { area: "Craft and Structure", correct: 1, total: 2, percent: 50 },
       { area: "Expression of Ideas", correct: 1, total: 1, percent: 100 },
     ]);
+  });
+
+  it("fills breakdown segments and names modules", () => {
+    expect(filledSegments(0, 10)).toBe(0);
+    expect(filledSegments(5, 10)).toBe(4);
+    expect(filledSegments(10, 10)).toBe(7);
+    expect(filledSegments(0, 0)).toBe(0);
+    expect(moduleLabel({ number: 2, tier: "harder" })).toBe("Module 2 (harder)");
+    expect(moduleLabel({ number: 1, tier: "standard" })).toBe("Module 1");
+  });
+
+  it("reads marks for review", () => {
+    const r = parseResults({ ...sample, modules: [{ ...sample.modules[0], questions: [{ ...sample.modules[0].questions[0], marked: true }] }] });
+    expect(r.modules[0].questions[0].marked).toBe(true);
   });
 });

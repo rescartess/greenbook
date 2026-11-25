@@ -147,6 +147,7 @@ describe("a full adaptive test", () => {
     expect(r.scaledScore).toBe(expected.scaled_score);
     expect(r.modules[0].questions[0].explanation).toBe("secret-expl-1");
     expect(r.modules[1].questions[2]).toMatchObject({ answer: null, isCorrect: false });
+    expect(r.modules[0].questions.map((q) => (q as unknown as { marked: boolean }).marked)).toEqual([false, false, true, false, false]);
     await t.actAs(S1);
     const progress = await t.one<{ n: number; wrong: number }>(`select count(*)::int n, sum(times_wrong)::int wrong from public.question_progress`);
     expect(progress).toEqual({ n: 8, wrong: 2 });
@@ -164,6 +165,15 @@ describe("a full adaptive test", () => {
     const r = (await t.one<{ r: Results }>(`select public.get_test_results($1) r`, [a])).r;
     expect(r.rawCorrect).toBe(1);
     expect((await t.one<{ n: number }>(`select count(*)::int n from public.attempts`)).n).toBe(1);
+  });
+
+  it("lets a student delete their own finished attempt, and nobody else's", async () => {
+    await t.actAs(S2);
+    await expect(t.db.query(`select public.remove_attempt($1)`, [attempt])).rejects.toThrow(/isn’t yours/);
+    const mine = (await t.one<{ id: string }>(`select id from public.attempts where status = 'completed'`)).id;
+    await t.db.query(`select public.remove_attempt($1)`, [mine]);
+    expect((await t.one<{ status: string }>(`select status from public.attempts where id = $1`, [mine])).status).toBe("abandoned");
+    await expect(t.db.query(`select public.remove_attempt($1)`, [mine])).rejects.toThrow(/already removed/);
   });
 });
 

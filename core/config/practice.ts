@@ -20,7 +20,7 @@ export const DIFFICULTY_LABEL: Record<Difficulty, string> = {
 /** Quick choices for "How many questions". Students can also type their own number. */
 export const PRACTICE_SIZES = [10, 20, 25] as const;
 export const DEFAULT_PRACTICE_SIZE = 20;
-export const MAX_PRACTICE_SIZE = 200;
+export const MAX_PRACTICE_SIZE = 600;
 
 export function isDifficulty(v: unknown): v is Difficulty {
   return typeof v === "string" && (DIFFICULTIES as readonly string[]).includes(v);

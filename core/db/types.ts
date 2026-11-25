@@ -550,6 +550,7 @@ export type Database = {
       retry_mistake: { Args: { p_answer: string; p_question_id: string }; Returns: Json }
       start_practice: { Args: { p_set_id: string }; Returns: string }
       list_topics: { Args: { p_subject: string }; Returns: Json }
+      remove_attempt: { Args: { p_attempt_id: string }; Returns: undefined }
       get_topic: { Args: { p_set_id: string }; Returns: Json }
       start_topic_practice: {
         Args: {

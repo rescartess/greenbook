@@ -379,9 +379,11 @@ function Square({ state, className }: { state: MapItemState; className?: string 
         "rounded",
         state === "unanswered" || state === "skipped"
           ? "border-[1.5px] border-dashed border-ink-soft"
-          : state === "answered" || state === "correct"
+          : state === "answered"
             ? "bg-pine"
-            : "border-[2px] border-ink bg-wash",
+            : state === "correct"
+              ? "bg-correct"
+              : "bg-incorrect",
         className,
       )}
     />
@@ -393,17 +395,20 @@ export function QuestionMapGrid({
   items,
   currentId,
   onPick,
+  legend = true,
 }: {
   items: readonly MapItem[];
   currentId?: string | null;
   onPick: (id: string) => void;
+  /** Turn off when several grids sit together and one legend is enough. */
+  legend?: boolean;
 }) {
   const states = STATE_ORDER.filter((s) => items.some((i) => i.state === s));
   if (states.includes("answered") && !states.includes("unanswered") && !states.includes("correct"))
     states.unshift("unanswered");
   return (
     <>
-      <div className="mb-4 flex flex-wrap justify-center gap-x-5 gap-y-1 text-[13px] text-ink-soft">
+      <div className={cn("mb-4 flex flex-wrap justify-center gap-x-5 gap-y-1 text-[13px] text-ink-soft", !legend && "hidden")}>
         {states.map((s) => (
           <span key={s} className="flex items-center gap-1.5">
             <Square state={s} className="h-3.5 w-3.5" /> {STATE_LABEL[s]}
@@ -423,11 +428,13 @@ export function QuestionMapGrid({
               aria-label={`Question ${item.number}, ${STATE_LABEL[item.state].toLowerCase()}${item.marked ? ", marked for review" : ""}`}
               className={cn(
                 "flex h-11 w-full items-center justify-center rounded-lg text-[15px] font-bold tabular-nums",
-                item.state === "answered" || item.state === "correct"
+                item.state === "answered"
                   ? "bg-pine text-pine-ink"
-                  : item.state === "wrong"
-                    ? "border-[2px] border-ink bg-wash text-ink line-through decoration-[1.5px]"
-                    : "border-[1.5px] border-dashed border-ink-soft text-ink",
+                  : item.state === "correct"
+                    ? "bg-correct text-paper"
+                    : item.state === "wrong"
+                      ? "bg-incorrect text-paper"
+                      : "border-[1.5px] border-dashed border-ink-soft text-ink",
                 item.id === currentId && "ring-2 ring-ink ring-offset-2 ring-offset-paper",
               )}
             >

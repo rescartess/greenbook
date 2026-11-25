@@ -20,6 +20,8 @@ export type Subject = {
   tools: ReadonlyArray<"annotate" | "calculator" | "reference">;
   /** The four official content areas, in College Board order. */
   domains: readonly string[];
+  /** One plain line per content area, shown on the results page. */
+  domainNotes: Readonly<Record<string, string>>;
   /** Section number on the test screen (Reading and Writing comes first). */
   sectionNumber: number;
   /** Shown under "Directions" on the test screen. */
@@ -47,6 +49,12 @@ export const SUBJECTS: Record<SubjectSlug, Subject> = {
       "Expression of Ideas",
       "Standard English Conventions",
     ],
+    domainNotes: {
+      "Information and Ideas": "Understanding what a text says and using evidence.",
+      "Craft and Structure": "Word meaning in context and how a text is built.",
+      "Expression of Ideas": "Revising writing so it is clearer and more effective.",
+      "Standard English Conventions": "Grammar, punctuation and sentence structure.",
+    },
   },
   math: {
     slug: "math",
@@ -68,6 +76,12 @@ export const SUBJECTS: Record<SubjectSlug, Subject> = {
       "Problem-Solving and Data Analysis",
       "Geometry and Trigonometry",
     ],
+    domainNotes: {
+      Algebra: "Linear equations, systems and inequalities.",
+      "Advanced Math": "Quadratics, exponentials and other nonlinear functions.",
+      "Problem-Solving and Data Analysis": "Ratios, percentages, probability and data.",
+      "Geometry and Trigonometry": "Area, volume, angles, circles and trigonometry.",
+    },
   },
 };
 

@@ -30,7 +30,7 @@ steps, and run `npm run check` before saying something is done.
 ## Design system (approved 24 Nov 2026)
 - Apple-like, minimal, Bluebook-style, liquid glass. Must not look AI-generated.
 - Font: Nunito (`@fontsource-variable/nunito`) for the interface. Headlines extra-bold with slight negative tracking. Test text (passages, questions, choices) uses the serif `font-serif` (Source Serif 4), like Bluebook (owner request, 25 Nov 2026).
-- Colors: only the tokens in `app/globals.css` (`bg-paper`, `bg-mist`, `bg-canvas`, `text-ink`, `text-graphite`, `border-hairline`, `bg-pine`, `bg-pine-soft`...). No raw hex in `app/` or `features/` (lint blocks it). Pine green is the only accent.
+- Colors: only the tokens in `app/globals.css` (`bg-paper`, `bg-mist`, `bg-canvas`, `text-ink`, `text-graphite`, `border-hairline`, `bg-pine`, `bg-pine-soft`...). No raw hex in `app/` or `features/` (lint blocks it). Pine green is the only accent. Exception (owner request, 25 Nov 2026): answer feedback uses `correct` (bright green) and `incorrect` (red) tokens, with `-tint` versions; use them only for right/wrong answers.
 - Glass (`glass`, `glass-on-brand` utilities) ONLY on floating things: nav bar, side tabs, subject switch, phone sheets. The test screen follows Bluebook's layout (owner request): flat full-width top and bottom bars in `bg-pine-tint` with dashed rules, a draggable divider, grey question bar with number, Mark for Review and ABC. Content panels stay flat: `Panel` with a hairline, no shadow.
 - Logged-in pages: glass side tabs on the left (bottom tab bar on phones), `PageHeader` with the English/Math switch.
 - Reuse `core/design/ui` (Button, ButtonLink, PillSwitch, Panel, AccentPanel, EmptyState, Icon, Logo). New shared pieces go there first and onto `/dev/design`.
@@ -43,7 +43,7 @@ steps, and run `npm run check` before saying something is done.
 
 ## Database
 - Supabase project `greenbook` (ref `pgpotvnyomwrlmnhzcmy`, Frankfurt). Migrations are applied with Claude's Supabase connector, then the security and performance advisors are re-run and `core/db/types.ts` is updated.
-- Anything that writes student activity or reveals answers is a database function (test engine 0007, admin tools 0009, practice and mistakes 0010, topic practice 0012). Pages call them with `supabase.rpc(...)`. Answers reach the browser only after a question is finished.
+- Anything that writes student activity or reveals answers is a database function (test engine 0007, admin tools 0009, practice and mistakes 0010, topic practice 0012, results and review 0013). Pages call them with `supabase.rpc(...)`. Answers reach the browser only after a question is finished.
 - `tests/db/` runs every migration in an in-memory Postgres (PGlite) and checks the rules as a student and as an admin. Add a check there for every new database function.
 - Question content and answer keys never go in this public repo; they live only in the database.
 - Destructive SQL (deletes) through the connector asks the owner to confirm; don't run it while they're away.
@@ -51,7 +51,7 @@ steps, and run `npm run check` before saying something is done.
 
 ## Feature map
 - `test-runner` (/test/[id]): timed Bluebook screen. `full-tests`, `results`, `practice` (/practice/[id]: Bluebook screen, check as you go or at the end, optional timer, results with an "Incorrect" review; used by `topics` and `monthly`), `topics` (/[subject]/topics and /[subject]/topics/[setId] setup page), `mistakes`, `dashboard`, `admin` (/admin), `auth`, `marketing`.
-- Shared question display lives in `core/question` (RichText format, QuestionView, AnswerCheck, highlights) and so do the Bluebook exam pieces used by both the test and practice screens (`ExamParts.tsx`: top/bottom bars, clock, Mark for Review, ABC, question map; `exam-hooks.ts`).
+- Shared question display lives in `core/question` (RichText format, QuestionView, AnswerCheck, highlights) and so do the Bluebook exam pieces used by both the test and practice screens (`ExamParts.tsx`: top/bottom bars, clock, Mark for Review, ABC, question map; `exam-hooks.ts`), and the shared review screen (`ReviewScreen.tsx`: Bluebook review with All / Incorrect / Skipped / Marked filters and a Show correct answer switch) used by practice results and full-test results.
 - Topic practice settings (levels, sizes, SAT pace) live in `core/config/practice.ts`.
 - Scores are estimated while `ESTIMATED_SCORES` is true in `core/config/subjects.ts`.
 

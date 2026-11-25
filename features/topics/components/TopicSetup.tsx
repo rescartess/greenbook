@@ -37,8 +37,9 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
 
   const [difficulty, setDifficulty] = useState<Difficulty>(firstLevel);
   const [size, setSize] = useState(DEFAULT_PRACTICE_SIZE);
-  const [customSize, setCustomSize] = useState(false);
+  const [sizeText, setSizeText] = useState(String(DEFAULT_PRACTICE_SIZE));
   const [from, setFrom] = useState(() => suggestedStart(itemsFor(topic.items, firstLevel), DEFAULT_PRACTICE_SIZE));
+  const [fromText, setFromText] = useState(() => String(from));
   const [checkMode, setCheckMode] = useState<CheckMode>("each");
   const [timed, setTimed] = useState(false);
   const [minutesText, setMinutesText] = useState<string | null>(null); // null = follow SAT pace
@@ -56,14 +57,18 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
   const minutesOk = !timed || (/^\d+$/.test(minutes) && Number(minutes) >= 1 && Number(minutes) <= 300);
   const paceSeconds = satPaceSeconds(subject);
 
+  const moveTo = (n: number) => {
+    setFrom(n);
+    setFromText(String(n));
+  };
   const pickDifficulty = (d: Difficulty) => {
     setDifficulty(d);
-    setFrom(suggestedStart(itemsFor(topic.items, d), size));
+    moveTo(suggestedStart(itemsFor(topic.items, d), size));
   };
-  const pickSize = (n: number) => {
+  const pickSize = (n: number, text = String(n)) => {
     const clean = Math.max(1, Math.min(MAX_PRACTICE_SIZE, Math.trunc(n) || 1));
     setSize(clean);
-    setFrom(suggestedStart(list, clean));
+    setSizeText(text);
   };
 
   const levelWord = difficulty === "all" ? "" : `${DIFFICULTY_LABEL[difficulty].toLowerCase()} `;
@@ -122,38 +127,50 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
             <div className="h-full rounded-full bg-pine" style={{ width: `${total ? (answered / total) * 100 : 0}%` }} />
           </div>
 
-          <p className="mb-2.5 mt-5 text-[15px] font-bold">How many at a time</p>
-          <div className="flex flex-wrap items-center gap-2">
-            {PRACTICE_SIZES.map((n) => (
-              <Pill
-                key={n}
-                selected={!customSize && size === n}
-                onClick={() => {
-                  setCustomSize(false);
-                  pickSize(n);
-                }}
-              >
-                {n}
-              </Pill>
-            ))}
-            <Pill selected={customSize} onClick={() => setCustomSize(true)}>
-              Other
-            </Pill>
-            {customSize ? (
-              <input
-                type="number"
-                inputMode="numeric"
-                min={1}
-                max={MAX_PRACTICE_SIZE}
-                defaultValue={size}
-                aria-label="Number of questions"
-                onChange={(e) => pickSize(Number(e.target.value))}
-                className="w-24 rounded-choice border-[1.5px] border-control bg-paper px-3 py-2 tabular-nums outline-none focus:border-pine"
-              />
-            ) : null}
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            <NumberField
+              label="Start at question #"
+              value={fromText}
+              min={1}
+              max={Math.max(1, total)}
+              onChange={(text) => {
+                setFromText(text);
+                const n = Math.trunc(Number(text));
+                if (n >= 1) setFrom(n);
+              }}
+              hint={`1 to ${total}`}
+            />
+            <NumberField
+              label="How many questions"
+              value={sizeText}
+              min={1}
+              max={MAX_PRACTICE_SIZE}
+              onChange={(text) => {
+                const n = Math.trunc(Number(text));
+                if (n >= 1) pickSize(n, text);
+                else setSizeText(text);
+              }}
+              extra={
+                <div className="flex gap-1.5">
+                  {PRACTICE_SIZES.map((n) => (
+                    <Pill key={n} selected={size === n && sizeText === String(n)} onClick={() => pickSize(n)}>
+                      {n}
+                    </Pill>
+                  ))}
+                  <Pill selected={size === total && sizeText === String(total)} onClick={() => pickSize(total)}>
+                    All
+                  </Pill>
+                </div>
+              }
+            />
           </div>
+          {count > 0 && count < size ? (
+            <p className="mt-3 text-[14px] text-graphite">
+              Only {count} question{count === 1 ? "" : "s"} left from #{safeFrom}, so you’ll do #{safeFrom}–{to}.
+            </p>
+          ) : null}
 
-          <p className="mb-2.5 mt-6 text-[15px] font-bold">Which ones</p>
+          <p className="mb-2.5 mt-6 text-[15px] font-bold">Or pick a group of {size}</p>
           <div className="grid grid-cols-[repeat(auto-fill,minmax(8.5rem,1fr))] gap-2">
             {ranges.map((r) => {
               const selected = r.from === safeFrom && count === r.size;
@@ -162,7 +179,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
                   key={r.from}
                   type="button"
                   aria-pressed={selected}
-                  onClick={() => setFrom(r.from)}
+                  onClick={() => moveTo(r.from)}
                   className={cn(
                     "rounded-choice border-[1.5px] px-3.5 py-2.5 text-left transition-colors",
                     selected ? "border-pine bg-pine-tint" : "border-hairline bg-paper hover:border-control",
@@ -183,18 +200,6 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
               );
             })}
           </div>
-          <label className="mt-4 flex items-center gap-2.5 text-[15px] text-ink-soft">
-            Or start at question #
-            <input
-              type="number"
-              inputMode="numeric"
-              min={1}
-              max={Math.max(1, total)}
-              value={safeFrom}
-              onChange={(e) => setFrom(Math.trunc(Number(e.target.value)) || 1)}
-              className="w-20 rounded-choice border-[1.5px] border-control bg-paper px-3 py-1.5 tabular-nums outline-none focus:border-pine"
-            />
-          </label>
         </Section>
       </div>
 
@@ -224,13 +229,13 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
               selected={checkMode === "each"}
               onSelect={() => setCheckMode("each")}
               title="Check as you go"
-              detail="Press Check after each question to see if you’re right."
+              detail="Press Check after each one."
             />
             <Choice
               selected={checkMode === "end"}
               onSelect={() => setCheckMode("end")}
               title="Check at the end"
-              detail="Like the real test. See your score when you finish."
+              detail="Like the real test."
             />
           </div>
 
@@ -263,7 +268,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
                   minutes
                 </label>
                 <p className="mt-1.5 text-[13px] text-graphite">
-                  SAT pace is about {Math.floor(paceSeconds / 60)} minute {paceSeconds % 60} seconds a question
+                  SAT pace: {Math.floor(paceSeconds / 60)} min {paceSeconds % 60} s a question
                   {minutesText !== null && minutesText !== String(pace) ? (
                     <>
                       {" "}
@@ -280,7 +285,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
                 </p>
               </div>
             ) : (
-              <p className="mt-0.5 text-[13px] text-graphite">Off. Take as long as you need.</p>
+              <p className="mt-0.5 text-[13px] text-graphite">No time limit.</p>
             )}
           </div>
 
@@ -292,7 +297,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
               {state.message}
             </p>
           ) : null}
-          <p className="mt-3 text-center text-[13px] text-graphite">Everyone gets these questions in the same order.</p>
+          <p className="mt-3 text-center text-[13px] text-graphite">Same order for everyone.</p>
         </section>
       </form>
     </div>
@@ -340,6 +345,43 @@ function Choice({
       <span className={cn("block font-bold", selected && "text-pine")}>{title}</span>
       <span className="block text-[13px] text-graphite">{detail}</span>
     </button>
+  );
+}
+
+function NumberField({
+  label,
+  value,
+  min,
+  max,
+  onChange,
+  hint,
+  extra,
+}: {
+  label: string;
+  value: string;
+  min: number;
+  max: number;
+  onChange: (text: string) => void;
+  hint?: string;
+  extra?: ReactNode;
+}) {
+  return (
+    <div>
+      <label className="flex flex-col gap-2">
+        <span className="text-[15px] font-bold">{label}</span>
+        <input
+          type="number"
+          inputMode="numeric"
+          min={min}
+          max={max}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full rounded-choice border-[1.5px] border-control bg-paper px-4 py-2.5 text-lg font-bold tabular-nums outline-none focus:border-pine"
+        />
+      </label>
+      {hint ? <p className="mt-1.5 text-[13px] text-graphite">{hint}</p> : null}
+      {extra ? <div className="mt-2">{extra}</div> : null}
+    </div>
   );
 }
 

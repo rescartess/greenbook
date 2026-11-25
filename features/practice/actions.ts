@@ -30,7 +30,7 @@ export async function startTopicPractice(_prev: StartState, form: FormData): Pro
 
   if (!isDifficulty(difficulty)) return { message: "Pick a difficulty." };
   if (!Number.isInteger(from) || from < 1) return { message: "Pick where to start." };
-  if (!Number.isInteger(count) || count < 1 || count > 200) return { message: "Pick between 1 and 200 questions." };
+  if (!Number.isInteger(count) || count < 1 || count > 600) return { message: "Pick between 1 and 600 questions." };
   if (minutes !== null && (!Number.isInteger(minutes) || minutes < 1 || minutes > 300))
     return { message: "Set the timer between 1 and 300 minutes." };
 

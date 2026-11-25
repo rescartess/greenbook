@@ -7,10 +7,10 @@ export function VerdictTag({ correct, skipped, className }: { correct: boolean; 
       className={cn(
         "rounded-full px-2.5 py-0.5 font-sans text-[13px] font-bold",
         correct
-          ? "bg-pine text-pine-ink"
+          ? "bg-correct text-paper"
           : skipped
             ? "border-[1.5px] border-dashed border-ink-soft text-ink"
-            : "border-[1.5px] border-ink text-ink",
+            : "bg-incorrect text-paper",
         className,
       )}
     >

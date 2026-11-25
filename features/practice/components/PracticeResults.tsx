@@ -1,22 +1,19 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { DIFFICULTY_LABEL, isDifficulty } from "@/core/config/practice";
 import { Button, ButtonLink, cn } from "@/core/design/ui";
 import {
-  ExamBottomBar,
-  ExamTitle,
-  ExamTopBar,
-  MapButton,
-  QuestionMapGrid,
-  QuestionMapPopover,
-  QuestionView,
-  type MapItem,
+  REVIEW_FILTERS,
+  ReviewScreen,
+  filterCounts,
+  matchesFilter,
+  reviewState,
+  type ReviewFilter,
+  type ReviewItem,
 } from "@/core/question";
 import { startTopicPractice, type StartState } from "../actions";
-import { rangeLabel, scorePractice, type PracticeQuestion, type PracticeState } from "../schema";
-import { VerdictTag } from "./VerdictTag";
-
-type Filter = "all" | "incorrect" | "marked";
+import { rangeLabel, scorePractice, type PracticeState } from "../schema";
 
 type Props = {
   state: PracticeState;
@@ -26,27 +23,52 @@ type Props = {
   backLabel: string;
 };
 
-const isRight = (q: PracticeQuestion) => q.feedback?.isCorrect === true;
-const answerOf = (q: PracticeQuestion) => q.feedback?.answer ?? q.answer;
+type Row = ReviewItem & { level: string | null };
 
-/** "Practice complete" with the score, then a Bluebook-style review with an "Incorrect only" filter. */
+/** "Practice complete" with the score, the list of every question, and a Bluebook-style review. */
 export function PracticeResults({ state, studentName, backHref, backLabel }: Props) {
-  const [reviewing, setReviewing] = useState(false);
+  const [review, setReview] = useState<null | { id?: string; filter: ReviewFilter; show: boolean }>(null);
+  const [filter, setFilter] = useState<ReviewFilter>("all");
+  const [showAnswers, setShowAnswers] = useState(false);
   const score = scorePractice(state.questions);
   const range = state.options ? rangeLabel(state.options) : null;
+  const title = range ? `${state.title}: ${range}` : state.title;
 
-  if (reviewing) {
-    return <Review state={state} studentName={studentName} range={range} onDone={() => setReviewing(false)} />;
-  }
+  const rows: Row[] = state.questions.map((q, i) => ({
+    id: q.id,
+    number: i + 1,
+    type: q.type,
+    passage: q.passage,
+    prompt: q.prompt,
+    choices: q.choices,
+    answer: q.feedback?.answer ?? q.answer,
+    correctAnswer: q.feedback?.correctAnswer ?? null,
+    isCorrect: q.feedback?.isCorrect === true,
+    marked: q.marked,
+    explanation: q.feedback?.explanation ?? null,
+    level: q.difficulty,
+  }));
+  const counts = filterCounts(rows);
+  const shown = rows.filter((r) => matchesFilter(r, filter));
+
+  const reviewScreen = review ? (
+      <ReviewScreen
+        title={title}
+        items={rows}
+        startId={review.id}
+        startFilter={review.filter}
+        showAnswers={review.show}
+        studentName={studentName}
+        onClose={() => setReview(null)}
+      />
+  ) : null;
 
   return (
-    <main className="mx-auto flex min-h-[calc(100dvh-90px)] max-w-[640px] flex-col justify-center px-5 pb-16">
+    <main className="mx-auto max-w-[880px] px-4 pb-20 sm:px-5">
+      {reviewScreen}
       <section className="rounded-panel border border-hairline bg-paper px-6 py-10 text-center sm:px-10">
         <h1 className="text-[34px] font-extrabold leading-tight tracking-tight">Practice complete</h1>
-        <p className="mt-1.5 text-[17px] text-ink-soft">
-          {state.title}
-          {range ? `: ${range}` : ""}
-        </p>
+        <p className="mt-1.5 text-[17px] text-ink-soft">{title}</p>
 
         <p className="mt-8 text-[64px] font-extrabold leading-none tracking-tight tabular-nums text-pine">
           {score.percent}%
@@ -56,13 +78,13 @@ export function PracticeResults({ state, studentName, backHref, backLabel }: Pro
         </p>
 
         <dl className="mx-auto mt-8 grid max-w-md grid-cols-3 divide-x divide-hairline rounded-card border border-hairline">
-          <Stat label="Correct" value={score.correct} />
-          <Stat label="Incorrect" value={score.incorrect} />
+          <Stat label="Correct" value={score.correct} className="text-correct" />
+          <Stat label="Incorrect" value={score.incorrect} className="text-incorrect" />
           <Stat label="Skipped" value={score.skipped} />
         </dl>
 
-        <div className="mt-9 flex flex-col items-center gap-3">
-          <Button size="lg" className="w-full max-w-sm" onClick={() => setReviewing(true)}>
+        <div className="mx-auto mt-9 flex max-w-sm flex-col items-center gap-3">
+          <Button size="lg" className="w-full" onClick={() => setReview({ filter: "all", show: showAnswers })}>
             Review your work
           </Button>
           <NextRange state={state} />
@@ -71,20 +93,126 @@ export function PracticeResults({ state, studentName, backHref, backLabel }: Pro
           </ButtonLink>
         </div>
       </section>
+
+      <section className="mt-6 rounded-panel border border-hairline bg-paper">
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 pb-4 pt-6">
+          <h2 className="text-xl font-extrabold tracking-tight">Your answers</h2>
+          <label className="flex cursor-pointer items-center gap-2.5 text-[15px] font-semibold">
+            <input
+              type="checkbox"
+              checked={showAnswers}
+              onChange={(e) => setShowAnswers(e.target.checked)}
+              className="peer sr-only"
+            />
+            <span
+              aria-hidden="true"
+              className="relative h-6 w-10 rounded-full bg-control transition-colors peer-checked:bg-pine peer-focus-visible:outline-2 peer-focus-visible:outline-pine after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-paper after:transition-transform peer-checked:after:translate-x-4"
+            />
+            Show correct answers
+          </label>
+        </div>
+
+        <div role="tablist" aria-label="Show questions" className="flex gap-1 overflow-x-auto border-b border-hairline px-4">
+          {REVIEW_FILTERS.map((f) => (
+            <button
+              key={f.key}
+              role="tab"
+              type="button"
+              aria-selected={filter === f.key}
+              onClick={() => setFilter(f.key)}
+              className={cn(
+                "-mb-px shrink-0 border-b-2 px-3 py-2.5 text-[15px] font-semibold tabular-nums",
+                filter === f.key ? "border-pine text-ink" : "border-transparent text-graphite hover:text-ink",
+              )}
+            >
+              {f.label} <span className="font-bold">{counts[f.key]}</span>
+            </button>
+          ))}
+        </div>
+
+        {shown.length === 0 ? (
+          <p className="px-6 py-10 text-center text-[15px] text-graphite">
+            {filter === "incorrect"
+              ? "No incorrect answers."
+              : filter === "skipped"
+                ? "You answered every question."
+                : "No questions here."}
+          </p>
+        ) : (
+          <table className="w-full text-left text-[15px]">
+            <thead>
+              <tr className="border-b border-hairline text-[13px] text-graphite">
+                <th scope="col" className="py-2.5 pl-6 pr-2 font-semibold">
+                  Question
+                </th>
+                <th scope="col" className="hidden px-2 py-2.5 font-semibold sm:table-cell">
+                  Level
+                </th>
+                <th scope="col" className="px-2 py-2.5 font-semibold">
+                  Correct
+                </th>
+                <th scope="col" className="px-2 py-2.5 font-semibold">
+                  Yours
+                </th>
+                <th scope="col" className="py-2.5 pl-2 pr-6 font-semibold">
+                  <span className="sr-only">Review</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-hairline">
+              {shown.map((r) => {
+                const s = reviewState(r);
+                return (
+                  <tr key={r.id} className="hover:bg-mist">
+                    <td className="py-3 pl-6 pr-2 font-bold tabular-nums">
+                      {r.number}
+                      {r.marked ? <span className="ml-2 text-[12px] font-semibold text-graphite">Marked</span> : null}
+                    </td>
+                    <td className="hidden px-2 py-3 text-ink-soft sm:table-cell">
+                      {isDifficulty(r.level) ? DIFFICULTY_LABEL[r.level] : ""}
+                    </td>
+                    <td className="px-2 py-3 font-bold">
+                      {showAnswers ? (
+                        r.correctAnswer
+                      ) : (
+                        <span className="text-graphite" aria-label="Hidden">
+                          •
+                        </span>
+                      )}
+                    </td>
+                    <td className={cn("px-2 py-3 font-bold", s === "correct" ? "text-correct" : "text-incorrect")}>
+                      {s === "skipped" ? "Omitted" : r.answer}
+                    </td>
+                    <td className="py-2 pl-2 pr-6 text-end">
+                      <button
+                        type="button"
+                        onClick={() => setReview({ id: r.id, filter, show: showAnswers })}
+                        className="rounded-full px-3 py-1.5 text-[14px] font-bold text-pine hover:bg-pine-tint"
+                      >
+                        Review
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
+      </section>
     </main>
   );
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
+function Stat({ label, value, className }: { label: string; value: number; className?: string }) {
   return (
     <div className="flex flex-col-reverse px-2 py-4">
       <dt className="text-[13px] font-semibold text-graphite">{label}</dt>
-      <dd className="text-[26px] font-extrabold tabular-nums">{value}</dd>
+      <dd className={cn("text-[26px] font-extrabold tabular-nums", className)}>{value}</dd>
     </div>
   );
 }
 
-/** "Start #26–50" with the same level, size, checking and timer. */
+/** "Start the next ones, #26–50" with the same level, size, checking and timer. */
 function NextRange({ state }: { state: PracticeState }) {
   const [result, action, pending] = useActionState<StartState, FormData>(startTopicPractice, { message: null });
   const o = state.options;
@@ -93,7 +221,7 @@ function NextRange({ state }: { state: PracticeState }) {
   const from = o.to + 1;
   const to = o.to + Math.min(size, state.moreAfter);
   return (
-    <form action={action} className="flex w-full max-w-sm flex-col">
+    <form action={action} className="flex w-full flex-col">
       <input type="hidden" name="setId" value={state.setId} />
       <input type="hidden" name="difficulty" value={o.difficulty} />
       <input type="hidden" name="from" value={from} />
@@ -101,184 +229,9 @@ function NextRange({ state }: { state: PracticeState }) {
       <input type="hidden" name="checkMode" value={state.checkMode} />
       <input type="hidden" name="minutes" value={o.minutes ?? ""} />
       <Button type="submit" variant="quiet" size="lg" disabled={pending}>
-        {pending ? "Starting…" : `Start the next ones, #${from}–${to}`}
+        {pending ? "Starting…" : from === to ? `Start the next one, #${from}` : `Start the next ones, #${from}–${to}`}
       </Button>
       {result.message ? <p className="mt-2 text-sm text-graphite">{result.message}</p> : null}
     </form>
-  );
-}
-
-function Review({
-  state,
-  studentName,
-  range,
-  onDone,
-}: {
-  state: PracticeState;
-  studentName: string;
-  range: string | null;
-  onDone: () => void;
-}) {
-  const [filter, setFilter] = useState<Filter>("all");
-  const [index, setIndex] = useState(0);
-  const [mapOpen, setMapOpen] = useState(false);
-  const [split, setSplit] = useState(50);
-
-  const numbered = state.questions.map((q, i) => ({ q, n: i + 1 }));
-  const shown = numbered.filter(({ q }) =>
-    filter === "incorrect" ? !isRight(q) : filter === "marked" ? q.marked : true,
-  );
-  const safeIndex = Math.min(index, Math.max(0, shown.length - 1));
-  const current = shown[safeIndex] ?? null;
-  const counts = {
-    all: numbered.length,
-    incorrect: numbered.filter(({ q }) => !isRight(q)).length,
-    marked: numbered.filter(({ q }) => q.marked).length,
-  };
-
-  const items: MapItem[] = shown.map(({ q, n }) => ({
-    id: q.id,
-    number: n,
-    state: isRight(q) ? "correct" : answerOf(q) ? "wrong" : "skipped",
-    marked: q.marked,
-  }));
-
-  const choose = (f: Filter) => {
-    setFilter(f);
-    setIndex(0);
-    setMapOpen(false);
-  };
-
-  return (
-    <div className="min-h-dvh bg-paper font-sans">
-      <ExamTopBar
-        left={
-          <ExamTitle
-            title={
-              <span className="max-sm:sr-only">
-                Review: {state.title}
-                {range ? <span className="hidden font-semibold text-ink-soft sm:inline">, {range}</span> : null}
-              </span>
-            }
-          />
-        }
-        center={
-          <div role="group" aria-label="Show questions" className="flex rounded-full border-[1.5px] border-ink bg-paper p-0.5">
-            {(
-              [
-                ["all", "All"],
-                ["incorrect", "Incorrect"],
-                ["marked", "Marked"],
-              ] as const
-            ).map(([key, label]) =>
-              key === "marked" && counts.marked === 0 ? null : (
-                <button
-                  key={key}
-                  type="button"
-                  aria-pressed={filter === key}
-                  onClick={() => choose(key)}
-                  className={cn(
-                    "rounded-full px-3 py-1 text-[13px] font-bold tabular-nums sm:px-4 sm:text-[14px]",
-                    filter === key ? "bg-ink text-paper" : "hover:bg-wash",
-                  )}
-                >
-                  {label} {counts[key]}
-                </button>
-              ),
-            )}
-          </div>
-        }
-        right={
-          <Button size="sm" onClick={onDone}>
-            Done
-          </Button>
-        }
-      />
-
-      <main className="mx-auto max-w-[1600px] pb-28">
-        {current ? (
-          <QuestionView
-            key={current.q.id}
-            number={current.n}
-            question={current.q}
-            selectedId={answerOf(current.q)}
-            correctId={current.q.feedback?.correctAnswer ?? null}
-            passageWidth={split}
-            onResize={setSplit}
-            fillHeight
-            headerExtra={
-              current.q.marked ? (
-                <span className="flex items-center gap-1.5 text-[15px] font-bold">Marked for Review</span>
-              ) : null
-            }
-            headerRight={<VerdictTag correct={isRight(current.q)} skipped={!answerOf(current.q)} />}
-            answerSlot={
-              current.q.type === "spr" ? (
-                <div className="flex flex-col gap-1 font-sans text-[17px]">
-                  <p>
-                    Your answer: <strong>{answerOf(current.q) ?? "none"}</strong>
-                  </p>
-                  <p>
-                    Correct answer: <strong>{current.q.feedback?.correctAnswer}</strong>
-                  </p>
-                </div>
-              ) : undefined
-            }
-          />
-        ) : (
-          <section className="mx-auto max-w-[560px] px-5 pt-16 text-center">
-            <h1 className="text-2xl font-extrabold tracking-tight">
-              {filter === "incorrect" ? "You got every question right." : "Nothing to show here."}
-            </h1>
-            <Button className="mt-6" variant="quiet" onClick={() => choose("all")}>
-              Show all questions
-            </Button>
-          </section>
-        )}
-      </main>
-
-      {mapOpen && items.length > 0 ? (
-        <QuestionMapPopover title={filter === "incorrect" ? "Incorrect and skipped" : "Questions"} onClose={() => setMapOpen(false)}>
-          <QuestionMapGrid
-            items={items}
-            currentId={current?.q.id}
-            onPick={(id) => {
-              setIndex(shown.findIndex(({ q }) => q.id === id));
-              setMapOpen(false);
-            }}
-          />
-        </QuestionMapPopover>
-      ) : null}
-
-      <ExamBottomBar
-        left={studentName}
-        center={
-          current ? (
-            <MapButton
-              current={current.n}
-              total={numbered.length}
-              open={mapOpen}
-              onClick={() => setMapOpen((o) => !o)}
-            />
-          ) : null
-        }
-        right={
-          current ? (
-            <>
-              {safeIndex > 0 ? (
-                <Button variant="quiet" onClick={() => setIndex(safeIndex - 1)}>
-                  Back
-                </Button>
-              ) : null}
-              {safeIndex < shown.length - 1 ? (
-                <Button onClick={() => setIndex(safeIndex + 1)}>Next</Button>
-              ) : (
-                <Button onClick={onDone}>Done</Button>
-              )}
-            </>
-          ) : null
-        }
-      />
-    </div>
   );
 }

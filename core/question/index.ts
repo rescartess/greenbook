@@ -27,3 +27,13 @@ export {
   type MapItemState,
 } from "./ExamParts";
 export { useMounted, useHighlights } from "./exam-hooks";
+export { VerdictTag } from "./VerdictTag";
+export {
+  ReviewScreen,
+  REVIEW_FILTERS,
+  filterCounts,
+  matchesFilter,
+  reviewState,
+  type ReviewFilter,
+  type ReviewItem,
+} from "./ReviewScreen";

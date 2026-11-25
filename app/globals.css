@@ -21,6 +21,11 @@
   --gb-pine-tint: #eef4f2;
   --gb-wash: rgba(26, 31, 30, 0.06);
   --gb-mark: rgba(141, 185, 173, 0.55);
+  /* Answer feedback only (owner request): correct is a bright green, incorrect is red. */
+  --gb-correct: #17924f;
+  --gb-correct-tint: #e7f6ed;
+  --gb-incorrect: #d1372c;
+  --gb-incorrect-tint: #fdecea;
 
   --gb-glass-bg: rgba(255, 255, 255, 0.62);
   --gb-glass-edge: rgba(255, 255, 255, 0.9);
@@ -44,6 +49,10 @@
   --gb-pine-tint: #1b2b28;
   --gb-wash: rgba(231, 239, 237, 0.08);
   --gb-mark: rgba(79, 127, 116, 0.7);
+  --gb-correct: #3fd287;
+  --gb-correct-tint: rgba(63, 210, 135, 0.14);
+  --gb-incorrect: #ff6e63;
+  --gb-incorrect-tint: rgba(255, 110, 99, 0.14);
 
   --gb-glass-bg: rgba(30, 42, 40, 0.55);
   --gb-glass-edge: rgba(255, 255, 255, 0.12);
@@ -68,6 +77,10 @@
     --gb-pine-tint: #1b2b28;
     --gb-wash: rgba(231, 239, 237, 0.08);
   --gb-mark: rgba(79, 127, 116, 0.7);
+  --gb-correct: #3fd287;
+  --gb-correct-tint: rgba(63, 210, 135, 0.14);
+  --gb-incorrect: #ff6e63;
+  --gb-incorrect-tint: rgba(255, 110, 99, 0.14);
 
     --gb-glass-bg: rgba(30, 42, 40, 0.55);
     --gb-glass-edge: rgba(255, 255, 255, 0.12);
@@ -91,6 +104,10 @@
   --color-pine-soft: var(--gb-pine-soft);
   --color-pine-tint: var(--gb-pine-tint);
   --color-wash: var(--gb-wash);
+  --color-correct: var(--gb-correct);
+  --color-correct-tint: var(--gb-correct-tint);
+  --color-incorrect: var(--gb-incorrect);
+  --color-incorrect-tint: var(--gb-incorrect-tint);
   /* The homepage hero stays deep green in both themes. */
   --color-brand: #2d5652;
   --color-brand-up: #36645f;

@@ -16,6 +16,8 @@ type Props = {
   selectedId?: string | null;
   /** Reveal the right answer (admin preview, review after a test). */
   correctId?: string | null;
+  /** In review with the right answer hidden: colour the student's pick green (right) or red (wrong). */
+  pickVerdict?: "right" | "wrong" | null;
   /** Choices the student crossed out. */
   eliminated?: readonly string[];
   /** Makes the choices clickable (test screen, practice). */
@@ -49,6 +51,7 @@ export function QuestionView({
   question,
   selectedId,
   correctId,
+  pickVerdict,
   eliminated = [],
   onChoose,
   onToggleEliminate,
@@ -164,20 +167,35 @@ export function QuestionView({
               {question.choices.map((choice) => {
                 const isCorrect = correctId === choice.id;
                 const isSelected = selectedId === choice.id;
-                const isWrongPick = reviewing && isSelected && !isCorrect;
+                // Green: the right answer, or the student's pick when we only say it was right.
+                const green = isCorrect || (isSelected && !reviewing && pickVerdict === "right");
+                // Red: the student's wrong pick.
+                const red = isSelected && !isCorrect && (reviewing || pickVerdict === "wrong");
                 const isOut = eliminated.includes(choice.id) && !isSelected;
-                const strong = isCorrect || (isSelected && !reviewing);
+                // Pine: the student's current pick while answering.
+                const picked = isSelected && !reviewing && !pickVerdict;
+                const label = isCorrect
+                  ? isSelected
+                    ? "Your answer, correct"
+                    : "Correct"
+                  : red
+                    ? "Your answer, incorrect"
+                    : green
+                      ? "Your answer, correct"
+                      : null;
 
                 const body = (
                   <>
                     <span
                       className={cn(
                         "flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-sans text-sm font-bold",
-                        strong
-                          ? "bg-pine text-pine-ink"
-                          : isWrongPick
-                            ? "bg-ink text-paper"
-                            : "border-[1.5px] border-ink",
+                        green
+                          ? "bg-correct text-paper"
+                          : red
+                            ? "bg-incorrect text-paper"
+                            : picked
+                              ? "bg-pine text-pine-ink"
+                              : "border-[1.5px] border-ink",
                       )}
                     >
                       {choice.id}
@@ -185,30 +203,29 @@ export function QuestionView({
                     <span className="text-left text-[17px] leading-snug">
                       <RichLine source={choice.text} />
                     </span>
-                    {isCorrect || isWrongPick ? (
+                    {label ? (
                       <span
                         className={cn(
                           "sr-only shrink-0 font-sans text-sm font-bold @md:not-sr-only @md:ml-auto",
-                          isCorrect ? "text-pine" : "text-ink",
+                          green ? "text-correct" : "text-incorrect",
                         )}
                       >
-                        {isCorrect
-                          ? isSelected
-                            ? "Your answer, correct"
-                            : "Correct"
-                          : "Your answer"}
+                        {label}
                       </span>
                     ) : null}
                   </>
                 );
 
+                const strong = green || picked;
                 const boxClass = cn(
                   "relative flex flex-1 items-center gap-4 rounded-lg px-4 py-3",
-                  strong
-                    ? "border-[3px] border-pine bg-pine-tint"
-                    : isWrongPick
-                      ? "border-[3px] border-ink bg-wash"
-                      : "border-[1.5px] border-ink/60 bg-paper",
+                  green
+                    ? "border-[3px] border-correct bg-correct-tint"
+                    : red
+                      ? "border-[3px] border-incorrect bg-incorrect-tint"
+                      : picked
+                        ? "border-[3px] border-pine bg-pine-tint"
+                        : "border-[1.5px] border-ink/60 bg-paper",
                   isOut && "text-graphite opacity-70",
                 );
 

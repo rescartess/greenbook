@@ -28,7 +28,7 @@ import {
 } from "@/core/question";
 import { abandonPractice, checkPracticeAnswer, finishPractice, pausePractice, savePracticeResponse } from "../actions";
 import { rangeLabel, type PracticeState } from "../schema";
-import { VerdictTag } from "./VerdictTag";
+import { VerdictTag } from "@/core/question";
 
 type Response = { answer: string | null; marked: boolean; eliminated: string[] };
 type View = { kind: "question"; index: number } | { kind: "review" };

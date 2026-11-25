@@ -14,6 +14,8 @@ export type ResultQuestion = {
   correctAnswer: string | null;
   explanation: string | null;
   seconds: number;
+  marked: boolean;
+  type: string;
 };
 
 export type TestResults = {
@@ -63,11 +65,24 @@ export function parseResults(json: unknown): TestResults {
             correctAnswer: str(q.correctAnswer),
             explanation: str(q.explanation),
             seconds: num(q.seconds),
+            marked: q.marked === true,
+            type: str(q.type) ?? "mcq",
           };
         }),
       };
     }),
   };
+}
+
+/** How many of `segments` blocks to fill for a share right (the breakdown bars). */
+export function filledSegments(correct: number, total: number, segments = 7): number {
+  if (total <= 0) return 0;
+  return Math.round((correct / total) * segments);
+}
+
+/** Module heading: "Module 1", "Module 2 (harder)". */
+export function moduleLabel(m: { number: number; tier: string }): string {
+  return `Module ${m.number}${m.number === 2 && m.tier !== "standard" ? ` (${m.tier})` : ""}`;
 }
 
 /** Accuracy per content area, in the order given (the official order). */
