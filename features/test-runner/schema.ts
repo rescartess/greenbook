@@ -86,14 +86,7 @@ export function parseTestState(json: unknown): TestState {
 }
 
 /** 1:05:09, 31:42, 0:07 */
-export function formatClock(ms: number): string {
-  const total = Math.max(0, Math.ceil(ms / 1000));
-  const h = Math.floor(total / 3600);
-  const m = Math.floor((total % 3600) / 60);
-  const s = total % 60;
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`;
-}
+export { formatClock } from "@/core/question";
 
 /** Plain-language reasons for a failed save, by the database's error code. */
 export function saveErrorMessage(code: string | undefined): { message: string; reload: boolean } {

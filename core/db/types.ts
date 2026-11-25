@@ -70,6 +70,8 @@ export type Database = {
       }
       attempts: {
         Row: {
+          check_mode: string
+          options: Json | null
           finished_at: string | null
           id: string
           kind: string
@@ -83,6 +85,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          check_mode?: string
+          options?: Json | null
           finished_at?: string | null
           id?: string
           kind?: string
@@ -96,6 +100,8 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          check_mode?: string
+          options?: Json | null
           finished_at?: string | null
           id?: string
           kind?: string
@@ -310,6 +316,8 @@ export type Database = {
           month: string | null
           published: boolean
           route_threshold: number | null
+          sort_order: number
+          description: string | null
           skill_id: number | null
           subject: string
           title: string
@@ -322,6 +330,8 @@ export type Database = {
           month?: string | null
           published?: boolean
           route_threshold?: number | null
+          sort_order?: number
+          description?: string | null
           skill_id?: number | null
           subject: string
           title: string
@@ -334,6 +344,8 @@ export type Database = {
           month?: string | null
           published?: boolean
           route_threshold?: number | null
+          sort_order?: number
+          description?: string | null
           skill_id?: number | null
           subject?: string
           title?: string
@@ -537,6 +549,29 @@ export type Database = {
       get_practice_state: { Args: { p_attempt_id: string }; Returns: Json }
       retry_mistake: { Args: { p_answer: string; p_question_id: string }; Returns: Json }
       start_practice: { Args: { p_set_id: string }; Returns: string }
+      list_topics: { Args: { p_subject: string }; Returns: Json }
+      get_topic: { Args: { p_set_id: string }; Returns: Json }
+      start_topic_practice: {
+        Args: {
+          p_check_mode: string
+          p_count: number
+          p_difficulty: string
+          p_from: number
+          p_minutes: number | null
+          p_set_id: string
+        }
+        Returns: string
+      }
+      save_practice_response: {
+        Args: {
+          p_answer: string | null
+          p_attempt_module_id: string
+          p_eliminated: string[]
+          p_marked: boolean
+          p_question_id: string
+        }
+        Returns: undefined
+      }
       admin_move_in_module: {
         Args: { p_direction: number; p_module_id: string; p_question_id: string }
         Returns: undefined

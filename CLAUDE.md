@@ -14,6 +14,7 @@ steps, and run `npm run check` before saying something is done.
 - English only. Two subjects in the URL: `/english/...` and `/math/...`; the switch swaps that word.
 - Full tests are per subject: module 1, then an easier or harder module 2, scored 200 to 800.
 - All questions are the owner's own. The owner is the only admin.
+- Dovudprep (EBRW Practice books) is the owner's own brand. Its questions were already rewritten by the owner; import them exactly as written (only fix PDF line breaks), never reword them. Book levels map to ours: 1–3 easy, 4–5 medium, 6–7 hard. Answers are in the book's Solutions copy.
 
 ## Structure (built to change safely)
 - `app/` routes only. A page file awaits params, calls a feature's query and renders a feature component. Keep it under ~30 lines.
@@ -42,15 +43,16 @@ steps, and run `npm run check` before saying something is done.
 
 ## Database
 - Supabase project `greenbook` (ref `pgpotvnyomwrlmnhzcmy`, Frankfurt). Migrations are applied with Claude's Supabase connector, then the security and performance advisors are re-run and `core/db/types.ts` is updated.
-- Anything that writes student activity or reveals answers is a database function (test engine 0007, admin tools 0009, practice and mistakes 0010). Pages call them with `supabase.rpc(...)`. Answers reach the browser only after a question is finished.
+- Anything that writes student activity or reveals answers is a database function (test engine 0007, admin tools 0009, practice and mistakes 0010, topic practice 0012). Pages call them with `supabase.rpc(...)`. Answers reach the browser only after a question is finished.
 - `tests/db/` runs every migration in an in-memory Postgres (PGlite) and checks the rules as a student and as an admin. Add a check there for every new database function.
 - Question content and answer keys never go in this public repo; they live only in the database.
 - Destructive SQL (deletes) through the connector asks the owner to confirm; don't run it while they're away.
 - Login uses email sign-in links. Supabase's built-in email allows only a few emails per hour; set up custom SMTP before launch.
 
 ## Feature map
-- `test-runner` (/test/[id]): timed Bluebook screen. `full-tests`, `results`, `practice` (/practice/[id], used by `topics` and `monthly`), `mistakes`, `dashboard`, `admin` (/admin), `auth`, `marketing`.
-- Shared question display lives in `core/question` (RichText format, QuestionView, AnswerCheck, highlights).
+- `test-runner` (/test/[id]): timed Bluebook screen. `full-tests`, `results`, `practice` (/practice/[id]: Bluebook screen, check as you go or at the end, optional timer, results with an "Incorrect" review; used by `topics` and `monthly`), `topics` (/[subject]/topics and /[subject]/topics/[setId] setup page), `mistakes`, `dashboard`, `admin` (/admin), `auth`, `marketing`.
+- Shared question display lives in `core/question` (RichText format, QuestionView, AnswerCheck, highlights) and so do the Bluebook exam pieces used by both the test and practice screens (`ExamParts.tsx`: top/bottom bars, clock, Mark for Review, ABC, question map; `exam-hooks.ts`).
+- Topic practice settings (levels, sizes, SAT pace) live in `core/config/practice.ts`.
 - Scores are estimated while `ESTIMATED_SCORES` is true in `core/config/subjects.ts`.
 
 ## Commands

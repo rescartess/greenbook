@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { monthLabel, parsePracticeState } from "./schema";
+import { monthLabel, parseOptions, parsePracticeState, scorePractice } from "./schema";
 
 describe("practice", () => {
   it("reads questions and earlier feedback", () => {
@@ -20,5 +20,22 @@ describe("practice", () => {
 
   it("names months in plain English", () => {
     expect(monthLabel("2025-11-01")).toBe("November 2025");
+  });
+
+  it("reads the options a topic practice was started with", () => {
+    expect(parseOptions({ difficulty: "easy", from: 21, to: 40, minutes: 24 })).toEqual({ difficulty: "easy", from: 21, to: 40, minutes: 24 });
+    expect(parseOptions({ difficulty: "tricky", from: 1, to: 2 })).toBeNull();
+    expect(parseOptions(null)).toBeNull();
+  });
+
+  it("scores a finished practice: right, wrong and skipped", () => {
+    const fb = (answer: string | null, isCorrect: boolean) => ({ answer, isCorrect, correctAnswer: "A", explanation: null });
+    const s = scorePractice([
+      { answer: "A", feedback: fb("A", true) },
+      { answer: "B", feedback: fb("B", false) },
+      { answer: null, feedback: fb(null, false) },
+      { answer: "A", feedback: fb("A", true) },
+    ]);
+    expect(s).toEqual({ correct: 2, incorrect: 1, skipped: 1, total: 4, percent: 50 });
   });
 });

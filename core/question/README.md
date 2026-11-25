@@ -9,3 +9,6 @@ The one way questions are drawn, used by the test screen, practice, results and 
 
 To support a new text format (for example math with KaTeX), add it to `rich-text.ts` with a test, then draw it in `RichText.tsx`.
 Every screen picks it up at once.
+
+- `ExamParts.tsx` and `exam-hooks.ts` are the Bluebook exam screen pieces (bars, clock, tools, Mark for Review, ABC,
+  question map, highlights). The timed test and practice both build their screens from them, so a change here shows up in both.
