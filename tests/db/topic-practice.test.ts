@@ -29,7 +29,7 @@ beforeAll(async () => {
   await t.addUser(S1);
   await t.addUser(S2);
   await t.actAs(ADMIN);
-  boundaries = (await t.one<{ id: string }>(`select id from public.question_sets where kind = 'topic' and title = 'Boundaries'`)).id;
+  boundaries = (await t.one<{ id: string }>(`select id from public.question_sets where kind = 'topic' and title = 'Boundaries' and collection = 'books'`)).id;
   const mod = (await t.one<{ id: string }>(`select id from public.modules where set_id = $1`, [boundaries])).id;
   const items = LEVELS.map((difficulty, i) => ({
     prompt: `B${i + 1}`,

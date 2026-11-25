@@ -25,7 +25,7 @@ async function Loader() {
   const supabase = await createDbClient();
   const { data, error } = await supabase
     .from("question_sets")
-    .select("id, title, subject, published, modules(module_questions(count))")
+    .select("id, title, subject, collection, published, modules(module_questions(count))")
     .eq("kind", "topic")
     .order("sort_order");
   if (error) throw new Error(`Could not load topics: ${error.message}`);
@@ -33,6 +33,7 @@ async function Loader() {
     id: s.id,
     title: s.title,
     subject: s.subject,
+    collection: s.collection,
     published: s.published,
     questions: s.modules.reduce((n, m) => n + (m.module_questions[0]?.count ?? 0), 0),
   }));

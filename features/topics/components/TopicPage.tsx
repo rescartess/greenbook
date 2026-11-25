@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { SQB_CREDIT } from "@/core/config/practice";
 import type { SubjectSlug } from "@/core/config/subjects";
 import { startTopicPractice } from "@/features/practice";
 import { getTopic } from "../queries";
@@ -21,8 +22,11 @@ async function Topic({ subject, setId }: { subject: SubjectSlug; setId: Promise<
   return (
     <>
       <header className="mb-6 pt-1 sm:pt-3">
-        <Link href={`/${subject}/topics`} className="text-[15px] font-semibold text-pine hover:underline">
-          Topics
+        <Link
+          href={topic.collection === "sqb" ? `/${subject}/topics/sqb` : `/${subject}/topics`}
+          className="text-[15px] font-semibold text-pine hover:underline"
+        >
+          {topic.collection === "sqb" ? "SQB topics" : "Topics"}
         </Link>
         <h1 className="mt-1 text-3xl font-extrabold tracking-tight sm:text-[40px] sm:leading-tight">{topic.title}</h1>
         <p className="mt-1 text-[17px] text-graphite">
@@ -32,6 +36,7 @@ async function Topic({ subject, setId }: { subject: SubjectSlug; setId: Promise<
         </p>
       </header>
       <TopicSetup topic={topic} subject={subject} startAction={startTopicPractice} />
+      {topic.collection === "sqb" ? <p className="mt-8 text-[14px] text-graphite">{SQB_CREDIT}</p> : null}
     </>
   );
 }

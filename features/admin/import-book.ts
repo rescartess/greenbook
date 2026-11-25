@@ -1,8 +1,8 @@
 /**
  * The import file Claude prepares from a question book (format "greenbook-import-1"):
  * {
- *   format, book, subject,
- *   topics: [{ topic: "<topic title>", items: [{ source, skill, difficulty, passage, prompt, choices, answer, image }] }],
+ *   format, book, subject, collection ("books" or "sqb", default "books"),
+ *   topics: [{ topic: "<topic title>", items: [{ source, skill, difficulty, passage, prompt, choices, answer, explanation?, image }] }],
  *   images: { "<storage path>": "<base64 picture>" }
  * }
  * Questions go to the end of the named topic, in order; questions already imported (same source) are skipped.
@@ -16,12 +16,14 @@ export type ImportItem = {
   prompt: string;
   choices: { id: string; text: string }[];
   answer: string;
+  explanation: string | null;
   image: string | null;
 };
 
 export type ImportBook = {
   book: string;
   subject: string;
+  collection: "books" | "sqb";
   topics: { topic: string; items: ImportItem[] }[];
   images: Record<string, string>;
 };
@@ -68,6 +70,7 @@ export function parseImportBook(text: string): ImportBook {
         prompt: it.prompt,
         choices,
         answer: it.answer,
+        explanation: typeof it.explanation === "string" && it.explanation ? it.explanation : null,
         image,
       } satisfies ImportItem;
     });
@@ -77,6 +80,7 @@ export function parseImportBook(text: string): ImportBook {
   return {
     book: typeof root.book === "string" ? root.book : "Untitled book",
     subject: root.subject === "math" ? "math" : "english",
+    collection: root.collection === "sqb" ? "sqb" : "books",
     topics: parsed,
     images: Object.fromEntries(Object.entries(images).filter((e): e is [string, string] => typeof e[1] === "string")),
   };

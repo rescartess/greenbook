@@ -1,27 +1,44 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { COLLECTION_LABEL, SQB_CREDIT, type Collection } from "@/core/config/practice";
 import { SUBJECTS, type SubjectSlug } from "@/core/config/subjects";
-import { EmptyState } from "@/core/design/ui";
+import { EmptyState, PillSwitch } from "@/core/design/ui";
 import { PageHeader } from "@/core/layout";
 import { listTopics } from "../queries";
 import type { TopicSummary } from "../schema";
 
-export function TopicsPage({ subject }: { subject: SubjectSlug }) {
+const COLLECTIONS: Collection[] = ["books", "sqb"];
+
+/** Topic practice. Two collections: GreenBook's own questions and College Board's SQB. */
+export function TopicsPage({ subject, collection = "books" }: { subject: SubjectSlug; collection?: Collection }) {
   return (
     <>
       <PageHeader title="Topics" subtitle={SUBJECTS[subject].name} />
-      <p className="-mt-2 mb-7 max-w-2xl text-[17px] leading-relaxed text-ink-soft">
-        Practice one question type at a time. Pick a level and how many questions, then check as you go or at the end.
-      </p>
+      <div className="-mt-2 mb-7 flex flex-wrap items-center gap-x-6 gap-y-3">
+        <PillSwitch
+          label="Question collection"
+          options={COLLECTIONS.map((c) => ({
+            label: COLLECTION_LABEL[c],
+            href: c === "sqb" ? `/${subject}/topics/sqb` : `/${subject}/topics`,
+            active: c === collection,
+          }))}
+        />
+        <p className="max-w-2xl text-[16px] leading-relaxed text-ink-soft">
+          {collection === "sqb"
+            ? "Official SAT questions by topic. Pick a level and how many questions, then check as you go or at the end."
+            : "Practice one question type at a time. Pick a level and how many questions, then check as you go or at the end."}
+        </p>
+      </div>
       <Suspense fallback={<div className="h-64 animate-pulse rounded-panel bg-paper" />}>
-        <Topics subject={subject} />
+        <Topics subject={subject} collection={collection} />
       </Suspense>
+      {collection === "sqb" ? <p className="mt-8 text-[14px] text-graphite">{SQB_CREDIT}</p> : null}
     </>
   );
 }
 
-async function Topics({ subject }: { subject: SubjectSlug }) {
-  const topics = await listTopics(subject);
+async function Topics({ subject, collection }: { subject: SubjectSlug; collection: Collection }) {
+  const topics = await listTopics(subject, collection);
   if (topics.length === 0) {
     return (
       <EmptyState title="No topics yet">

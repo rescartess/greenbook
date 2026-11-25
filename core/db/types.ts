@@ -318,6 +318,7 @@ export type Database = {
           route_threshold: number | null
           sort_order: number
           description: string | null
+          collection: string
           skill_id: number | null
           subject: string
           title: string
@@ -332,6 +333,7 @@ export type Database = {
           route_threshold?: number | null
           sort_order?: number
           description?: string | null
+          collection?: string
           skill_id?: number | null
           subject: string
           title: string
@@ -346,6 +348,7 @@ export type Database = {
           route_threshold?: number | null
           sort_order?: number
           description?: string | null
+          collection?: string
           skill_id?: number | null
           subject?: string
           title?: string
@@ -549,7 +552,9 @@ export type Database = {
       get_practice_state: { Args: { p_attempt_id: string }; Returns: Json }
       retry_mistake: { Args: { p_answer: string; p_question_id: string }; Returns: Json }
       start_practice: { Args: { p_set_id: string }; Returns: string }
-      list_topics: { Args: { p_subject: string }; Returns: Json }
+      list_topics:
+        | { Args: { p_subject: string }; Returns: Json }
+        | { Args: { p_collection: string; p_subject: string }; Returns: Json }
       remove_attempt: { Args: { p_attempt_id: string }; Returns: undefined }
       invite_code_password: { Args: { p_code: string; p_email: string }; Returns: string }
       admin_get_invite_code: { Args: never; Returns: string | null }

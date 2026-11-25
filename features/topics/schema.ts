@@ -1,4 +1,4 @@
-import { isDifficulty, type CheckMode, type Difficulty } from "@/core/config/practice";
+import { isDifficulty, type CheckMode, type Collection, type Difficulty } from "@/core/config/practice";
 
 export type Level = Exclude<Difficulty, "all">;
 
@@ -35,6 +35,7 @@ export type TopicDetail = {
   description: string | null;
   subject: string;
   published: boolean;
+  collection: Collection;
   items: TopicItem[];
   open: OpenPractice[];
 };
@@ -75,6 +76,7 @@ export function parseTopic(json: unknown): TopicDetail | null {
     description: str(t.description),
     subject: str(t.subject) ?? "english",
     published: t.published === true,
+    collection: t.collection === "sqb" ? "sqb" : "books",
     items: (Array.isArray(t.items) ? t.items : []).flatMap((raw) => {
       const i = obj(raw);
       if (!isLevel(i.d)) return [];

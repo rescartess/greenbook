@@ -28,7 +28,7 @@ beforeAll(async () => {
   await t.addUser(ADMIN, "admin");
   await t.addUser(S1);
   await t.actAsOwner();
-  topic = (await t.one<{ id: string }>(`select id from public.question_sets where title = 'Command of Evidence'`)).id;
+  topic = (await t.one<{ id: string }>(`select id from public.question_sets where title = 'Command of Evidence' and collection = 'books'`)).id;
 });
 
 const importItems = (items: unknown[]) =>
