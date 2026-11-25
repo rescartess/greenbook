@@ -128,7 +128,6 @@ export function ImportBook({ topics }: { topics: TopicOption[] }) {
           </span>
           <input
             type="file"
-            accept=".json,application/json"
             multiple
             disabled={running}
             onChange={(e) => void choose(e.target.files)}
