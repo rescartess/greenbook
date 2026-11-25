@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, PointerEvent, ReactNode } from "react";
 import { cn } from "@/core/design/ui";
 import type { QuestionChoice } from "./choices";
 import { RichLine, RichText } from "./RichText";
@@ -20,19 +20,29 @@ type Props = {
   eliminated?: readonly string[];
   /** Makes the choices clickable (test screen, practice). */
   onChoose?: (id: string) => void;
-  /** Shows a cross-out button next to each choice. */
+  /** Shows a round cross-out button next to each choice. */
   onToggleEliminate?: (id: string) => void;
-  /** Extra controls in the question's top bar, e.g. "Mark for review". */
+  /** Controls in the grey question bar after the number, e.g. "Mark for Review". */
   headerExtra?: ReactNode;
+  /** Controls at the right end of the grey question bar, e.g. the ABC cross-out switch. */
+  headerRight?: ReactNode;
   /** Replaces the choice list, e.g. a typed-answer box for Math. */
   answerSlot?: ReactNode;
+  /** Passage width in percent on wide screens (default 50). */
+  passageWidth?: number;
+  /** When given, the divider between passage and question can be dragged. */
+  onResize?: (percent: number) => void;
+  /** Stretch to the screen height between the test bars, so the divider runs top to bottom. */
+  fillHeight?: boolean;
   className?: string;
 };
 
+const clamp = (n: number) => Math.min(75, Math.max(25, n));
+
 /**
- * The Bluebook-style question: passage on the left, question and choices on the right.
- * Stacks when its space is narrow (phones, side-by-side previews). Keeps no state:
- * the test screen, practice, results and the admin preview pass in what to show.
+ * The Bluebook-style question: passage on the left, a divider, the question and choices on the right.
+ * Test text is set in a serif, like the real test. Stacks when its space is narrow.
+ * Keeps no state: the test screen, practice, results and the admin preview pass in what to show.
  */
 export function QuestionView({
   number,
@@ -43,33 +53,114 @@ export function QuestionView({
   onChoose,
   onToggleEliminate,
   headerExtra,
+  headerRight,
   answerSlot,
+  passageWidth = 50,
+  onResize,
+  fillHeight,
   className,
 }: Props) {
   const hasPassage = Boolean(question.passage?.trim());
   const reviewing = Boolean(correctId);
 
+  const drag = (e: PointerEvent<HTMLDivElement>) => {
+    if (!onResize || e.buttons !== 1) return;
+    const box = e.currentTarget.parentElement?.getBoundingClientRect();
+    if (box) onResize(clamp(((e.clientX - box.left) / box.width) * 100));
+  };
+
   return (
-    <div className={cn("@container", className)}>
-      <div className={cn("grid", hasPassage && "@2xl:grid-cols-2")}>
+    <div className={cn("@container font-serif", className)}>
+      <div
+        className={cn(
+          "flex flex-col",
+          hasPassage && "@2xl:flex-row",
+          fillHeight && "@2xl:min-h-[calc(100dvh-146px)]",
+        )}
+        style={{ "--pw": `${passageWidth}%` } as CSSProperties}
+      >
         {hasPassage ? (
-          <div className="border-hairline px-6 py-7 text-[17px] leading-[1.75] @2xl:border-r @2xl:px-10 @2xl:py-9">
-            <RichText source={question.passage!} data-passage />
-          </div>
+          <>
+            <div className="px-6 py-7 text-[17px] leading-[1.7] @2xl:w-[var(--pw)] @2xl:shrink-0 @2xl:px-10 @2xl:py-8">
+              <RichText source={question.passage!} data-passage />
+            </div>
+            <div
+              className={cn(
+                "relative hidden w-[3px] shrink-0 bg-ink/70 @2xl:block",
+                onResize && "cursor-col-resize touch-none",
+              )}
+              onPointerDown={
+                onResize
+                  ? (e) => e.currentTarget.setPointerCapture(e.pointerId)
+                  : undefined
+              }
+              onPointerMove={onResize ? drag : undefined}
+            >
+              {onResize ? (
+                <button
+                  type="button"
+                  role="separator"
+                  aria-orientation="vertical"
+                  aria-label="Resize the passage"
+                  aria-valuenow={Math.round(passageWidth)}
+                  aria-valuemin={25}
+                  aria-valuemax={75}
+                  onKeyDown={(e) => {
+                    if (e.key === "ArrowLeft")
+                      onResize(clamp(passageWidth - 5));
+                    if (e.key === "ArrowRight")
+                      onResize(clamp(passageWidth + 5));
+                  }}
+                  className="absolute left-1/2 top-28 flex h-7 w-4 -translate-x-1/2 cursor-col-resize items-center justify-center rounded-md bg-ink text-paper"
+                >
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 10 10"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M4 2 1 5l3 3M6 2l3 3-3 3"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.4"
+                    />
+                  </svg>
+                </button>
+              ) : null}
+            </div>
+          </>
         ) : null}
 
-        <div className={cn("flex flex-col gap-5 px-6 py-7 @2xl:px-10 @2xl:py-9", !hasPassage && "mx-auto w-full max-w-2xl")}>
-          <div className="flex min-h-10 items-center gap-3.5 border-b border-dashed border-control pb-3">
-            <span className="flex h-7 min-w-7 items-center justify-center rounded-md bg-ink px-1.5 text-sm font-bold text-paper tabular-nums">
-              {number}
-            </span>
-            {headerExtra}
+        <div
+          className={cn(
+            "flex min-w-0 flex-1 flex-col gap-5 px-6 py-7 @2xl:px-10 @2xl:py-8",
+            !hasPassage && "mx-auto w-full max-w-3xl",
+          )}
+        >
+          <div className="border-b-[3px] border-dashed border-ink/80 pb-1">
+            <div className="flex min-h-9 items-center gap-3 bg-mist pr-2 font-sans">
+              <span className="flex h-9 min-w-9 items-center justify-center bg-ink px-2 text-[15px] font-bold text-paper tabular-nums">
+                {number}
+              </span>
+              {headerExtra}
+              {headerRight ? (
+                <span className="ml-auto flex items-center">{headerRight}</span>
+              ) : null}
+            </div>
           </div>
 
-          <RichText source={question.prompt} className="text-[17px] leading-relaxed" />
+          <RichText
+            source={question.prompt}
+            className="text-[17px] leading-relaxed"
+          />
 
           {answerSlot ?? (
-            <div role={onChoose ? "radiogroup" : "list"} aria-label="Answer choices" className="flex flex-col gap-2.5">
+            <div
+              role={onChoose ? "radiogroup" : "list"}
+              aria-label="Answer choices"
+              className="flex flex-col gap-3.5"
+            >
               {question.choices.map((choice) => {
                 const isCorrect = correctId === choice.id;
                 const isSelected = selectedId === choice.id;
@@ -81,63 +172,97 @@ export function QuestionView({
                   <>
                     <span
                       className={cn(
-                        "mt-px flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold",
-                        strong ? "bg-pine text-pine-ink" : isWrongPick ? "bg-ink text-paper" : "border-[1.5px] border-ink",
+                        "flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-sans text-sm font-bold",
+                        strong
+                          ? "bg-pine text-pine-ink"
+                          : isWrongPick
+                            ? "bg-ink text-paper"
+                            : "border-[1.5px] border-ink",
                       )}
                     >
                       {choice.id}
                     </span>
-                    <span className={cn("pt-0.5 text-left", isOut && "text-graphite line-through decoration-ink/60")}>
+                    <span className="text-left text-[17px] leading-snug">
                       <RichLine source={choice.text} />
                     </span>
                     {isCorrect || isWrongPick ? (
                       <span
                         className={cn(
-                          "sr-only shrink-0 pt-0.5 text-sm font-bold @md:not-sr-only @md:ml-auto",
+                          "sr-only shrink-0 font-sans text-sm font-bold @md:not-sr-only @md:ml-auto",
                           isCorrect ? "text-pine" : "text-ink",
                         )}
                       >
-                        {isCorrect ? (isSelected ? "Your answer, correct" : "Correct") : "Your answer"}
+                        {isCorrect
+                          ? isSelected
+                            ? "Your answer, correct"
+                            : "Correct"
+                          : "Your answer"}
                       </span>
                     ) : null}
                   </>
                 );
 
                 const boxClass = cn(
-                  "flex flex-1 items-start gap-3.5 rounded-choice px-4 py-3 text-base leading-snug",
+                  "relative flex flex-1 items-center gap-4 rounded-lg px-4 py-3",
                   strong
-                    ? "border-2 border-pine bg-pine-tint"
+                    ? "border-[3px] border-pine bg-pine-tint"
                     : isWrongPick
-                      ? "border-2 border-ink bg-wash"
-                      : "border-[1.5px] border-control bg-paper",
-                  isOut && "opacity-60",
+                      ? "border-[3px] border-ink bg-wash"
+                      : "border-[1.5px] border-ink/60 bg-paper",
+                  isOut && "text-graphite opacity-70",
                 );
 
                 return (
-                  <div key={choice.id} role={onChoose ? undefined : "listitem"} className="flex items-stretch gap-2">
+                  <div
+                    key={choice.id}
+                    role={onChoose ? undefined : "listitem"}
+                    className="flex items-center gap-3"
+                  >
                     {onChoose ? (
                       <button
                         type="button"
                         role="radio"
                         aria-checked={isSelected}
                         onClick={() => onChoose(choice.id)}
-                        className={cn(boxClass, "transition-colors", !strong && "hover:border-ink-soft")}
+                        className={cn(boxClass, !strong && "hover:border-ink")}
                       >
                         {body}
+                        {isOut ? (
+                          <span
+                            aria-hidden="true"
+                            className="pointer-events-none absolute inset-x-2 top-1/2 h-[2px] bg-ink/70"
+                          />
+                        ) : null}
                       </button>
                     ) : (
                       <div className={boxClass}>{body}</div>
                     )}
                     {onToggleEliminate ? (
-                      <button
-                        type="button"
-                        onClick={() => onToggleEliminate(choice.id)}
-                        aria-pressed={isOut}
-                        aria-label={isOut ? `Bring back choice ${choice.id}` : `Cross out choice ${choice.id}`}
-                        className="flex w-10 shrink-0 items-center justify-center rounded-choice text-sm font-bold text-graphite hover:bg-wash"
-                      >
-                        <span className={cn("relative", !isOut && "line-through decoration-2")}>{isOut ? "Undo" : choice.id}</span>
-                      </button>
+                      <span className="flex w-10 shrink-0 justify-center">
+                        {isOut ? (
+                          <button
+                            type="button"
+                            onClick={() => onToggleEliminate(choice.id)}
+                            aria-label={`Bring back choice ${choice.id}`}
+                            className="font-sans text-[13px] font-bold text-ink underline underline-offset-2"
+                          >
+                            Undo
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => onToggleEliminate(choice.id)}
+                            aria-label={`Cross out choice ${choice.id}`}
+                            className="relative flex h-6 w-6 items-center justify-center rounded-full border-[1.5px] border-ink font-sans text-[11px] font-bold hover:bg-wash"
+                          >
+                            {choice.id}
+                            <span
+                              aria-hidden="true"
+                              className="absolute -inset-x-1 top-1/2 h-[1.5px] bg-ink"
+                            />
+                          </button>
+                        )}
+                      </span>
                     ) : null}
                   </div>
                 );

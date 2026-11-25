@@ -20,6 +20,10 @@ export type Subject = {
   tools: ReadonlyArray<"annotate" | "calculator" | "reference">;
   /** The four official content areas, in College Board order. */
   domains: readonly string[];
+  /** Section number on the test screen (Reading and Writing comes first). */
+  sectionNumber: number;
+  /** Shown under "Directions" on the test screen. */
+  directions: readonly string[];
 };
 
 export const SUBJECTS: Record<SubjectSlug, Subject> = {
@@ -31,6 +35,12 @@ export const SUBJECTS: Record<SubjectSlug, Subject> = {
     questionsPerModule: 27,
     minutesPerModule: 32,
     tools: ["annotate"],
+    sectionNumber: 1,
+    directions: [
+      "Each question has a short passage, sometimes with a table or two texts, and four answer choices. Pick the one best answer.",
+      "You can move between questions and change your answers until the module ends. Unanswered questions count as wrong, so answer every one.",
+      "Use Highlight to mark words in a passage, ABC to cross out choices you’ve ruled out, and Mark for Review to find a question again later.",
+    ],
     domains: [
       "Information and Ideas",
       "Craft and Structure",
@@ -46,6 +56,12 @@ export const SUBJECTS: Record<SubjectSlug, Subject> = {
     questionsPerModule: 22,
     minutesPerModule: 35,
     tools: ["calculator", "reference"],
+    sectionNumber: 2,
+    directions: [
+      "Most questions have four answer choices; pick the one best answer. For the others, type your answer in the box.",
+      "Typed answers: up to 5 characters for a positive answer and 6 for a negative one. Fractions like 3/4 and decimals like 0.75 are both fine. If there are several right answers, enter one.",
+      "Reference has the formulas you may need. You can move between questions and change answers until the module ends. Unanswered questions count as wrong.",
+    ],
     domains: [
       "Algebra",
       "Advanced Math",

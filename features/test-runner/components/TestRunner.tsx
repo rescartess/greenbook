@@ -33,6 +33,10 @@ type Props = {
   resultsHref: string;
   /** From SUBJECTS[subject].tools: highlighter for English, calculator and reference for Math. */
   tools: readonly Tool[];
+  /** 1 for Reading and Writing, 2 for Math, like the real test. */
+  sectionNumber: number;
+  /** Short paragraphs shown under "Directions". */
+  directions: readonly string[];
 };
 
 const EMPTY: RunnerResponse = { answer: null, marked: false, eliminated: [] };
@@ -44,6 +48,8 @@ export function TestRunner({
   studentName,
   resultsHref,
   tools,
+  sectionNumber,
+  directions,
 }: Props) {
   const router = useRouter();
   const { module, questions } = state;
@@ -66,6 +72,8 @@ export function TestRunner({
   const [problem, setProblem] = useState<string | null>(null);
   const [panel, setPanel] = useState<"calculator" | "reference" | null>(null);
   const [highlighting, setHighlighting] = useState(false);
+  const [directionsOpen, setDirectionsOpen] = useState(false);
+  const [split, setSplit] = useState(50);
   const marksKey = `gb-marks-${amId}`;
   const [marks, setMarks] = useState<Record<string, Span[]>>(() => {
     if (typeof window === "undefined") return {};
@@ -180,7 +188,11 @@ export function TestRunner({
       const t = Date.now() + offset;
       setNow(t);
       // Time is up: finish, retrying at most every 5 seconds if the connection is down.
-      if (deadline !== null && t >= deadline && Date.now() - lastTry.current > 5000) {
+      if (
+        deadline !== null &&
+        t >= deadline &&
+        Date.now() - lastTry.current > 5000
+      ) {
         lastTry.current = Date.now();
         void finishRef.current();
       }
@@ -229,23 +241,77 @@ export function TestRunner({
     : `Finish module ${module.number}`;
 
   return (
-    <div className="min-h-dvh bg-paper">
-      {/* Top bar */}
-      <header className="sticky top-0 z-30 px-3 pt-3">
-        <div className="glass mx-auto flex h-[54px] max-w-[1480px] items-center justify-between gap-3 rounded-full px-5">
-          <div className="min-w-0 truncate text-[15px]">
-            <span className="hidden font-bold sm:inline">{sectionName}</span>{" "}
-            <span className="text-graphite">{moduleLabel}</span>
+    <div className="min-h-dvh bg-paper font-sans">
+      {/* Top bar: section and directions, timer, tools */}
+      <header className="sticky top-0 z-30 bg-pine-tint font-sans">
+        <div className="mx-auto grid min-h-[72px] max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-8">
+          <div className="relative min-w-0">
+            <p className="truncate text-[15px] font-bold sm:text-[17px]">
+              <span className="hidden sm:inline">
+                Section {sectionNumber},{" "}
+              </span>
+              {moduleLabel}
+              <span className="hidden sm:inline">: {sectionName}</span>
+            </p>
+            <button
+              type="button"
+              aria-expanded={directionsOpen}
+              onClick={() => setDirectionsOpen((o) => !o)}
+              className="mt-0.5 flex items-center gap-1 text-[15px] hover:underline"
+            >
+              Directions
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                aria-hidden="true"
+                className={cn(
+                  "transition-transform",
+                  directionsOpen && "rotate-180",
+                )}
+              >
+                <path
+                  d="m2 4 4 4 4-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                />
+              </svg>
+            </button>
+            {directionsOpen ? (
+              <div
+                role="dialog"
+                aria-label="Directions"
+                className="absolute left-0 top-full z-40 mt-3 w-[min(560px,90vw)] rounded-panel border border-hairline bg-paper p-6 shadow-lg"
+              >
+                {directions.map((d) => (
+                  <p
+                    key={d}
+                    className="mb-3 text-[15px] leading-relaxed last:mb-0"
+                  >
+                    {d}
+                  </p>
+                ))}
+                <div className="mt-4 flex justify-end">
+                  <Button size="sm" onClick={() => setDirectionsOpen(false)}>
+                    Close
+                  </Button>
+                </div>
+              </div>
+            ) : null}
           </div>
-          <div className="flex items-center gap-2.5" aria-live="polite">
+
+          <div className="flex flex-col items-center gap-1" aria-live="polite">
             {remaining === null ? null : !mounted ? (
-              <span className="inline-block w-14" aria-hidden="true" />
+              <span className="h-7" aria-hidden="true" />
             ) : hideClock ? (
-              <span className="text-sm text-graphite">Timer hidden</span>
+              <span className="flex h-7 items-center text-sm text-graphite">
+                Timer hidden
+              </span>
             ) : (
               <span
                 className={cn(
-                  "text-lg font-bold tabular-nums",
+                  "text-[22px] font-bold leading-7 tabular-nums",
                   lowTime && "text-pine",
                 )}
                 aria-label={`Time left ${formatClock(remaining)}`}
@@ -257,54 +323,55 @@ export function TestRunner({
               <button
                 type="button"
                 onClick={() => setHideClock((h) => !h)}
-                className="rounded-full px-2.5 py-1 text-[13px] font-semibold text-ink-soft hover:bg-wash"
+                className="rounded-full border-[1.5px] border-ink px-3 py-px text-[13px] font-semibold hover:bg-paper"
               >
                 {hideClock ? "Show" : "Hide"}
               </button>
             ) : null}
           </div>
-          <div className="flex items-center gap-1">
+
+          <div className="flex items-center justify-end gap-1 sm:gap-2">
             {tools.includes("annotate") ? (
               <ToolButton
+                label="Highlight"
                 pressed={highlighting}
                 onClick={() => setHighlighting((h) => !h)}
               >
-                Highlight
+                <path d="M4 20h6M14.5 4.5l5 5L10 19H5v-5z" />
               </ToolButton>
             ) : null}
             {tools.includes("calculator") && DESMOS_KEY ? (
               <ToolButton
+                label="Calculator"
                 pressed={panel === "calculator"}
                 onClick={() =>
                   setPanel((p) => (p === "calculator" ? null : "calculator"))
                 }
               >
-                Calculator
+                <path d="M6 3h12v18H6zM9 7h6M9 12h1M14 12h1M9 16h1M14 16h1" />
               </ToolButton>
             ) : null}
             {tools.includes("reference") ? (
               <ToolButton
+                label="Reference"
                 pressed={panel === "reference"}
                 onClick={() =>
                   setPanel((p) => (p === "reference" ? null : "reference"))
                 }
               >
-                Reference
+                <path d="M5 4h10l4 4v12H5zM9 11h6M9 15h4M14 4v5h5" />
               </ToolButton>
             ) : null}
-            <ToolButton
-              pressed={crossOut}
-              onClick={() => setCrossOut((c) => !c)}
-            >
-              <span className="line-through decoration-2">ABC</span>
-              <span className="sr-only">Cross out</span>
-            </ToolButton>
           </div>
         </div>
+        <div className="border-b-[3px] border-dashed border-ink/70" />
       </header>
 
       {problem ? (
-        <p role="alert" className="mx-auto mt-3 max-w-[1480px] px-3">
+        <p
+          role="alert"
+          className="mx-auto mt-3 max-w-[1600px] px-4 font-sans sm:px-8"
+        >
           <span className="block rounded-choice bg-wash px-4 py-2.5 text-[15px] font-semibold">
             {problem}
           </span>
@@ -317,7 +384,7 @@ export function TestRunner({
         onMouseUp={addHighlight}
         onTouchEnd={addHighlight}
         className={cn(
-          "mx-auto max-w-[1480px] pb-32",
+          "mx-auto max-w-[1600px] pb-28",
           highlighting && "[&_[data-passage]]:cursor-text",
         )}
       >
@@ -349,39 +416,73 @@ export function TestRunner({
                   }
                 : undefined
             }
+            passageWidth={split}
+            onResize={setSplit}
+            fillHeight
             headerExtra={
-              <>
-                <button
-                  type="button"
-                  aria-pressed={responses[current.id]?.marked ?? false}
-                  onClick={() =>
-                    update(current.id, {
-                      marked: !(responses[current.id]?.marked ?? false),
-                    })
-                  }
-                  className={cn(
-                    "flex items-center gap-1.5 rounded-full px-3 py-1 text-sm",
-                    responses[current.id]?.marked
-                      ? "bg-pine-tint font-bold text-pine"
-                      : "text-ink-soft hover:bg-wash",
-                  )}
+              <button
+                type="button"
+                aria-pressed={responses[current.id]?.marked ?? false}
+                onClick={() =>
+                  update(current.id, {
+                    marked: !(responses[current.id]?.marked ?? false),
+                  })
+                }
+                className={cn(
+                  "flex items-center gap-1.5 text-[15px]",
+                  responses[current.id]?.marked
+                    ? "font-bold"
+                    : "hover:underline",
+                )}
+              >
+                <svg
+                  width="16"
+                  height="18"
+                  viewBox="0 0 16 18"
+                  aria-hidden="true"
+                  className={responses[current.id]?.marked ? "text-pine" : ""}
                 >
-                  <Icon name="bookmark" size={16} />
-                  {responses[current.id]?.marked
-                    ? "Marked for review"
-                    : "Mark for review"}
-                </button>
+                  <path
+                    d="M2.5 1.5h11v15L8 12.5l-5.5 4z"
+                    fill={
+                      responses[current.id]?.marked ? "currentColor" : "none"
+                    }
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                {responses[current.id]?.marked
+                  ? "Marked for Review"
+                  : "Mark for Review"}
+              </button>
+            }
+            headerRight={
+              <>
                 {mounted && marks[current.id]?.length ? (
                   <button
                     type="button"
                     onClick={() =>
                       setMarks((all) => ({ ...all, [current.id]: [] }))
                     }
-                    className="ml-auto rounded-full px-3 py-1 text-sm text-ink-soft hover:bg-wash"
+                    className="mr-3 text-[13px] text-ink-soft hover:underline"
                   >
                     Clear highlights
                   </button>
                 ) : null}
+                <button
+                  type="button"
+                  aria-pressed={crossOut}
+                  aria-label="Cross out answer choices"
+                  title="Cross out answer choices"
+                  onClick={() => setCrossOut((c) => !c)}
+                  className={cn(
+                    "rounded-md border-[1.5px] border-ink px-1.5 py-px text-[12px] font-bold line-through decoration-[1.5px]",
+                    crossOut ? "bg-ink text-paper" : "bg-paper hover:bg-wash",
+                  )}
+                >
+                  ABC
+                </button>
               </>
             }
             answerSlot={
@@ -437,9 +538,9 @@ export function TestRunner({
 
       {/* Question map */}
       {mapOpen ? (
-        <div className="fixed inset-x-3 bottom-[88px] z-40 mx-auto max-w-[560px]">
+        <div className="fixed inset-x-3 bottom-[84px] z-40 mx-auto max-w-[560px] font-sans">
           <div
-            className="glass rounded-card p-5"
+            className="rounded-card border border-hairline bg-paper p-5 shadow-lg"
             role="dialog"
             aria-label="Questions in this module"
           >
@@ -481,31 +582,45 @@ export function TestRunner({
         <ReferenceSheet onClose={() => setPanel(null)} />
       ) : null}
       {highlighting ? (
-        <p className="fixed inset-x-0 top-[74px] z-20 mx-auto w-fit rounded-full bg-ink px-4 py-1.5 text-[13px] font-semibold text-paper">
+        <p className="fixed inset-x-0 top-[86px] z-20 mx-auto w-fit rounded-full bg-ink px-4 py-1.5 font-sans text-[13px] font-semibold text-paper">
           Select words in the passage to highlight them
         </p>
       ) : null}
 
-      {/* Bottom bar */}
-      <footer className="fixed inset-x-0 bottom-0 z-30 px-3 pb-3">
-        <div className="glass mx-auto flex min-h-[60px] max-w-[1480px] items-center justify-between gap-3 rounded-full py-2 pl-5 pr-2.5">
-          <span className="hidden min-w-0 truncate text-sm text-graphite sm:block sm:w-40">
+      {/* Bottom bar: name, question map, Back / Next */}
+      <footer className="fixed inset-x-0 bottom-0 z-30 bg-pine-tint font-sans">
+        <div className="border-t-[3px] border-dashed border-ink/70" />
+        <div className="mx-auto grid h-[68px] max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-8">
+          <span className="hidden min-w-0 truncate text-[15px] font-bold sm:block">
             {studentName}
           </span>
           <button
             type="button"
             onClick={() => setMapOpen((o) => !o)}
             aria-expanded={mapOpen}
-            className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-paper tabular-nums"
+            className="col-start-2 flex items-center gap-1.5 rounded-lg bg-ink px-4 py-2 text-[15px] font-bold text-paper tabular-nums"
           >
             {current
               ? `Question ${current.position} of ${questions.length}`
               : "Review"}
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 12 12"
+              aria-hidden="true"
+              className={cn("transition-transform", !mapOpen && "rotate-180")}
+            >
+              <path
+                d="m2 4 4 4 4-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+              />
+            </svg>
           </button>
-          <div className="flex gap-2">
+          <div className="flex justify-end gap-2">
             {view.kind === "review" ? (
               <Button
-                variant="quiet"
                 onClick={() =>
                   go({ kind: "question", index: questions.length - 1 })
                 }
@@ -516,7 +631,6 @@ export function TestRunner({
               <>
                 {view.index > 0 ? (
                   <Button
-                    variant="quiet"
                     onClick={() =>
                       go({ kind: "question", index: view.index - 1 })
                     }
@@ -684,10 +798,12 @@ function TypedAnswer({
 }
 
 function ToolButton({
+  label,
   pressed,
   onClick,
   children,
 }: {
+  label: string;
   pressed: boolean;
   onClick: () => void;
   children: ReactNode;
@@ -698,11 +814,25 @@ function ToolButton({
       aria-pressed={pressed}
       onClick={onClick}
       className={cn(
-        "rounded-full px-3 py-1.5 text-sm font-semibold",
-        pressed ? "bg-ink text-paper" : "text-ink-soft hover:bg-wash",
+        "flex flex-col items-center gap-0.5 rounded-lg px-2 py-1 text-[13px] font-semibold",
+        pressed ? "bg-ink text-paper" : "hover:bg-paper",
       )}
     >
-      {children}
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        aria-hidden="true"
+      >
+        {children}
+      </svg>
+      <span className="hidden sm:block">{label}</span>
+      <span className="sr-only sm:hidden">{label}</span>
     </button>
   );
 }

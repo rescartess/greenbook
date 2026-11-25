@@ -28,9 +28,9 @@ steps, and run `npm run check` before saying something is done.
 
 ## Design system (approved 24 Nov 2026)
 - Apple-like, minimal, Bluebook-style, liquid glass. Must not look AI-generated.
-- Font: Nunito only (`@fontsource-variable/nunito`). Headlines extra-bold with slight negative tracking.
+- Font: Nunito (`@fontsource-variable/nunito`) for the interface. Headlines extra-bold with slight negative tracking. Test text (passages, questions, choices) uses the serif `font-serif` (Source Serif 4), like Bluebook (owner request, 25 Nov 2026).
 - Colors: only the tokens in `app/globals.css` (`bg-paper`, `bg-mist`, `bg-canvas`, `text-ink`, `text-graphite`, `border-hairline`, `bg-pine`, `bg-pine-soft`...). No raw hex in `app/` or `features/` (lint blocks it). Pine green is the only accent.
-- Glass (`glass`, `glass-on-brand` utilities) ONLY on floating things: nav bar, side tabs, subject switch, test screen bars, phone sheets. Content panels stay flat: `Panel` with a hairline, no shadow.
+- Glass (`glass`, `glass-on-brand` utilities) ONLY on floating things: nav bar, side tabs, subject switch, phone sheets. The test screen follows Bluebook's layout (owner request): flat full-width top and bottom bars in `bg-pine-tint` with dashed rules, a draggable divider, grey question bar with number, Mark for Review and ABC. Content panels stay flat: `Panel` with a hairline, no shadow.
 - Logged-in pages: glass side tabs on the left (bottom tab bar on phones), `PageHeader` with the English/Math switch.
 - Reuse `core/design/ui` (Button, ButtonLink, PillSwitch, Panel, AccentPanel, EmptyState, Icon, Logo). New shared pieces go there first and onto `/dev/design`.
 - Never: decorative gradients, identical card grids, emoji, rows of icons, ALL-CAPS labels, "→" on buttons, sales phrases. Copy is sentence case with plain verbs; buttons say what happens.

@@ -97,6 +97,8 @@
   --color-brand-down: #264b47;
 
   --font-sans: "Nunito Variable", "Nunito", system-ui, -apple-system, sans-serif;
+  /* Test text only (passages, questions, choices), like Bluebook. */
+  --font-serif: "Source Serif 4 Variable", Georgia, "Times New Roman", serif;
 
   /* Laptop layout (full side tabs) starts here; sm (640px) shows the slim icon rail. */
   --breakpoint-nav: 56rem;
