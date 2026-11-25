@@ -24,6 +24,7 @@ Automated checks for the database live in `tests/db/` and run with `npm test`: e
 - 0012 topic practice: the ten English topics (sets of kind 'topic', hidden until published), question_sets.sort_order/description, attempts.check_mode ('each' or 'end') and attempts.options. New: list_topics, get_topic, start_topic_practice (level, range, check mode, optional timer; same fixed order for everyone), save_practice_response. Re-created: check_practice_answer (refused in check-at-the-end practices, while paused, after time is up), finish_practice (grades unchecked answers), get_practice_state (picks, marks, clock, options; all answers after finishing).
 - 0013 results and review: get_test_results adds each question's Mark for Review flag, type and startedAt; start_topic_practice allows up to 600 questions; remove_attempt ("Delete this attempt": a finished test is marked abandoned and leaves results and the dashboard).
 - 0014 pictures and import: public storage bucket question-images (only admins upload or change), admin_import_questions (batch import into a topic, skips questions whose source exists), questions_source index; get_practice_state, get_test_results and get_mistakes now include each question's picture ('image').
+- 0015 admins can look up question pictures (needed to replace a picture on a rerun of an import).
 
 ## About the security advisor
 It lists the student-facing functions (start_full_test, save_response, finish_module, get_test_state,
