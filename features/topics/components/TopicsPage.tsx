@@ -31,7 +31,7 @@ async function Topics({ subject }: { subject: SubjectSlug }) {
     );
   }
   return (
-    <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <ul className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
       {topics.map((t) => (
         <li key={t.id}>
           <TopicCard subject={subject} topic={t} />
@@ -43,44 +43,42 @@ async function Topics({ subject }: { subject: SubjectSlug }) {
 
 function TopicCard({ subject, topic }: { subject: SubjectSlug; topic: TopicSummary }) {
   const ready = topic.total > 0;
+  const status =
+    topic.open > 0
+      ? `${topic.open} unfinished`
+      : topic.done > 0
+        ? `${topic.done} of ${topic.total} done`
+        : `${topic.total} questions`;
   const body = (
     <>
-      <div className="flex items-start justify-between gap-3">
-        <h2 className="text-[19px] font-extrabold leading-snug tracking-tight">{topic.title}</h2>
-        {!topic.published ? (
-          <span className="shrink-0 rounded-full bg-wash px-2.5 py-0.5 text-[12px] font-bold text-ink-soft">
-            Hidden from students
-          </span>
-        ) : null}
-      </div>
-      {topic.description ? <p className="mt-1 text-[15px] leading-snug text-graphite">{topic.description}</p> : null}
+      <h2 className="text-[17px] font-extrabold leading-snug tracking-tight">{topic.title}</h2>
+      {!topic.published ? (
+        <span className="mt-1.5 self-start rounded-full bg-wash px-2.5 py-0.5 text-[12px] font-bold text-ink-soft">
+          Hidden from students
+        </span>
+      ) : null}
+      {topic.description ? (
+        <p className="mt-1 line-clamp-2 text-[14px] leading-snug text-graphite">{topic.description}</p>
+      ) : null}
 
       {ready ? (
         <>
-          <LevelBar counts={topic.counts} className="mt-5" />
+          <LevelBar counts={topic.counts} className="mt-4" />
           <p className="mt-2 text-[13px] text-graphite tabular-nums">
             {topic.counts.easy} easy, {topic.counts.medium} medium, {topic.counts.hard} hard
           </p>
-          <div className="mt-auto flex items-end justify-between gap-3 pt-5">
-            <p className="text-[14px] text-ink-soft tabular-nums">
-              {topic.open > 0
-                ? `${topic.open} unfinished`
-                : topic.done > 0
-                  ? `${topic.done} of ${topic.total} done`
-                  : `${topic.total} questions`}
-            </p>
-            <span className="rounded-full bg-pine px-4 py-2 text-sm font-bold text-pine-ink">
-              {topic.open > 0 ? "Continue" : "Choose questions"}
-            </span>
-          </div>
+          <p className="mt-auto pt-4 text-[13px] font-semibold text-ink-soft tabular-nums">{status}</p>
+          <span className="mt-2 block rounded-full bg-pine py-2.5 text-center text-[15px] font-bold text-pine-ink">
+            {topic.open > 0 ? "Continue" : "Start practice"}
+          </span>
         </>
       ) : (
-        <p className="mt-auto pt-5 text-[14px] text-graphite">Questions coming soon</p>
+        <p className="mt-auto pt-4 text-[14px] text-graphite">Questions coming soon</p>
       )}
     </>
   );
 
-  const box = "flex h-full flex-col rounded-panel border border-hairline bg-paper p-6";
+  const box = "flex h-full flex-col rounded-panel border border-hairline bg-paper p-5";
   return ready ? (
     <Link
       href={`/${subject}/topics/${topic.id}`}
