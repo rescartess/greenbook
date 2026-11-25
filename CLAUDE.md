@@ -13,7 +13,8 @@ steps, and run `npm run check` before saying something is done.
 - Login is required for everything except `/` and `/login`.
 - English only. Two subjects in the URL: `/english/...` and `/math/...`; the switch swaps that word.
 - Full tests are per subject: module 1, then an easier or harder module 2, scored 200 to 800.
-- All questions are the owner's own. The owner is the only admin.
+- Questions are the owner's own, plus College Board's SAT Suite Question Bank (SQB), which the owner has College Board's permission to publish with credit (owner, 26 Nov 2026). The owner is the only admin.
+- SQB: import exactly as printed (same rule as Dovudprep), with College Board's rationale as the explanation. Show `SQB_CREDIT` (core/config/practice.ts) wherever SQB topics appear. Don't name Dovudprep on SQB pages; the collection is just "SQB".
 - Dovudprep (EBRW Practice books) is the owner's own brand. Its questions were already rewritten by the owner; import them exactly as written (only fix PDF line breaks), never reword them. Book levels map to ours: 1–3 easy, 4–5 medium, 6–7 hard. Answers are in the book's Solutions copy.
 
 ## Structure (built to change safely)
@@ -45,7 +46,7 @@ steps, and run `npm run check` before saying something is done.
 
 ## Database
 - Supabase project `greenbook` (ref `pgpotvnyomwrlmnhzcmy`, Frankfurt). Migrations are applied with Claude's Supabase connector, then the security and performance advisors are re-run and `core/db/types.ts` is updated.
-- Anything that writes student activity or reveals answers is a database function (test engine 0007, admin tools 0009, practice and mistakes 0010, topic practice 0012, results and review 0013, pictures and import 0014, invite code 0016). Pages call them with `supabase.rpc(...)`. Answers reach the browser only after a question is finished.
+- Anything that writes student activity or reveals answers is a database function (test engine 0007, admin tools 0009, practice and mistakes 0010, topic practice 0012, results and review 0013, pictures and import 0014, invite code 0016, SQB collection 0017). Pages call them with `supabase.rpc(...)`. Answers reach the browser only after a question is finished.
 - `tests/db/` runs every migration in an in-memory Postgres (PGlite) and checks the rules as a student and as an admin. Add a check there for every new database function.
 - Question content and answer keys never go in this public repo; they live only in the database.
 - Big imports: Claude turns a book into an import file (format `greenbook-import-1`, see `features/admin/import-book.ts`); the owner uploads it at /admin/import, which sends pictures to the `question-images` storage bucket and questions to `admin_import_questions` (migration 0014) in batches. Re-running is safe (same `source` is skipped). Pictures are `questions.image_path`, shown above the passage.
@@ -56,6 +57,7 @@ steps, and run `npm run check` before saying something is done.
 - `test-runner` (/test/[id]): timed Bluebook screen. `full-tests`, `results`, `practice` (/practice/[id]: Bluebook screen, check as you go or at the end, optional timer, results with an "Incorrect" review; used by `topics` and `monthly`), `topics` (/[subject]/topics and /[subject]/topics/[setId] setup page), `mistakes`, `dashboard`, `admin` (/admin), `auth`, `marketing`.
 - Shared question display lives in `core/question` (RichText format, QuestionView, AnswerCheck, highlights) and so do the Bluebook exam pieces used by both the test and practice screens (`ExamParts.tsx`: top/bottom bars, clock, Mark for Review, ABC, question map; `exam-hooks.ts`), and the shared review screen (`ReviewScreen.tsx`: Bluebook review with All / Incorrect / Skipped / Marked filters and a Show correct answer switch) used by practice results and full-test results.
 - Topic practice settings (levels, sizes, SAT pace) live in `core/config/practice.ts`.
+- Topics come in collections (`question_sets.collection`, migration 0017): `books` (/[subject]/topics, labelled GreenBook) and `sqb` (/[subject]/topics/sqb). Import files name their collection (`"collection": "sqb"`). SQB book reader: `sqb_parse.py` + `sqb_make_import.py` (outside the repo, in Claude's content folder).
 - Scores are estimated while `ESTIMATED_SCORES` is true in `core/config/subjects.ts`.
 
 ## Commands

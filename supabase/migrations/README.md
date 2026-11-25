@@ -33,3 +33,4 @@ get_test_results, start_practice, get_practice_state, check_practice_answer, fin
 retry_mistake, list_topics, get_topic, start_topic_practice, save_practice_response, remove_attempt) as "signed-in users can execute a SECURITY DEFINER function". That is on purpose: they are the
 only way students write activity, and each one checks the caller owns the attempt before doing anything.
 Helper functions live in the `private` schema and can't be called from the website.
+- 0017 SQB collection: question_sets.collection ('books'/'sqb'), 10 SQB topic sets, list_topics(subject, collection), get_topic returns collection, imports keep the explanation.
