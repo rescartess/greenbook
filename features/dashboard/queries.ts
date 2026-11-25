@@ -29,7 +29,7 @@ export async function getDashboard(subject: SubjectSlug): Promise<DashboardData>
   const [attemptsRes, answersRes, mistakesRes, fullTestsRes, monthlyRes] = await Promise.all([
     supabase
       .from("attempts")
-      .select("id, mode, status, scaled_score, raw_correct, started_at, finished_at, question_sets(title), attempt_modules(question_ids, submitted_at, started_at, modules(module_number), responses(answer, is_correct))")
+      .select("id, mode, status, scaled_score, raw_correct, started_at, finished_at, question_sets(title), attempt_modules(question_ids, submitted_at, started_at, paused_remaining_sec, modules(module_number), responses(answer, is_correct))")
       .eq("user_id", userId)
       .eq("subject", subject)
       .order("started_at", { ascending: true }),
@@ -64,7 +64,10 @@ export async function getDashboard(subject: SubjectSlug): Promise<DashboardData>
         ? { title, detail: `${answered} of ${total} checked`, progress: total ? answered / total : 0, href: `/practice/${open.id}` }
         : {
             title: `${title}, module ${running?.modules?.module_number ?? 1}`,
-            detail: `${answered} of ${total} answered. The timer keeps running while you’re away.`,
+            detail:
+              running?.paused_remaining_sec != null
+                ? `${answered} of ${total} answered. Paused with ${Math.max(1, Math.round(running.paused_remaining_sec / 60))} minutes left.`
+                : `${answered} of ${total} answered. The timer is still running.`,
             progress: total ? answered / total : 0,
             href: `/test/${open.id}`,
           };

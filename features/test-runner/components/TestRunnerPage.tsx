@@ -31,6 +31,7 @@ async function Runner({ attemptId }: { attemptId: Promise<string> }) {
       tools={SUBJECTS[subject].tools}
       sectionNumber={SUBJECTS[subject].sectionNumber}
       directions={SUBJECTS[subject].directions}
+      exitHref={`/${subject}/full-tests`}
     />
   );
 }

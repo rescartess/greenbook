@@ -24,6 +24,7 @@ export type Database = {
           deadline_at: string | null
           id: string
           module_id: string | null
+          paused_remaining_sec: number | null
           question_ids: string[]
           started_at: string
           submitted_at: string | null
@@ -34,6 +35,7 @@ export type Database = {
           deadline_at?: string | null
           id?: string
           module_id?: string | null
+          paused_remaining_sec?: number | null
           question_ids: string[]
           started_at?: string
           submitted_at?: string | null
@@ -44,6 +46,7 @@ export type Database = {
           deadline_at?: string | null
           id?: string
           module_id?: string | null
+          paused_remaining_sec?: number | null
           question_ids?: string[]
           started_at?: string
           submitted_at?: string | null
@@ -539,7 +542,9 @@ export type Database = {
         Returns: undefined
       }
       admin_remove_from_module: { Args: { p_module_id: string; p_question_id: string }; Returns: undefined }
+      abandon_test: { Args: { p_attempt_id: string }; Returns: undefined }
       finish_module: { Args: { p_attempt_module_id: string }; Returns: string }
+      pause_test: { Args: { p_attempt_module_id: string }; Returns: undefined }
       get_test_results: { Args: { p_attempt_id: string }; Returns: Json }
       get_test_state: { Args: { p_attempt_id: string }; Returns: Json }
       save_response: {

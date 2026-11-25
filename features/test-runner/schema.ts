@@ -102,6 +102,8 @@ export function saveErrorMessage(code: string | undefined): { message: string; r
       return { message: "Time is up for this module.", reload: true };
     case "P0003":
       return { message: "This module is already finished.", reload: true };
+    case "P0007":
+      return { message: "This test is paused. Reopening it…", reload: true };
     case "42501":
       return { message: "You’re signed out. Sign in again to keep going.", reload: true };
     default:

@@ -17,7 +17,7 @@ import {
   spanFromRange,
   type Span,
 } from "@/core/question";
-import { finishModule, saveAnswer } from "../actions";
+import { abandonTest, finishModule, pauseTest, saveAnswer } from "../actions";
 import { formatClock, type RunnerResponse, type TestState } from "../schema";
 import { Calculator, DESMOS_KEY, ReferenceSheet } from "./Tools";
 
@@ -37,6 +37,8 @@ type Props = {
   sectionNumber: number;
   /** Short paragraphs shown under "Directions". */
   directions: readonly string[];
+  /** Where "Save and exit" and "Delete and exit" go. */
+  exitHref: string;
 };
 
 const EMPTY: RunnerResponse = { answer: null, marked: false, eliminated: [] };
@@ -50,6 +52,7 @@ export function TestRunner({
   tools,
   sectionNumber,
   directions,
+  exitHref,
 }: Props) {
   const router = useRouter();
   const { module, questions } = state;
@@ -74,6 +77,30 @@ export function TestRunner({
   const [highlighting, setHighlighting] = useState(false);
   const [directionsOpen, setDirectionsOpen] = useState(false);
   const [split, setSplit] = useState(50);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [exitStep, setExitStep] = useState<"menu" | "confirmDelete">("menu");
+  const [exiting, setExiting] = useState<null | "save" | "delete">(null);
+
+  const exit = async (how: "save" | "delete") => {
+    setExiting(how);
+    finishingRef.current = true; // stop the clock from finishing the module while we leave
+    await queue.current;
+    const result =
+      how === "save"
+        ? await pauseTest(amId)
+        : await abandonTest(state.attemptId);
+    if (!result.ok) {
+      finishingRef.current = false;
+      setExiting(null);
+      setProblem(
+        how === "save"
+          ? "The test couldn’t be paused. Check your connection and try again."
+          : "The test couldn’t be deleted. Try again.",
+      );
+      return;
+    }
+    router.replace(exitHref);
+  };
   const marksKey = `gb-marks-${amId}`;
   const [marks, setMarks] = useState<Record<string, Span[]>>(() => {
     if (typeof window === "undefined") return {};
@@ -362,6 +389,86 @@ export function TestRunner({
                 <path d="M5 4h10l4 4v12H5zM9 11h6M9 15h4M14 4v5h5" />
               </ToolButton>
             ) : null}
+            <div className="relative">
+              <ToolButton
+                label="More"
+                pressed={moreOpen}
+                onClick={() => {
+                  setMoreOpen((o) => !o);
+                  setExitStep("menu");
+                }}
+              >
+                <circle cx="12" cy="5" r="1.3" fill="currentColor" />
+                <circle cx="12" cy="12" r="1.3" fill="currentColor" />
+                <circle cx="12" cy="19" r="1.3" fill="currentColor" />
+              </ToolButton>
+              {moreOpen ? (
+                <div
+                  role="menu"
+                  aria-label="More"
+                  className="absolute right-0 top-full z-40 mt-2 w-80 rounded-panel border border-hairline bg-paper p-2 shadow-lg"
+                >
+                  {exitStep === "menu" ? (
+                    <>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        disabled={exiting !== null}
+                        onClick={() => void exit("save")}
+                        className="w-full rounded-choice px-4 py-3 text-left hover:bg-mist disabled:opacity-60"
+                      >
+                        <span className="block font-bold">
+                          {exiting === "save" ? "Saving…" : "Save and exit"}
+                        </span>
+                        <span className="block text-[13px] text-graphite">
+                          Your answers and time left are kept. The timer stops
+                          until you come back.
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        disabled={exiting !== null}
+                        onClick={() => setExitStep("confirmDelete")}
+                        className="w-full rounded-choice px-4 py-3 text-left hover:bg-mist disabled:opacity-60"
+                      >
+                        <span className="block font-bold">Delete and exit</span>
+                        <span className="block text-[13px] text-graphite">
+                          Throws this attempt away. It won’t count anywhere.
+                        </span>
+                      </button>
+                    </>
+                  ) : (
+                    <div className="px-4 py-3">
+                      <p className="font-bold">Delete this attempt?</p>
+                      <p className="mt-1 text-[13px] text-graphite">
+                        Your answers in this test will be lost. You can start
+                        the test again later.
+                      </p>
+                      <div className="mt-3 flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="quiet"
+                          disabled={exiting !== null}
+                          onClick={() => setExitStep("menu")}
+                        >
+                          Keep it
+                        </Button>
+                        <Button
+                          size="sm"
+                          disabled={exiting !== null}
+                          onClick={() => void exit("delete")}
+                        >
+                          {exiting === "delete"
+                            ? "Deleting…"
+                            : "Delete and exit"}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
         <div className="border-b-[3px] border-dashed border-ink/70" />

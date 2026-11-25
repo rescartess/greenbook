@@ -36,3 +36,17 @@ export async function finishModule(attemptModuleId: string): Promise<FinishResul
   if (error) return { ok: false, message: "The module couldn’t be finished. Check your connection and try again." };
   return { ok: true, completed: data === "completed" };
 }
+
+/** "Save and exit": stops this module's clock. Opening the test again restarts it. */
+export async function pauseTest(attemptModuleId: string): Promise<{ ok: boolean }> {
+  const supabase = await createDbClient();
+  const { error } = await supabase.rpc("pause_test", { p_attempt_module_id: attemptModuleId });
+  return { ok: !error };
+}
+
+/** "Delete and exit": throws this attempt away. It won't count anywhere. */
+export async function abandonTest(attemptId: string): Promise<{ ok: boolean }> {
+  const supabase = await createDbClient();
+  const { error } = await supabase.rpc("abandon_test", { p_attempt_id: attemptId });
+  return { ok: !error };
+}
