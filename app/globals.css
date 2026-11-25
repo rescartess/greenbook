@@ -150,6 +150,29 @@
     0 10px 30px rgba(0, 0, 0, 0.18);
 }
 
+/* Exam screens in light mode swap the pine accent for blue, like Bluebook
+   (owner request, 26 Nov 2026). Dark mode keeps the pine colors. */
+.exam {
+  --gb-pine: #2e46b8;
+  --gb-pine-ink: #ffffff;
+  --gb-pine-soft: #9aa9e4;
+  --gb-pine-tint: #e6ebf5;
+}
+[data-theme="dark"] .exam {
+  --gb-pine: #7fb5a8;
+  --gb-pine-ink: #0f1716;
+  --gb-pine-soft: #4f7f74;
+  --gb-pine-tint: #1b2b28;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .exam {
+    --gb-pine: #7fb5a8;
+    --gb-pine-ink: #0f1716;
+    --gb-pine-soft: #4f7f74;
+    --gb-pine-tint: #1b2b28;
+  }
+}
+
 /* Exam screens (test, practice, review) use Bluebook-like type: Roboto for the
    interface, Noto Serif for passages, questions and choices (owner request, 26 Nov 2026). */
 .exam,
