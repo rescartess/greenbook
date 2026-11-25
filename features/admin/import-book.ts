@@ -34,7 +34,7 @@ export function parseImportBook(text: string): ImportBook {
   try {
     raw = JSON.parse(text);
   } catch {
-    throw new Error("This isn’t an import file (it can’t be read as JSON).");
+    throw new Error("This isn’t an import file. Choose the .json files whose names start with “GreenBook import”, not the book PDFs.");
   }
   const root = obj(raw);
   if (!root || root.format !== "greenbook-import-1") throw new Error("This isn’t a GreenBook import file.");
