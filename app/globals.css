@@ -26,6 +26,8 @@
   --gb-correct-tint: #e7f6ed;
   --gb-incorrect: #d1372c;
   --gb-incorrect-tint: #fdecea;
+  /* Mark for Review flag on exam screens, red like Bluebook (owner request, 26 Nov 2026). */
+  --gb-flag: #c8102e;
 
   --gb-glass-bg: rgba(255, 255, 255, 0.62);
   --gb-glass-edge: rgba(255, 255, 255, 0.9);
@@ -53,6 +55,7 @@
   --gb-correct-tint: rgba(63, 210, 135, 0.14);
   --gb-incorrect: #ff6e63;
   --gb-incorrect-tint: rgba(255, 110, 99, 0.14);
+  --gb-flag: #ff6e63;
 
   --gb-glass-bg: rgba(30, 42, 40, 0.55);
   --gb-glass-edge: rgba(255, 255, 255, 0.12);
@@ -81,6 +84,7 @@
   --gb-correct-tint: rgba(63, 210, 135, 0.14);
   --gb-incorrect: #ff6e63;
   --gb-incorrect-tint: rgba(255, 110, 99, 0.14);
+  --gb-flag: #ff6e63;
 
     --gb-glass-bg: rgba(30, 42, 40, 0.55);
     --gb-glass-edge: rgba(255, 255, 255, 0.12);
@@ -108,6 +112,7 @@
   --color-correct-tint: var(--gb-correct-tint);
   --color-incorrect: var(--gb-incorrect);
   --color-incorrect-tint: var(--gb-incorrect-tint);
+  --color-flag: var(--gb-flag);
   /* The homepage hero stays deep green in both themes. */
   --color-brand: #2d5652;
   --color-brand-up: #36645f;
@@ -143,6 +148,16 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.32),
     0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+/* Exam screens (test, practice, review) use Bluebook-like type: Roboto for the
+   interface, Noto Serif for passages, questions and choices (owner request, 26 Nov 2026). */
+.exam,
+.exam .font-sans {
+  font-family: "Roboto Variable", Roboto, system-ui, sans-serif;
+}
+.exam .font-serif {
+  font-family: "Noto Serif Variable", "Noto Serif", Georgia, serif;
 }
 
 /* Passage highlights on the test screen (CSS Custom Highlight API). */

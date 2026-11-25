@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/nunito";
 import "@fontsource-variable/source-serif-4";
 import "@fontsource-variable/source-serif-4/wght-italic.css";
+import "@fontsource-variable/roboto";
+import "@fontsource-variable/noto-serif";
+import "@fontsource-variable/noto-serif/wght-italic.css";
 import "./globals.css";
 import { THEME_SCRIPT } from "@/core/layout";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, type ReactNode } from "react";
-import { Button, cn, Icon } from "@/core/design/ui";
+import { Button, cn } from "@/core/design/ui";
 
 /*
  * The pieces of the Bluebook-style exam screen, shared by the timed test and by practice.
@@ -12,7 +12,7 @@ import { Button, cn, Icon } from "@/core/design/ui";
 export function ExamTopBar({ left, center, right }: { left: ReactNode; center?: ReactNode; right: ReactNode }) {
   return (
     <header className="sticky top-0 z-30 bg-pine-tint font-sans">
-      <div className="mx-auto grid min-h-[72px] max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-8">
+      <div className="mx-auto grid min-h-[84px] max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-8">
         <div className="relative min-w-0">{left}</div>
         <div className="flex flex-col items-center gap-1" aria-live="polite">
           {center}
@@ -29,8 +29,8 @@ export function ExamBottomBar({ left, center, right }: { left?: ReactNode; cente
   return (
     <footer className="fixed inset-x-0 bottom-0 z-30 bg-pine-tint font-sans">
       <div className="border-t-[3px] border-dashed border-ink/70" />
-      <div className="mx-auto grid h-[68px] max-w-[1600px] grid-cols-[auto_1fr] items-center gap-2 px-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-3 sm:px-8">
-        <span className="hidden min-w-0 truncate text-[15px] font-bold sm:block">{left}</span>
+      <div className="mx-auto grid h-[76px] max-w-[1600px] grid-cols-[auto_1fr] items-center gap-2 px-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-3 sm:px-8">
+        <span className="hidden min-w-0 truncate text-[19px] font-medium sm:block">{left}</span>
         <div className="sm:col-start-2">{center}</div>
         <div className="flex justify-end gap-1.5 sm:gap-2 [&>button]:max-sm:px-3.5">{right}</div>
       </div>
@@ -43,14 +43,14 @@ export function ExamTitle({ title, directions }: { title: ReactNode; directions?
   const [open, setOpen] = useState(false);
   return (
     <>
-      <p className="truncate text-[15px] font-bold sm:text-[17px]">{title}</p>
+      <p className="truncate text-[16px] font-medium sm:text-[21px]">{title}</p>
       {directions?.length ? (
         <>
           <button
             type="button"
             aria-expanded={open}
             onClick={() => setOpen((o) => !o)}
-            className="mt-0.5 flex items-center gap-1 text-[15px] hover:underline"
+            className="mt-1 flex items-center gap-1.5 text-[16px] font-medium hover:underline"
           >
             Directions
             <Chevron className={cn("transition-transform", open && "rotate-180")} />
@@ -92,7 +92,7 @@ export function ExamClock({ remaining, mounted }: { remaining: number | null; mo
         <span className="flex h-7 items-center text-sm text-graphite">Timer hidden</span>
       ) : (
         <span
-          className={cn("text-[22px] font-bold leading-7 tabular-nums", low && "text-pine")}
+          className={cn("text-[26px] font-bold leading-8 tabular-nums", low && "text-pine")}
           aria-label={`Time left ${formatClock(remaining)}`}
         >
           {formatClock(remaining)}
@@ -101,7 +101,7 @@ export function ExamClock({ remaining, mounted }: { remaining: number | null; mo
       <button
         type="button"
         onClick={() => setHidden((h) => !h)}
-        className="rounded-full border-[1.5px] border-ink px-3 py-px text-[13px] font-semibold hover:bg-paper"
+        className="rounded-full border-[1.5px] border-ink px-4 py-px text-[14px] font-bold hover:bg-paper"
       >
         {hidden ? "Show" : "Hide"}
       </button>
@@ -137,7 +137,7 @@ export function ToolButton({
       aria-pressed={pressed}
       onClick={onClick}
       className={cn(
-        "flex flex-col items-center gap-0.5 rounded-lg px-2 py-1 text-[13px] font-semibold",
+        "flex flex-col items-center gap-1 rounded-lg px-2 py-1 text-[14px] font-medium",
         pressed ? "bg-ink text-paper" : "hover:bg-paper",
       )}
     >
@@ -232,9 +232,9 @@ export function MarkForReviewButton({ marked, onToggle }: { marked: boolean; onT
       type="button"
       aria-pressed={marked}
       onClick={onToggle}
-      className={cn("flex items-center gap-1.5 text-[15px]", marked ? "font-bold" : "hover:underline")}
+      className={cn("flex items-center gap-2 text-[17px]", marked ? "font-medium" : "hover:underline")}
     >
-      <svg width="16" height="18" viewBox="0 0 16 18" aria-hidden="true" className={marked ? "text-pine" : ""}>
+      <svg width="17" height="20" viewBox="0 0 16 18" aria-hidden="true" className={marked ? "text-flag" : ""}>
         <path
           d="M2.5 1.5h11v15L8 12.5l-5.5 4z"
           fill={marked ? "currentColor" : "none"}
@@ -337,7 +337,7 @@ export function MapButton({
       type="button"
       onClick={onClick}
       aria-expanded={open}
-      className="flex items-center gap-1.5 whitespace-nowrap rounded-lg bg-ink px-3 py-2 text-[15px] font-bold text-paper tabular-nums sm:px-4"
+      className="flex items-center gap-2 whitespace-nowrap rounded-lg bg-ink px-3.5 py-2.5 text-[16px] font-bold text-paper tabular-nums sm:px-5 sm:text-[18px]"
     >
       {current !== undefined && total !== undefined ? (
         <>
@@ -372,13 +372,36 @@ const STATE_LABEL: Record<MapItemState, string> = {
 
 const STATE_ORDER: MapItemState[] = ["unanswered", "answered", "correct", "wrong", "skipped"];
 
+/** The red bookmark that marks a question for review. */
+export function ReviewFlag({ size = 16, className }: { size?: number; className?: string }) {
+  return (
+    <svg width={size} height={size * 1.15} viewBox="0 0 16 18" aria-hidden="true" className={cn("text-flag", className)}>
+      <path d="M2.5 1.5h11v15L8 12.5l-5.5 4z" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function Pin({ className }: { className?: string }) {
+  return (
+    <svg width="18" height="22" viewBox="0 0 18 22" aria-hidden="true" className={className}>
+      <path
+        d="M9 20.5s7-6.2 7-11.5a7 7 0 1 0-14 0c0 5.3 7 11.5 7 11.5z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
+      <circle cx="9" cy="9" r="2.6" fill="none" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
 function Square({ state, className }: { state: MapItemState; className?: string }) {
   return (
     <span
       className={cn(
-        "rounded",
+        "rounded-sm",
         state === "unanswered" || state === "skipped"
-          ? "border-[1.5px] border-dashed border-ink-soft"
+          ? "border-[1.5px] border-dashed border-ink"
           : state === "answered"
             ? "bg-pine"
             : state === "correct"
@@ -390,65 +413,83 @@ function Square({ state, className }: { state: MapItemState; className?: string 
   );
 }
 
-/** The grid of question squares with a legend of the states it shows. */
+/** Legend for the question map: Current (when shown), the states in use, and For Review. */
+export function MapLegend({ items, current = false }: { items: readonly MapItem[]; current?: boolean }) {
+  const states = STATE_ORDER.filter((s) => s !== "answered" && items.some((i) => i.state === s));
+  const inExam = items.some((i) => i.state === "answered" || i.state === "unanswered");
+  if (inExam && !states.includes("unanswered")) states.unshift("unanswered");
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[16px]">
+      {current ? (
+        <span className="flex items-center gap-2">
+          <Pin /> Current
+        </span>
+      ) : null}
+      {states.map((s) => (
+        <span key={s} className="flex items-center gap-2">
+          <Square state={s} className="h-5 w-5" /> {STATE_LABEL[s]}
+        </span>
+      ))}
+      <span className="flex items-center gap-2">
+        <ReviewFlag size={16} /> For Review
+      </span>
+    </div>
+  );
+}
+
+/** The grid of question numbers, with its legend above (turn the legend off to place it yourself). */
 export function QuestionMapGrid({
   items,
   currentId,
   onPick,
   legend = true,
+  className,
 }: {
   items: readonly MapItem[];
   currentId?: string | null;
   onPick: (id: string) => void;
-  /** Turn off when several grids sit together and one legend is enough. */
   legend?: boolean;
+  /** Extra classes for the grid, e.g. a fixed number of columns. */
+  className?: string;
 }) {
-  const states = STATE_ORDER.filter((s) => items.some((i) => i.state === s));
-  if (states.includes("answered") && !states.includes("unanswered") && !states.includes("correct"))
-    states.unshift("unanswered");
   return (
     <>
-      <div className={cn("mb-4 flex flex-wrap justify-center gap-x-5 gap-y-1 text-[13px] text-ink-soft", !legend && "hidden")}>
-        {states.map((s) => (
-          <span key={s} className="flex items-center gap-1.5">
-            <Square state={s} className="h-3.5 w-3.5" /> {STATE_LABEL[s]}
-          </span>
-        ))}
-        <span className="flex items-center gap-1.5">
-          <Icon name="bookmark" size={14} className="text-pine" /> For review
-        </span>
-      </div>
-      <ol className="grid grid-cols-[repeat(auto-fill,minmax(2.75rem,1fr))] gap-2">
-        {items.map((item) => (
-          <li key={item.id} className="relative">
-            <button
-              type="button"
-              onClick={() => onPick(item.id)}
-              aria-current={item.id === currentId ? "step" : undefined}
-              aria-label={`Question ${item.number}, ${STATE_LABEL[item.state].toLowerCase()}${item.marked ? ", marked for review" : ""}`}
-              className={cn(
-                "flex h-11 w-full items-center justify-center rounded-lg text-[15px] font-bold tabular-nums",
-                item.state === "answered"
-                  ? "bg-pine text-pine-ink"
-                  : item.state === "correct"
-                    ? "bg-correct text-paper"
-                    : item.state === "wrong"
-                      ? "bg-incorrect text-paper"
-                      : "border-[1.5px] border-dashed border-ink-soft text-ink",
-                item.id === currentId && "ring-2 ring-ink ring-offset-2 ring-offset-paper",
-              )}
-            >
-              {item.number}
-            </button>
-            {item.marked ? (
-              <Icon
-                name="bookmark"
-                size={15}
-                className="pointer-events-none absolute -right-1.5 -top-1.5 rounded-full bg-paper text-pine"
-              />
-            ) : null}
-          </li>
-        ))}
+      {legend ? (
+        <div className="mb-8 border-b border-control pb-4">
+          <MapLegend items={items} current={currentId !== undefined} />
+        </div>
+      ) : null}
+      <ol className={cn("grid grid-cols-[repeat(auto-fill,3rem)] justify-center gap-x-3 gap-y-6 pt-2 sm:gap-x-5 sm:gap-y-7", className)}>
+        {items.map((item) => {
+          const isCurrent = item.id === currentId;
+          return (
+            <li key={item.id} className="relative">
+              {isCurrent ? <Pin className="pointer-events-none absolute -top-6 left-1/2 -translate-x-1/2" /> : null}
+              <button
+                type="button"
+                onClick={() => onPick(item.id)}
+                aria-current={isCurrent ? "step" : undefined}
+                aria-label={`Question ${item.number}, ${STATE_LABEL[item.state].toLowerCase()}${item.marked ? ", marked for review" : ""}`}
+                className={cn(
+                  "flex h-12 w-12 items-center justify-center text-[20px] font-bold tabular-nums",
+                  item.state === "answered"
+                    ? "bg-pine text-pine-ink"
+                    : item.state === "correct"
+                      ? "bg-correct text-paper"
+                      : item.state === "wrong"
+                        ? "bg-incorrect text-paper"
+                        : "border-[1.5px] border-dashed border-ink text-pine hover:bg-pine-tint",
+                  isCurrent && "underline underline-offset-4",
+                )}
+              >
+                {item.number}
+              </button>
+              {item.marked ? (
+                <ReviewFlag size={15} className="pointer-events-none absolute -right-2 -top-2.5" />
+              ) : null}
+            </li>
+          );
+        })}
       </ol>
     </>
   );
@@ -467,21 +508,96 @@ export function QuestionMapPopover({
   footer?: ReactNode;
 }) {
   return (
-    <div className="fixed inset-x-3 bottom-[84px] z-40 mx-auto max-w-[560px] font-sans">
-      <div className="rounded-card border border-hairline bg-paper p-5 shadow-lg" role="dialog" aria-label="Questions">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <p className="font-bold">{title}</p>
+    <div className="fixed inset-x-3 bottom-[96px] z-40 mx-auto max-w-[760px] font-sans">
+      <div className="relative rounded-xl border border-hairline bg-paper px-5 pb-6 pt-5 shadow-xl sm:px-10" role="dialog" aria-label="Questions">
+        <div className="relative mb-4 flex items-center justify-center border-b border-control pb-4">
+          <p className="px-10 text-center text-[18px] font-bold sm:text-[21px]">{title}</p>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full px-3 py-1 text-sm font-semibold hover:bg-wash"
+            aria-label="Close"
+            className="absolute right-0 rounded-full p-1.5 hover:bg-wash"
           >
-            Close
+            <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+              <path d="M5 5l12 12M17 5 5 17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
           </button>
         </div>
-        <div className="max-h-[55dvh] overflow-y-auto p-1">{children}</div>
-        {footer ? <div className="mt-5 flex justify-center gap-2">{footer}</div> : null}
+        <div className="max-h-[55dvh] overflow-y-auto px-1 pb-1">{children}</div>
+        {footer ? <div className="mt-7 flex justify-center gap-2">{footer}</div> : null}
+        <span
+          aria-hidden="true"
+          className="absolute -bottom-[9px] left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 border-b border-r border-hairline bg-paper"
+        />
       </div>
+    </div>
+  );
+}
+
+/** "Go to Review Page" at the bottom of the question map. */
+export function GoToReviewButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="rounded-full border-[1.5px] border-pine px-7 py-2.5 text-[17px] font-bold text-pine hover:bg-pine-tint"
+    >
+      Go to Review Page
+    </button>
+  );
+}
+
+/** The Check Your Work page at the end of a module: notes, then every question with its state. */
+export function CheckYourWork({
+  notes,
+  cardTitle,
+  items,
+  onPick,
+}: {
+  notes: ReactNode;
+  cardTitle: ReactNode;
+  items: readonly MapItem[];
+  onPick: (id: string) => void;
+}) {
+  return (
+    <section className="mx-auto max-w-[860px] px-4 pb-10 pt-8 text-center font-sans sm:pt-12">
+      <h1 className="text-[32px] font-normal sm:text-[42px]">Check Your Work</h1>
+      <div className="mt-4 space-y-2 text-[16px] sm:text-[18px]">{notes}</div>
+      <div className="mt-10 rounded-xl border border-hairline bg-paper px-5 pb-8 pt-6 text-left shadow-lg sm:px-10">
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b border-control pb-5">
+          <p className="text-[18px] font-bold sm:text-[20px]">{cardTitle}</p>
+          <MapLegend items={items} />
+        </div>
+        <div className="pt-8">
+          <QuestionMapGrid items={items} onPick={onPick} legend={false} className="md:grid-cols-[repeat(10,3rem)]" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Full-screen message while a module closes and the next one (or the results) loads. */
+export function ModuleOverScreen({ title, next }: { title: string; next: string }) {
+  return (
+    <div className="exam fixed inset-0 z-[60] flex flex-col items-center justify-center bg-paper px-6 text-center" role="status">
+      <h1 className="text-[34px] font-light text-pine sm:text-[44px]">{title}</h1>
+      <p className="mt-8 text-[18px] sm:text-[21px]">Your answers are saved.</p>
+      <p className="mt-4 text-[18px] sm:text-[21px]">{next}</p>
+      <p className="mt-4 text-[18px] sm:text-[21px]">Please don’t refresh or close this page.</p>
+      <svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true" className="mt-12 animate-spin [animation-duration:1.6s]">
+        {Array.from({ length: 8 }, (_, i) => {
+          const a = (i / 8) * Math.PI * 2;
+          return (
+            <circle
+              key={i}
+              cx={32 + 24 * Math.cos(a)}
+              cy={32 + 24 * Math.sin(a)}
+              r={1.5 + i * 0.45}
+              fill="currentColor"
+            />
+          );
+        })}
+      </svg>
     </div>
   );
 }

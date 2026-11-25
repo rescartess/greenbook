@@ -154,8 +154,8 @@ export function QuestionView({
           )}
         >
           <div className="border-b-[3px] border-dashed border-ink/80 pb-1">
-            <div className="flex min-h-9 items-center gap-3 bg-mist pr-2 font-sans">
-              <span className="flex h-9 min-w-9 items-center justify-center bg-ink px-2 text-[15px] font-bold text-paper tabular-nums">
+            <div className="flex min-h-11 items-center gap-3 bg-mist pr-2 font-sans">
+              <span className="flex h-11 min-w-11 items-center justify-center bg-ink px-2 text-[20px] font-bold text-paper tabular-nums">
                 {number}
               </span>
               {headerExtra}
@@ -200,7 +200,7 @@ export function QuestionView({
                   <>
                     <span
                       className={cn(
-                        "flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-sans text-sm font-bold",
+                        "flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-sans text-[15px] font-bold",
                         green
                           ? "bg-correct text-paper"
                           : red
@@ -230,7 +230,7 @@ export function QuestionView({
 
                 const strong = green || picked;
                 const boxClass = cn(
-                  "relative flex flex-1 items-center gap-4 rounded-lg px-4 py-3",
+                  "relative flex flex-1 items-center gap-4 rounded-lg px-4 py-3.5",
                   green
                     ? "border-[3px] border-correct bg-correct-tint"
                     : red

@@ -23,6 +23,11 @@ export {
   MapButton,
   QuestionMapGrid,
   QuestionMapPopover,
+  MapLegend,
+  ReviewFlag,
+  GoToReviewButton,
+  CheckYourWork,
+  ModuleOverScreen,
   type MapItem,
   type MapItemState,
 } from "./ExamParts";

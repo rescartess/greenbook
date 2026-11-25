@@ -19,6 +19,9 @@ import {
   MoreTool,
   QuestionMapGrid,
   QuestionMapPopover,
+  CheckYourWork,
+  GoToReviewButton,
+  ModuleOverScreen,
   QuestionView,
   TypedAnswer,
   useHighlights,
@@ -73,7 +76,6 @@ export function PracticeRunner({ state, studentName, canHighlight, exitHref }: P
   const [split, setSplit] = useState(50);
   const [problem, setProblem] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
-  const [confirming, setConfirming] = useState(false);
   const [finishing, setFinishing] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [exitStep, setExitStep] = useState<"menu" | "confirmDelete">("menu");
@@ -146,7 +148,6 @@ export function PracticeRunner({ state, studentName, canHighlight, exitHref }: P
 
   const go = (next: View) => {
     setMapOpen(false);
-    setConfirming(false);
     setView(next);
     window.scrollTo({ top: 0 });
   };
@@ -235,7 +236,7 @@ export function PracticeRunner({ state, studentName, canHighlight, exitHref }: P
   const currentResponse = current ? (responses[current.id] ?? EMPTY) : EMPTY;
 
   return (
-    <div className="min-h-dvh bg-paper font-sans">
+    <div className="exam min-h-dvh bg-paper font-sans">
       <ExamTopBar
         left={
           <ExamTitle
@@ -369,43 +370,26 @@ export function PracticeRunner({ state, studentName, canHighlight, exitHref }: P
             }
           />
         ) : (
-          <section className="mx-auto max-w-[720px] px-5 pt-10 text-center">
-            <h1 className="text-3xl font-extrabold tracking-tight">Check your work</h1>
-            <p className="mt-2 text-[17px] text-ink-soft">
-              {unanswered === 0
-                ? "You answered every question. You can still go back to any of them."
-                : `${unanswered} question${unanswered === 1 ? " is" : "s are"} unanswered. Unanswered questions count as not correct.`}
-              {uncheckedPicks > 0
-                ? ` ${uncheckedPicks} answer${uncheckedPicks === 1 ? "" : "s"} you picked but didn’t check will be checked when you finish.`
-                : ""}
-            </p>
-            <div className="mt-8 rounded-card border border-hairline bg-paper p-6 text-left">
-              <p className="mb-4 font-bold">
-                {state.title}
-                {range ? `: ${range}` : ""}
-              </p>
-              <QuestionMapGrid items={mapItems} onPick={pickById} />
-            </div>
-            <div className="mt-8">
-              {confirming ? (
-                <div className="flex flex-col items-center gap-3">
-                  <p className="text-[17px] font-bold">Finish now and see your score?</p>
-                  <div className="flex gap-2.5">
-                    <Button variant="quiet" onClick={() => setConfirming(false)} disabled={finishing}>
-                      Keep working
-                    </Button>
-                    <Button onClick={() => void finish()} disabled={finishing}>
-                      {finishing ? "Finishing…" : "Finish practice"}
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <Button size="lg" onClick={() => (unanswered > 0 ? setConfirming(true) : void finish())} disabled={finishing}>
-                  {finishing ? "Finishing…" : "Finish practice"}
-                </Button>
-              )}
-            </div>
-          </section>
+          <CheckYourWork
+            cardTitle={`${state.title}${range ? `: ${range}` : ""}`}
+            items={mapItems}
+            onPick={pickById}
+            notes={
+              <>
+                <p>
+                  {unanswered === 0
+                    ? "You answered every question. You can still go back to any of them."
+                    : `${unanswered} question${unanswered === 1 ? " is" : "s are"} unanswered. Unanswered questions count as not correct.`}
+                  {uncheckedPicks > 0
+                    ? ` ${uncheckedPicks} answer${uncheckedPicks === 1 ? "" : "s"} you picked but didn’t check will be checked when you finish.`
+                    : ""}
+                </p>
+                <p>
+                  Select <strong>Next</strong> to finish and see your score.
+                </p>
+              </>
+            }
+          />
         )}
       </main>
 
@@ -414,15 +398,14 @@ export function PracticeRunner({ state, studentName, canHighlight, exitHref }: P
           title={range ? `${state.title}: ${range}` : state.title}
           onClose={() => setMapOpen(false)}
           footer={
-            <Button variant="quiet" size="sm" onClick={() => go({ kind: "review" })}>
-              Go to review page
-            </Button>
+            <GoToReviewButton onClick={() => go({ kind: "review" })} />
           }
         >
           <QuestionMapGrid items={mapItems} currentId={current?.id} onPick={pickById} />
         </QuestionMapPopover>
       ) : null}
       {highlighting ? <HighlightHint /> : null}
+      {finishing ? <ModuleOverScreen title="Practice Complete" next="Your score opens in a moment." /> : null}
 
       <ExamBottomBar
         left={studentName}
@@ -437,7 +420,12 @@ export function PracticeRunner({ state, studentName, canHighlight, exitHref }: P
         }
         right={
           view.kind === "review" ? (
-            <Button onClick={() => go({ kind: "question", index: questions.length - 1 })}>Back</Button>
+            <>
+              <Button onClick={() => go({ kind: "question", index: questions.length - 1 })}>Back</Button>
+              <Button onClick={() => void finish()} disabled={finishing}>
+                Next
+              </Button>
+            </>
           ) : (
             <>
               {view.index > 0 ? (

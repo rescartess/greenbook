@@ -119,7 +119,7 @@ export function ReviewScreen({ title, items, startId, startFilter = "all", showA
       role="dialog"
       aria-modal="true"
       aria-label={`Review: ${title}`}
-      className="fixed inset-0 z-50 overflow-y-auto bg-paper font-sans"
+      className="exam fixed inset-0 z-50 overflow-y-auto bg-paper font-sans"
     >
       <ExamTopBar
         left={<ExamTitle title={<span className="max-sm:sr-only">Review: {title}</span>} />}

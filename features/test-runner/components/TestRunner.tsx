@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, cn } from "@/core/design/ui";
 import {
+  CheckYourWork,
   ClearHighlightsButton,
   CrossOutToggle,
   ExamBottomBar,
@@ -11,11 +12,13 @@ import {
   ExamProblem,
   ExamTitle,
   ExamTopBar,
+  GoToReviewButton,
   HighlightHint,
   HighlightTool,
   MapButton,
   MarkForReviewButton,
   MenuItem,
+  ModuleOverScreen,
   MoreTool,
   QuestionMapGrid,
   QuestionMapPopover,
@@ -78,7 +81,6 @@ export function TestRunner({
   );
   const [mapOpen, setMapOpen] = useState(false);
   const [crossOut, setCrossOut] = useState(false);
-  const [confirming, setConfirming] = useState(false);
   const [finishing, setFinishing] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
   const [panel, setPanel] = useState<"calculator" | "reference" | null>(null);
@@ -170,7 +172,6 @@ export function TestRunner({
     }
     enteredAt.current = Date.now();
     setMapOpen(false);
-    setConfirming(false);
     setView(next);
     window.scrollTo({ top: 0 });
   };
@@ -236,12 +237,9 @@ export function TestRunner({
 
   const answeredCount = questions.filter((q) => responses[q.id]?.answer).length;
   const moduleLabel = `Module ${module.number}`;
-  const finishLabel = module.isLast
-    ? "Finish test"
-    : `Finish module ${module.number}`;
 
   return (
-    <div className="min-h-dvh bg-paper font-sans">
+    <div className="exam min-h-dvh bg-paper font-sans">
       <ExamTopBar
         left={
           <ExamTitle
@@ -385,31 +383,23 @@ export function TestRunner({
             }
           />
         ) : (
-          <ReviewPage
-            title={`${sectionName}, ${moduleLabel}`}
+          <CheckYourWork
+            cardTitle={`Section ${sectionNumber}, ${moduleLabel}: ${sectionName} Questions`}
             items={mapItems}
-            unanswered={questions.length - answeredCount}
             onPick={pickById}
-            footer={
-              confirming ? (
-                <div className="flex flex-col items-center gap-3">
-                  <p className="text-[17px] font-bold">
-                    {module.isLast ? "Finish the test now?" : "Finish this module now?"} You can’t come back to it.
-                  </p>
-                  <div className="flex gap-2.5">
-                    <Button variant="quiet" onClick={() => setConfirming(false)} disabled={finishing}>
-                      Keep working
-                    </Button>
-                    <Button onClick={() => void finish()} disabled={finishing}>
-                      {finishing ? "Finishing…" : finishLabel}
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <Button size="lg" onClick={() => setConfirming(true)}>
-                  {finishLabel}
-                </Button>
-              )
+            notes={
+              <>
+                <p>
+                  {questions.length - answeredCount === 0
+                    ? "You answered every question. You can still go back to any of them."
+                    : `${questions.length - answeredCount} question${questions.length - answeredCount === 1 ? " is" : "s are"} unanswered. Unanswered questions count as wrong.`}
+                </p>
+                <p>
+                  {module.isLast ? "Select " : "When you’re ready to move on, select "}
+                  <strong>Next</strong>
+                  {module.isLast ? " to finish the test." : ". You can’t come back to this module."}
+                </p>
+              </>
             }
           />
         )}
@@ -417,18 +407,22 @@ export function TestRunner({
 
       {mapOpen ? (
         <QuestionMapPopover
-          title={`${sectionName}, ${moduleLabel}`}
+          title={`Section ${sectionNumber}, ${moduleLabel}: ${sectionName} Questions`}
           onClose={() => setMapOpen(false)}
           footer={
-            <Button variant="quiet" size="sm" onClick={() => go({ kind: "review" })}>
-              Go to review page
-            </Button>
+            <GoToReviewButton onClick={() => go({ kind: "review" })} />
           }
         >
           <QuestionMapGrid items={mapItems} currentId={current?.id} onPick={pickById} />
         </QuestionMapPopover>
       ) : null}
 
+      {finishing ? (
+        <ModuleOverScreen
+          title={module.isLast ? "This Test Is Over" : "This Module Is Over"}
+          next={module.isLast ? "Your results open in a moment." : "The next module starts in a moment."}
+        />
+      ) : null}
       {panel === "calculator" ? <Calculator onClose={() => setPanel(null)} /> : null}
       {panel === "reference" ? <ReferenceSheet onClose={() => setPanel(null)} /> : null}
       {highlighting ? <HighlightHint /> : null}
@@ -446,7 +440,12 @@ export function TestRunner({
         }
         right={
           view.kind === "review" ? (
-            <Button onClick={() => go({ kind: "question", index: questions.length - 1 })}>Back</Button>
+            <>
+              <Button onClick={() => go({ kind: "question", index: questions.length - 1 })}>Back</Button>
+              <Button onClick={() => void finish()} disabled={finishing}>
+                Next
+              </Button>
+            </>
           ) : (
             <>
               {view.index > 0 ? (
@@ -468,35 +467,5 @@ export function TestRunner({
         }
       />
     </div>
-  );
-}
-
-function ReviewPage({
-  title,
-  items,
-  unanswered,
-  onPick,
-  footer,
-}: {
-  title: string;
-  items: MapItem[];
-  unanswered: number;
-  onPick: (id: string) => void;
-  footer: ReactNode;
-}) {
-  return (
-    <section className="mx-auto max-w-[720px] px-5 pt-10 text-center">
-      <h1 className="text-3xl font-extrabold tracking-tight">Check your work</h1>
-      <p className="mt-2 text-[17px] text-ink-soft">
-        {unanswered === 0
-          ? "You answered every question. You can still go back to any of them."
-          : `${unanswered} question${unanswered === 1 ? " is" : "s are"} unanswered. Unanswered questions count as wrong.`}
-      </p>
-      <div className="mt-8 rounded-card border border-hairline bg-paper p-6 text-left">
-        <p className="mb-4 font-bold">{title}</p>
-        <QuestionMapGrid items={items} onPick={onPick} />
-      </div>
-      <div className="mt-8">{footer}</div>
-    </section>
   );
 }
