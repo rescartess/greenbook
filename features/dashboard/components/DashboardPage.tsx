@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { SUBJECTS, type SubjectSlug } from "@/core/config/subjects";
 import { cn } from "@/core/design/ui";
 import { BtnLink, Bubbles, Card, PageTitle } from "@/core/shell";
+import { ColorSettings, getLook } from "@/features/profile";
 import { getDashboard, type DashboardData } from "../queries";
 
 /** An SAT section is scored from 200 to 800 (English and Math alike). */
@@ -34,11 +35,11 @@ function DashboardLoading() {
 }
 
 async function DashboardContent({ subject }: { subject: SubjectSlug }) {
-  const data = await getDashboard(subject);
-  return <DashboardView subject={subject} data={data} />;
+  const [data, look] = await Promise.all([getDashboard(subject), getLook()]);
+  return <DashboardView subject={subject} data={data} design={<ColorSettings initial={look.colors} compact />} />;
 }
 
-export function DashboardView({ subject, data }: { subject: SubjectSlug; data: DashboardData }) {
+export function DashboardView({ subject, data, design }: { subject: SubjectSlug; data: DashboardData; design?: React.ReactNode }) {
   const measured = data.domains.filter((d) => d.accuracy !== null).map((d) => d.accuracy!);
   const weakest = measured.length > 1 ? Math.min(...measured) : null;
   const firstTime = !data.resume && !data.score && measured.length === 0;
@@ -104,6 +105,13 @@ export function DashboardView({ subject, data }: { subject: SubjectSlug; data: D
             </p>
           ) : null}
         </Card>
+
+        {design ? (
+          <Card className="lg:col-span-2">
+            <h2 className="text-[17px] font-bold">Design color</h2>
+            {design}
+          </Card>
+        ) : null}
       </div>
     </>
   );

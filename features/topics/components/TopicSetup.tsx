@@ -8,7 +8,6 @@ import {
   MAX_PRACTICE_SIZE,
   PRACTICE_SIZES,
   satPaceMinutes,
-  satPaceSeconds,
   type CheckMode,
   type Difficulty,
   numbersText,
@@ -16,7 +15,7 @@ import {
 import type { SubjectSlug } from "@/core/config/subjects";
 import { cn } from "@/core/design/ui";
 import { Btn } from "@/core/shell";
-import { chunks, chunkStatus, itemsFor, levelCounts, suggestedStart, type TopicDetail } from "../schema";
+import { itemsFor, levelCounts, suggestedStart, type TopicDetail } from "../schema";
 
 type StartState = { message: string | null };
 type Props = {
@@ -48,7 +47,6 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
 
   const list = itemsFor(topic.items, difficulty);
   const total = list.length;
-  const ranges = chunks(list, size);
   const safeFrom = Math.min(Math.max(1, from), Math.max(1, total));
   const count = Math.max(0, Math.min(size, total - safeFrom + 1));
   const to = safeFrom + count - 1;
@@ -56,7 +54,6 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
   const pace = satPaceMinutes(subject, Math.max(1, count));
   const minutes = minutesText ?? String(pace);
   const minutesOk = !timed || (/^\d+$/.test(minutes) && Number(minutes) >= 1 && Number(minutes) <= 300);
-  const paceSeconds = satPaceSeconds(subject);
 
   const moveTo = (n: number) => {
     setFrom(n);
@@ -119,7 +116,6 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
                 const n = Math.trunc(Number(text));
                 if (n >= 1) setFrom(n);
               }}
-              hint={`1 to ${total}`}
             />
             <NumberField
               label="How many questions"
@@ -151,36 +147,6 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
             </p>
           ) : null}
 
-          <p className="mb-2.5 mt-6 text-[14px] font-semibold">Or pick a group of {size}</p>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(8.5rem,1fr))] gap-2">
-            {ranges.map((r) => {
-              const selected = r.from === safeFrom && count === r.size;
-              return (
-                <button
-                  key={r.from}
-                  type="button"
-                  aria-pressed={selected}
-                  onClick={() => moveTo(r.from)}
-                  className={cn(
-                    "rounded-[10px] border px-3.5 py-2.5 text-left transition-colors focus-visible:outline-2 focus-visible:outline-pine",
-                    selected ? "border-pine bg-pine-tint ring-1 ring-pine ring-inset" : "border-hairline bg-paper hover:border-graphite/40",
-                  )}
-                >
-                  <span className="block font-semibold tabular-nums">
-                    {r.from}–{r.to}
-                  </span>
-                  <span
-                    className={cn(
-                      "block text-[13px]",
-                      r.answered === r.size ? "font-semibold text-pine" : "text-graphite",
-                    )}
-                  >
-                    {chunkStatus(r)}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
         </Section>
       </div>
 
@@ -196,12 +162,8 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
 
         <section className="rounded-[14px] border border-hairline bg-paper p-5 sm:p-6">
           <div className="rounded-[10px] bg-mist px-5 py-5 text-center">
-            <p className="text-[14px] font-medium text-graphite">You’ll do</p>
-            <p className="mt-0.5 text-[34px] font-bold leading-tight tracking-[-0.01em] tabular-nums">
+            <p className="text-[34px] font-bold leading-tight tracking-[-0.01em] tabular-nums">
               {count === 0 ? "Nothing yet" : numbersText(safeFrom, to).replace(/^q/, "Q")}
-            </p>
-            <p className="text-[15px] text-ink-soft">
-              {count} {levelWord}question{count === 1 ? "" : "s"}, in order
             </p>
             {count > 0 && count <= 40 ? (
               <div
@@ -229,21 +191,18 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
             onChange={(e) => setNameText(e.target.value)}
             className="h-10 w-full rounded-[10px] border border-hairline bg-paper px-3 text-[15px] outline-none focus:border-pine"
           />
-          <p className="mt-1.5 text-[13px] text-graphite">Find it again in Results by this name</p>
 
           <p className="mb-2.5 mt-6 text-[14px] font-semibold">Answers</p>
           <div className="flex flex-col gap-2" role="radiogroup" aria-label="When to check answers">
             <Choice
               selected={checkMode === "each"}
               onSelect={() => setCheckMode("each")}
-              title="Check as you go"
-              detail="Press Check after each one"
+              title="Check one by one"
             />
             <Choice
               selected={checkMode === "end"}
               onSelect={() => setCheckMode("end")}
               title="Check at the end"
-              detail="Like the real test"
             />
           </div>
 
@@ -275,25 +234,8 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
                   />
                   minutes
                 </label>
-                <p className="mt-1.5 text-[13px] text-graphite">
-                  SAT pace: {Math.floor(paceSeconds / 60)} min {paceSeconds % 60} s a question
-                  {minutesText !== null && minutesText !== String(pace) ? (
-                    <>
-                      {" "}
-                      (
-                      <button type="button" className="underline" onClick={() => setMinutesText(null)}>
-                        use {pace} minutes
-                      </button>
-                      )
-                    </>
-                  ) : (
-                    ""
-                  )}
-                </p>
               </div>
-            ) : (
-              <p className="mt-0.5 text-[13px] text-graphite">No time limit</p>
-            )}
+            ) : null}
           </div>
 
           <Btn type="submit" className="mt-6 h-11 w-full text-[16px]" disabled={pending || count === 0 || !minutesOk || !nameOk}>
@@ -304,7 +246,6 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
               {state.message}
             </p>
           ) : null}
-          <p className="mt-3 text-center text-[13px] text-graphite">Same order for everyone</p>
         </section>
       </form>
     </div>
@@ -335,7 +276,7 @@ function Choice({
   disabled?: boolean;
   onSelect: () => void;
   title: string;
-  detail: string;
+  detail?: string;
 }) {
   return (
     <button
@@ -350,7 +291,7 @@ function Choice({
       )}
     >
       <span className={cn("block font-semibold", selected && "text-pine")}>{title}</span>
-      <span className="block text-[13px] text-graphite">{detail}</span>
+      {detail ? <span className="block text-[13px] text-graphite">{detail}</span> : null}
     </button>
   );
 }

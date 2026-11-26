@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { SUBJECTS } from "@/core/config/subjects";
 import { PageTitle, Shell, SideNav } from "@/core/shell";
 import type { DashboardData } from "../queries";
+import { ColorSettings } from "@/features/profile";
 import { DashboardView } from "./DashboardPage";
 
 const SAMPLE: DashboardData = {
@@ -34,7 +35,7 @@ export function DashboardPreview() {
   return (
     <Shell nav={<SideNav user={{ name: "ravshanbekrahmonov91", initials: "RA", isAdmin: true }} badges={{ english: { mistakes: 65 } }} />}>
       <PageTitle title="Dashboard" subtitle={SUBJECTS.english.name} />
-      <DashboardView subject="english" data={SAMPLE} />
+      <DashboardView subject="english" data={SAMPLE} design={<ColorSettings initial={{ main: null, background: null }} compact />} />
     </Shell>
   );
 }

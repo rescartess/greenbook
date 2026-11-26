@@ -30,7 +30,7 @@ function preview(colors: UserColors) {
  * behind the cards). Each has a few ready choices plus a picker for any color. The test and practice
  * screens keep their own colors.
  */
-export function ColorSettings({ initial }: { initial: UserColors }) {
+export function ColorSettings({ initial, compact = false }: { initial: UserColors; compact?: boolean }) {
   const [colors, setColors] = useState<UserColors>(initial);
   const [saved, setSaved] = useState<UserColors>(initial);
   const [message, setMessage] = useState<string | null>(null);
@@ -56,7 +56,8 @@ export function ColorSettings({ initial }: { initial: UserColors }) {
     });
 
   return (
-    <div className="mt-5 grid gap-5 border-t border-hairline pt-5">
+    <div className={compact ? "mt-4 grid gap-5" : "mt-5 grid gap-5 border-t border-hairline pt-5"}>
+      <div className={compact ? "grid gap-5 md:grid-cols-2 md:gap-8" : "grid gap-5"}>
       <ColorRow
         step="1"
         title="Main color"
@@ -75,7 +76,10 @@ export function ColorSettings({ initial }: { initial: UserColors }) {
         value={colors.background}
         onPick={(background) => pick({ ...colors, background })}
       />
+      </div>
 
+      {compact ? null : (
+        <>
       <div className="gb-colors rounded-[10px] border border-hairline bg-canvas p-3" aria-hidden="true">
         <div className="rounded-[8px] border border-hairline bg-paper p-3">
           <p className="text-[13px] font-semibold">Preview</p>
@@ -90,6 +94,9 @@ export function ColorSettings({ initial }: { initial: UserColors }) {
       </div>
 
       <p className="text-[13px] text-graphite">Used on every page except the test and practice screens, which keep the test-day look</p>
+
+        </>
+      )}
 
       <div className="flex flex-wrap items-center gap-2.5">
         <Btn onClick={save} disabled={pending || !dirty}>
