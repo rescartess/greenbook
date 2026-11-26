@@ -14,7 +14,7 @@ const WAYS = [
 
 export function HomePage() {
   return (
-    <div className="min-h-dvh bg-canvas">
+    <div className="gb-colors min-h-dvh bg-canvas">
       <header className="border-b border-hairline bg-paper">
         <nav className="mx-auto flex h-16 max-w-[1200px] items-center justify-between gap-3 px-5 sm:px-8">
           <Link href="/" className="text-ink">

@@ -2,8 +2,10 @@ import { Suspense } from "react";
 import { SUBJECTS, type SubjectSlug } from "@/core/config/subjects";
 import { cn } from "@/core/design/ui";
 import { BtnLink, Bubbles, Card, PageTitle } from "@/core/shell";
-import { ColorSettings, getLook } from "@/features/profile";
-import { getDashboard, type DashboardData } from "../queries";
+import { getCurrentUser } from "@/features/auth";
+import { BioEditor, ColorSettings, getLook } from "@/features/profile";
+import { getBanner, getDashboard, type DashboardData } from "../queries";
+import { ProfileBanner } from "./ProfileBanner";
 import { pickRoast } from "../roasts";
 import { RoastCard } from "./RoastCard";
 
@@ -36,24 +38,42 @@ function DashboardLoading() {
 }
 
 async function DashboardContent({ subject }: { subject: SubjectSlug }) {
-  const [data, look] = await Promise.all([getDashboard(subject), getLook()]);
-  return <DashboardView subject={subject} data={data} roast={pickRoast()} design={<ColorSettings initial={look.colors} compact />} />;
+  const [data, look, user, banner] = await Promise.all([getDashboard(subject), getLook(), getCurrentUser(), getBanner(subject)]);
+  return (
+    <DashboardView
+      subject={subject}
+      data={data}
+      roast={pickRoast()}
+      top={
+        <ProfileBanner
+          name={user.name}
+          initials={user.initials}
+          avatarUrl={look.avatarUrl}
+          banner={banner}
+          score={data.score}
+          bio={<BioEditor initial={banner.bio} />}
+        />
+      }
+      design={<ColorSettings initial={look.colors} compact />}
+    />
+  );
 }
 
 export function DashboardView({
   data,
   roast,
+  top,
   design,
 }: {
   subject: SubjectSlug;
   data: DashboardData;
   roast: string;
+  top?: React.ReactNode;
   design?: React.ReactNode;
 }) {
   const measured = data.domains.filter((d) => d.accuracy !== null).map((d) => d.accuracy!);
   const weakest = measured.length > 1 ? Math.min(...measured) : null;
   const firstTime = !data.resume && !data.score && measured.length === 0;
-  const both = Boolean(data.resume && data.score);
   return (
     <>
       {firstTime ? (
@@ -63,10 +83,11 @@ export function DashboardView({
       ) : null}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.7fr_1fr]">
-        {data.score ? <ScoreCard score={data.score} className={both ? undefined : "lg:col-span-2"} /> : null}
-        {data.resume ? <ContinueCard resume={data.resume} className={both ? undefined : "lg:col-span-2"} /> : null}
+        {top ?? (data.score ? <ScoreCard score={data.score} className="lg:col-span-2" /> : null)}
+        {data.resume ? <ContinueCard resume={data.resume} /> : null}
+        {data.resume ? <RoastCard first={roast} /> : null}
 
-        <Card>
+        <Card className={data.resume ? "lg:col-span-2" : undefined}>
           <h2 className="text-[17px] font-bold">Accuracy by area</h2>
           <ul className="mt-3">
             {data.domains.map((d) => {
@@ -94,7 +115,7 @@ export function DashboardView({
           </ul>
         </Card>
 
-        <RoastCard first={roast} />
+        {data.resume ? null : <RoastCard first={roast} />}
 
         {design ? (
           <Card className="lg:col-span-2">

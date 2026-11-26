@@ -4,3 +4,4 @@ export { ProfilePreview } from "./components/ProfilePreview";
 export { ProfileStyle } from "./components/ProfileStyle";
 export { getLook } from "./queries";
 export { ColorSettings } from "./components/ColorSettings";
+export { BioEditor } from "./components/BioEditor";

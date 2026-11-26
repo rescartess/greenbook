@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createDbClient } from "@/core/db/server";
 import { avatarUrl } from "@/core/shell";
-import { parseColor, parseName, parseTarget, parseTestDate, type ProfileFormState } from "./schema";
+import { parseBio, parseColor, parseName, parseTarget, parseTestDate, type ProfileFormState } from "./schema";
 
 async function userId() {
   const supabase = await createDbClient();
@@ -97,4 +97,16 @@ export async function removeAvatar(): Promise<ProfileFormState> {
   if (before?.avatar_path) await supabase.storage.from("avatars").remove([before.avatar_path]);
   revalidatePath("/", "layout");
   return { ok: true, message: "Photo removed" };
+}
+
+/** Saves the short bio shown in the dashboard banner (empty clears it). */
+export async function saveBio(text: string): Promise<ProfileFormState & { bio?: string | null }> {
+  const parsed = parseBio(text);
+  if (!parsed.ok) return { ok: false, message: parsed.message };
+  const { supabase, id } = await userId();
+  if (!id) return { ok: false, message: "Log in again to save." };
+  const { error } = await supabase.from("profiles").update({ bio: parsed.bio }).eq("id", id);
+  if (error) return { ok: false, message: "It couldn’t be saved. Try again." };
+  revalidatePath("/", "layout");
+  return { ok: true, message: "Saved", bio: parsed.bio };
 }

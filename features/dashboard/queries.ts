@@ -135,3 +135,32 @@ export async function getDashboard(subject: SubjectSlug): Promise<DashboardData>
 
   return { resume, score, domains, next, mistakeCount };
 }
+
+export type Banner = {
+  joined: string | null;
+  bio: string | null;
+  seconds: number;
+  answered: number;
+  bestScore: number | null;
+  rank: number;
+  students: number;
+};
+
+/** The numbers for the profile banner at the top of the dashboard (migration 0021). */
+export async function getBanner(subject: SubjectSlug): Promise<Banner> {
+  const empty: Banner = { joined: null, bio: null, seconds: 0, answered: 0, bestScore: null, rank: 1, students: 1 };
+  const supabase = await createDbClient();
+  const { data, error } = await supabase.rpc("get_my_banner", { p_subject: subject });
+  if (error || !data || typeof data !== "object" || Array.isArray(data)) return empty;
+  const d = data as Record<string, unknown>;
+  const num = (v: unknown, f: number) => (typeof v === "number" && Number.isFinite(v) ? v : f);
+  return {
+    joined: typeof d.joined === "string" ? d.joined : null,
+    bio: typeof d.bio === "string" ? d.bio : null,
+    seconds: num(d.seconds, 0),
+    answered: num(d.answered, 0),
+    bestScore: typeof d.bestScore === "number" ? d.bestScore : null,
+    rank: num(d.rank, 1),
+    students: Math.max(1, num(d.students, 1)),
+  };
+}

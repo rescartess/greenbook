@@ -243,3 +243,56 @@
     }
   }
 }
+
+/*
+ * GreenBook's own colors on the pages around the exam (owner request, 27 Nov 2026):
+ * a bright green on near-black in dark mode, like monkeytype; a brighter green in light mode.
+ * Only inside `.gb-colors` (side menu pages, admin, home, login, finished practice), so the
+ * test and practice screens keep their test-day look. A student's own Design color
+ * (UserColorsStyle, later in the page) still wins over these.
+ */
+.gb-colors {
+  --gb-canvas: #eef5ec;
+  --gb-mist: #f1f7ef;
+  --gb-hairline: #dde9da;
+  --gb-control: #cfe0cb;
+  --gb-ink: #0f1f12;
+  --gb-ink-soft: #33483a;
+  --gb-graphite: #55695a;
+  --gb-pine: #12801f;
+  --gb-pine-ink: #ffffff;
+  --gb-pine-soft: #7fd68a;
+  --gb-pine-tint: #e6f6e4;
+}
+
+[data-theme="dark"] .gb-colors {
+  --gb-paper: #0a1a0b;
+  --gb-mist: #0f2510;
+  --gb-canvas: #030603;
+  --gb-ink: #d4f7cc;
+  --gb-ink-soft: #a9dca0;
+  --gb-graphite: #62b35a;
+  --gb-hairline: #163416;
+  --gb-control: #1f4a1f;
+  --gb-pine: #3cff2a;
+  --gb-pine-ink: #031203;
+  --gb-pine-soft: #1e7a18;
+  --gb-pine-tint: #123a12;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .gb-colors {
+    --gb-paper: #0a1a0b;
+    --gb-mist: #0f2510;
+    --gb-canvas: #030603;
+    --gb-ink: #d4f7cc;
+    --gb-ink-soft: #a9dca0;
+    --gb-graphite: #62b35a;
+    --gb-hairline: #163416;
+    --gb-control: #1f4a1f;
+    --gb-pine: #3cff2a;
+    --gb-pine-ink: #031203;
+    --gb-pine-soft: #1e7a18;
+    --gb-pine-tint: #123a12;
+  }
+}

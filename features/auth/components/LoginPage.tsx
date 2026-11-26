@@ -6,7 +6,7 @@ import { LoginForm } from "./LoginForm";
 /** Sign-in screen: email plus the class invite code, or an emailed one-time link. No passwords to remember. */
 export function LoginPage() {
   return (
-    <main className="flex min-h-dvh flex-col bg-canvas">
+    <main className="gb-colors flex min-h-dvh flex-col bg-canvas">
       <header className="border-b border-hairline bg-paper">
         <div className="mx-auto flex h-16 max-w-[1200px] items-center px-5 sm:px-8">
           <Link href="/" className="text-ink">

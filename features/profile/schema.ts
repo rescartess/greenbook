@@ -54,3 +54,13 @@ export function parseTestDate(raw: unknown): { ok: true; date: string | null } |
 export function daysUntil(date: string, today: string): number {
   return Math.round((Date.parse(`${date}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / 86400000);
 }
+
+export const BIO_MAX = 160;
+
+/** A bio of up to 160 characters, spaces tidied; empty clears it. */
+export function parseBio(raw: unknown): { ok: true; bio: string | null } | { ok: false; message: string } {
+  const bio = String(raw ?? "").replace(/\s+/g, " ").trim();
+  if (!bio) return { ok: true, bio: null };
+  if (bio.length > BIO_MAX) return { ok: false, message: `Use ${BIO_MAX} characters or fewer.` };
+  return { ok: true, bio };
+}

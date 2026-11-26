@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { SUBJECTS } from "@/core/config/subjects";
 import { PageTitle, Shell, SideNav } from "@/core/shell";
 import type { DashboardData } from "../queries";
-import { ColorSettings } from "@/features/profile";
+import { BioEditor, ColorSettings } from "@/features/profile";
+import { ProfileBanner } from "./ProfileBanner";
 import { DashboardView } from "./DashboardPage";
 
 const SAMPLE: DashboardData = {
@@ -35,7 +36,18 @@ export function DashboardPreview() {
   return (
     <Shell nav={<SideNav user={{ name: "ravshanbekrahmonov91", initials: "RA", isAdmin: true }} badges={{ english: { mistakes: 65 } }} />}>
       <PageTitle title="Dashboard" subtitle={SUBJECTS.english.name} />
-      <DashboardView subject="english" data={SAMPLE} roast="1500+ is the only way to get her. Grind!" design={<ColorSettings initial={{ main: null, background: null }} compact />} />
+      <DashboardView subject="english" data={SAMPLE} roast="1500+ is the only way to get her. Grind!"
+        top={
+          <ProfileBanner
+            name="rescartess"
+            initials="RA"
+            avatarUrl={null}
+            score={SAMPLE.score}
+            banner={{ joined: "2026-11-24T10:00:00Z", bio: "Faster than the speed of light.", seconds: 232184, answered: 9010, bestScore: 610, rank: 3, students: 41 }}
+            bio={<BioEditor initial="Faster than the speed of light." />}
+          />
+        }
+        design={<ColorSettings initial={{ main: null, background: null }} compact />} />
     </Shell>
   );
 }

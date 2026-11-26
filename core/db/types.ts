@@ -221,6 +221,7 @@ export type Database = {
           accent_color: string | null
           avatar_path: string | null
           background_color: string | null
+          bio: string | null
           created_at: string
           display_name: string | null
           id: string
@@ -232,6 +233,7 @@ export type Database = {
           accent_color?: string | null
           avatar_path?: string | null
           background_color?: string | null
+          bio?: string | null
           created_at?: string
           display_name?: string | null
           id: string
@@ -243,6 +245,7 @@ export type Database = {
           accent_color?: string | null
           avatar_path?: string | null
           background_color?: string | null
+          bio?: string | null
           created_at?: string
           display_name?: string | null
           id?: string
@@ -563,6 +566,7 @@ export type Database = {
         Returns: Json
       }
       finish_practice: { Args: { p_attempt_id: string }; Returns: undefined }
+      get_my_banner: { Args: { p_subject: string }; Returns: Json }
       get_mistakes: { Args: { p_subject: string }; Returns: Json }
       get_practice_state: { Args: { p_attempt_id: string }; Returns: Json }
       retry_mistake: { Args: { p_answer: string; p_question_id: string }; Returns: Json }

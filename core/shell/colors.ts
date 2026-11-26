@@ -32,12 +32,12 @@ export const BACKGROUND_PRESETS = [
   { name: "Butter", hex: "#f6efc9" },
 ] as const;
 
-/** GreenBook's own values for the default swatches (same as app/globals.css). */
-export const DEFAULT_MAIN = "#2d5652";
-export const DEFAULT_BACKGROUND = "#eef2f0";
+/** GreenBook's own values for the default swatches (same as the .gb-colors block in app/globals.css). */
+export const DEFAULT_MAIN = "#12801f";
+export const DEFAULT_BACKGROUND = "#eef5ec";
 
-const LIGHT = { paper: "#ffffff", canvas: "#eef2f0", text: "#14201e" };
-const DARK = { paper: "#0f1716", canvas: "#0b1211", text: "#e6ecea" };
+const LIGHT = { paper: "#ffffff", canvas: "#eef5ec", text: "#0f1f12" };
+const DARK = { paper: "#0a1a0b", canvas: "#030603", text: "#d4f7cc" };
 
 export const isHex = (v: unknown): v is string => typeof v === "string" && /^#[0-9a-f]{6}$/.test(v);
 
