@@ -52,3 +52,45 @@ export function Bubbles({ done, total, label }: { done: number; total: number; l
 export function Meta({ children, className }: { children: ReactNode; className?: string }) {
   return <span className={cn("text-[13px] text-graphite tabular-nums", className)}>{children}</span>;
 }
+
+/** A segmented switch made of links, like English / Math. */
+export function SegmentLinks({ label, options }: { label: string; options: { label: string; href: string; active: boolean }[] }) {
+  return (
+    <nav aria-label={label} className="flex w-fit rounded-[10px] border border-hairline bg-mist p-[3px]">
+      {options.map((o) => (
+        <Link
+          key={o.href}
+          href={o.href}
+          aria-current={o.active ? "page" : undefined}
+          className={cn(
+            "rounded-[7px] px-4 py-1.5 text-[14px] font-semibold transition-colors",
+            o.active ? "bg-paper text-ink shadow-[0_1px_2px_rgb(0_0_0/0.06)] ring-1 ring-hairline" : "text-ink-soft hover:text-ink",
+          )}
+        >
+          {o.label}
+        </Link>
+      ))}
+    </nav>
+  );
+}
+
+/** A plain empty state: what is missing and what to do. */
+export function Empty({ title, children, action }: { title: string; children?: ReactNode; action?: ReactNode }) {
+  return (
+    <Card className="px-6 py-10 sm:px-8">
+      <p className="text-[17px] font-bold">{title}</p>
+      {children ? <p className="mt-1.5 max-w-xl text-[15px] text-ink-soft">{children}</p> : null}
+      {action ? <div className="mt-5">{action}</div> : null}
+    </Card>
+  );
+}
+
+/** A quiet note next to a title, like "Draft, only you can see it". */
+export function Note({ children }: { children: ReactNode }) {
+  return <span className="text-[13px] font-semibold text-graphite">{children}</span>;
+}
+
+/** Loading placeholder with the card's shape. */
+export function CardSkeleton({ className }: { className?: string }) {
+  return <div className={cn("rounded-[14px] border border-hairline bg-paper", className ?? "h-48")} />;
+}

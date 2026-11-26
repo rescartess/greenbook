@@ -15,7 +15,8 @@ import {
   type Difficulty,
 } from "@/core/config/practice";
 import type { SubjectSlug } from "@/core/config/subjects";
-import { Button, cn } from "@/core/design/ui";
+import { cn } from "@/core/design/ui";
+import { Btn } from "@/core/shell";
 import { chunks, chunkStatus, itemsFor, levelCounts, suggestedStart, type TopicDetail } from "../schema";
 
 type StartState = { message: string | null };
@@ -82,7 +83,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
               {topic.open.map((o) => (
                 <li key={o.attemptId} className="flex flex-wrap items-center justify-between gap-3 px-2 py-3">
                   <div>
-                    <p className="font-bold">{rangeLabel(o)}</p>
+                    <p className="font-semibold">{rangeLabel(o)}</p>
                     <p className="text-[14px] text-graphite">
                       {o.answered} of {o.total} answered,{" "}
                       {o.checkMode === "each" ? "checking as you go" : "checking at the end"}
@@ -90,7 +91,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
                   </div>
                   <Link
                     href={`/practice/${o.attemptId}`}
-                    className="rounded-full bg-wash px-4 py-2 text-sm font-bold hover:bg-hairline"
+                    className="inline-flex h-9 items-center rounded-[10px] border border-hairline bg-mist px-4 text-[14px] font-bold hover:bg-canvas"
                   >
                     Continue
                   </Link>
@@ -123,7 +124,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
             </span>
           }
         >
-          <div className="h-1.5 overflow-hidden rounded-full bg-mist" aria-hidden="true">
+          <div className="h-1 overflow-hidden rounded-full bg-mist" aria-hidden="true">
             <div className="h-full rounded-full bg-pine" style={{ width: `${total ? (answered / total) * 100 : 0}%` }} />
           </div>
 
@@ -170,7 +171,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
             </p>
           ) : null}
 
-          <p className="mb-2.5 mt-6 text-[15px] font-bold">Or pick a group of {size}</p>
+          <p className="mb-2.5 mt-6 text-[14px] font-semibold">Or pick a group of {size}</p>
           <div className="grid grid-cols-[repeat(auto-fill,minmax(8.5rem,1fr))] gap-2">
             {ranges.map((r) => {
               const selected = r.from === safeFrom && count === r.size;
@@ -181,11 +182,11 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
                   aria-pressed={selected}
                   onClick={() => moveTo(r.from)}
                   className={cn(
-                    "rounded-choice border-[1.5px] px-3.5 py-2.5 text-left transition-colors",
-                    selected ? "border-pine bg-pine-tint" : "border-hairline bg-paper hover:border-control",
+                    "rounded-[10px] border px-3.5 py-2.5 text-left transition-colors focus-visible:outline-2 focus-visible:outline-pine",
+                    selected ? "border-pine bg-pine-tint ring-1 ring-pine ring-inset" : "border-hairline bg-paper hover:border-graphite/40",
                   )}
                 >
-                  <span className="block font-bold tabular-nums">
+                  <span className="block font-semibold tabular-nums">
                     #{r.from}–{r.to}
                   </span>
                   <span
@@ -212,36 +213,50 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
         <input type="hidden" name="checkMode" value={checkMode} />
         <input type="hidden" name="minutes" value={timed ? minutes : ""} />
 
-        <section className="rounded-panel border border-hairline bg-paper p-6">
-          <div className="rounded-card bg-mist px-5 py-5 text-center">
-            <p className="text-[14px] font-semibold text-graphite">You’ll do</p>
-            <p className="mt-0.5 text-[40px] font-extrabold leading-tight tracking-tight tabular-nums">
+        <section className="rounded-[14px] border border-hairline bg-paper p-5 sm:p-6">
+          <div className="rounded-[10px] bg-mist px-5 py-5 text-center">
+            <p className="text-[14px] font-medium text-graphite">You’ll do</p>
+            <p className="mt-0.5 text-[34px] font-bold leading-tight tracking-[-0.01em] tabular-nums">
               {count === 0 ? "Nothing yet" : safeFrom === to ? `#${safeFrom}` : `#${safeFrom}–${to}`}
             </p>
             <p className="text-[15px] text-ink-soft">
               {count} {levelWord}question{count === 1 ? "" : "s"}, in order
             </p>
+            {count > 0 && count <= 40 ? (
+              <div
+                role="img"
+                aria-label={`${list.slice(safeFrom - 1, to).filter((i) => i.result !== null).length} of ${count} answered before`}
+                className="mx-auto mt-4 grid w-fit grid-cols-[repeat(10,12px)] gap-x-2 gap-y-1.5"
+              >
+                {list.slice(safeFrom - 1, to).map((item, i) => (
+                  <span
+                    key={i}
+                    className={cn("h-3 w-3 rounded-full", item.result !== null ? "bg-pine" : "border-[1.5px] border-graphite/45")}
+                  />
+                ))}
+              </div>
+            ) : null}
           </div>
 
-          <p className="mb-2.5 mt-6 text-[15px] font-bold">Answers</p>
+          <p className="mb-2.5 mt-6 text-[14px] font-semibold">Answers</p>
           <div className="flex flex-col gap-2" role="radiogroup" aria-label="When to check answers">
             <Choice
               selected={checkMode === "each"}
               onSelect={() => setCheckMode("each")}
               title="Check as you go"
-              detail="Press Check after each one."
+              detail="Press Check after each one"
             />
             <Choice
               selected={checkMode === "end"}
               onSelect={() => setCheckMode("end")}
               title="Check at the end"
-              detail="Like the real test."
+              detail="Like the real test"
             />
           </div>
 
-          <div className="mt-5 rounded-choice border-[1.5px] border-hairline px-4 py-3">
+          <div className="mt-5 rounded-[10px] border border-hairline px-4 py-3">
             <label className="flex cursor-pointer items-center justify-between gap-3">
-              <span className="font-bold">Timer</span>
+              <span className="font-semibold">Timer</span>
               <input
                 type="checkbox"
                 checked={timed}
@@ -263,7 +278,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
                     max={300}
                     value={minutes}
                     onChange={(e) => setMinutesText(e.target.value)}
-                    className="w-20 rounded-choice border-[1.5px] border-control bg-paper px-3 py-1.5 tabular-nums outline-none focus:border-pine"
+                    className="h-9 w-20 rounded-[8px] border border-hairline bg-paper px-3 tabular-nums outline-none focus:border-pine"
                   />
                   minutes
                 </label>
@@ -281,23 +296,22 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
                   ) : (
                     ""
                   )}
-                  .
                 </p>
               </div>
             ) : (
-              <p className="mt-0.5 text-[13px] text-graphite">No time limit.</p>
+              <p className="mt-0.5 text-[13px] text-graphite">No time limit</p>
             )}
           </div>
 
-          <Button type="submit" size="lg" className="mt-6 w-full" disabled={pending || count === 0 || !minutesOk}>
+          <Btn type="submit" className="mt-6 h-11 w-full text-[16px]" disabled={pending || count === 0 || !minutesOk}>
             {pending ? "Starting…" : count === 0 ? "No questions here yet" : `Start ${safeFrom === to ? `#${safeFrom}` : `#${safeFrom}–${to}`}`}
-          </Button>
+          </Btn>
           {state.message ? (
             <p role="alert" className="mt-3 text-center text-[14px] font-semibold">
               {state.message}
             </p>
           ) : null}
-          <p className="mt-3 text-center text-[13px] text-graphite">Same order for everyone.</p>
+          <p className="mt-3 text-center text-[13px] text-graphite">Same order for everyone</p>
         </section>
       </form>
     </div>
@@ -306,9 +320,9 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
 
 function Section({ title, aside, children }: { title: string; aside?: ReactNode; children: ReactNode }) {
   return (
-    <section className="rounded-panel border border-hairline bg-paper p-6">
+    <section className="rounded-[14px] border border-hairline bg-paper p-5 sm:p-6">
       <div className="mb-4 flex items-baseline justify-between gap-3">
-        <h2 className="text-[19px] font-extrabold tracking-tight">{title}</h2>
+        <h2 className="text-[17px] font-bold">{title}</h2>
         {aside}
       </div>
       {children}
@@ -338,11 +352,11 @@ function Choice({
       disabled={disabled}
       onClick={onSelect}
       className={cn(
-        "rounded-choice border-[1.5px] px-4 py-3 text-left transition-colors disabled:opacity-40",
-        selected ? "border-pine bg-pine-tint" : "border-hairline bg-paper enabled:hover:border-control",
+        "rounded-[10px] border px-4 py-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-pine disabled:opacity-40",
+        selected ? "border-pine bg-pine-tint ring-1 ring-pine ring-inset" : "border-hairline bg-paper enabled:hover:border-graphite/40",
       )}
     >
-      <span className={cn("block font-bold", selected && "text-pine")}>{title}</span>
+      <span className={cn("block font-semibold", selected && "text-pine")}>{title}</span>
       <span className="block text-[13px] text-graphite">{detail}</span>
     </button>
   );
@@ -368,7 +382,7 @@ function NumberField({
   return (
     <div>
       <label className="flex flex-col gap-2">
-        <span className="text-[15px] font-bold">{label}</span>
+        <span className="text-[14px] font-semibold">{label}</span>
         <input
           type="number"
           inputMode="numeric"
@@ -376,7 +390,7 @@ function NumberField({
           max={max}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full rounded-choice border-[1.5px] border-control bg-paper px-4 py-2.5 text-lg font-bold tabular-nums outline-none focus:border-pine"
+          className="h-11 w-full rounded-[10px] border border-hairline bg-paper px-4 text-[17px] font-semibold tabular-nums outline-none focus:border-pine"
         />
       </label>
       {hint ? <p className="mt-1.5 text-[13px] text-graphite">{hint}</p> : null}
@@ -392,8 +406,8 @@ function Pill({ selected, onClick, children }: { selected: boolean; onClick: () 
       aria-pressed={selected}
       onClick={onClick}
       className={cn(
-        "min-w-14 rounded-full border-[1.5px] px-4 py-1.5 font-bold tabular-nums transition-colors",
-        selected ? "border-pine bg-pine text-pine-ink" : "border-hairline bg-paper hover:border-control",
+        "h-8 min-w-12 rounded-[8px] border px-3 text-[14px] font-semibold tabular-nums transition-colors focus-visible:outline-2 focus-visible:outline-pine",
+        selected ? "border-pine bg-pine text-pine-ink" : "border-hairline bg-paper hover:border-graphite/40",
       )}
     >
       {children}
