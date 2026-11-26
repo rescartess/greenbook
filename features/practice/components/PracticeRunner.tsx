@@ -12,6 +12,7 @@ import {
   ExamTitle,
   ExamTopBar,
   HighlightHint,
+  HighlightMenu,
   HighlightTool,
   MapButton,
   MarkForReviewButton,
@@ -382,10 +383,13 @@ export function PracticeRunner({
 
       <main
         ref={mainRef}
-        onMouseUp={highlights.addFromSelection}
-        onTouchEnd={highlights.addFromSelection}
+        onMouseUp={(e) => highlights.onPointerUp(e.clientX, e.clientY)}
+        onTouchEnd={(e) => {
+          const t = e.changedTouches[0];
+          if (t) highlights.onPointerUp(t.clientX, t.clientY);
+        }}
         className={cn(
-          "mx-auto max-w-[1600px] pb-28",
+          "mx-auto max-w-[1600px] pb-28 min-[42rem]:pb-[79px]",
           highlighting && "[&_[data-passage]]:cursor-text",
         )}
       >
@@ -515,6 +519,14 @@ export function PracticeRunner({
         </QuestionMapPopover>
       ) : null}
       {highlighting ? <HighlightHint /> : null}
+      {highlights.active ? (
+        <HighlightMenu
+          active={highlights.active}
+          onColor={highlights.setActiveColor}
+          onUnderline={highlights.toggleActiveUnderline}
+          onDelete={highlights.removeActive}
+        />
+      ) : null}
       {finishing ? (
         <ModuleOverScreen
           title="Practice Complete"

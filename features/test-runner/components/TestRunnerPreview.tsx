@@ -6,6 +6,12 @@ import { TestRunner } from "./TestRunner";
 const PASSAGE =
   "Many city parks now plant native grasses instead of lawns. The grasses need less water and give shelter to insects. Park staff say the change has been ______: fewer hours are spent mowing, and visitors report seeing more butterflies.";
 
+const LONG = Array.from(
+  { length: 6 },
+  (_, i) =>
+    `Paragraph ${i + 1}. Many city parks now plant native grasses instead of lawns. The grasses need less water, give shelter to insects and birds, and stay green through dry summers. Park staff say the change has saved money on mowing, fuel and watering, and visitors report seeing more butterflies along the paths every year.`,
+).join("\n\n");
+
 /** Local-only preview of the test screen with made-up questions, for checking the design. */
 export function TestRunnerPreview() {
   if (process.env.NODE_ENV === "production") notFound();
@@ -13,7 +19,7 @@ export function TestRunnerPreview() {
     id: `q${i + 1}`,
     position: i + 1,
     type: "mcq" as const,
-    passage: PASSAGE,
+    passage: i === 0 ? LONG : PASSAGE,
     image: null,
     prompt: "Which choice completes the text with the most logical and precise word or phrase?",
     choices: [

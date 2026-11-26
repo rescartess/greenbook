@@ -1,7 +1,15 @@
 import { cn } from "@/core/design/ui";
 
 /** "Correct", "Incorrect" or "Skipped" in the grey question bar after a question is checked. */
-export function VerdictTag({ correct, skipped, className }: { correct: boolean; skipped?: boolean; className?: string }) {
+export function VerdictTag({
+  correct,
+  skipped,
+  className,
+}: {
+  correct: boolean;
+  skipped?: boolean;
+  className?: string;
+}) {
   return (
     <span
       className={cn(

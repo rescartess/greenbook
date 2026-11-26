@@ -21,7 +21,11 @@ export type Block =
   | { kind: "table"; header: Inline[][]; rows: Inline[][][] };
 
 type Mark = "em" | "strong" | "u";
-type Token = { kind: "text"; text: string } | { kind: "blank" } | { kind: "break" } | { kind: "mark"; mark: Mark; raw: string; close?: boolean };
+type Token =
+  | { kind: "text"; text: string }
+  | { kind: "blank" }
+  | { kind: "break" }
+  | { kind: "mark"; mark: Mark; raw: string; close?: boolean };
 
 const TOKEN = /(\*\*|\*|<u>|<\/u>|_{3,}|\n)/g;
 
@@ -40,7 +44,8 @@ function tokenize(source: string): Token[] {
     else tokens.push({ kind: "mark", mark: "u", raw, close: true });
     last = at + raw.length;
   }
-  if (last < source.length) tokens.push({ kind: "text", text: source.slice(last) });
+  if (last < source.length)
+    tokens.push({ kind: "text", text: source.slice(last) });
   return tokens;
 }
 
@@ -59,9 +64,11 @@ export function parseInline(source: string): Inline[] {
 
   for (const token of tokenize(source)) {
     if (token.kind === "text") pushText(top().children, token.text);
-    else if (token.kind === "blank" || token.kind === "break") top().children.push({ kind: token.kind });
+    else if (token.kind === "blank" || token.kind === "break")
+      top().children.push({ kind: token.kind });
     else {
-      const closes = token.mark === "u" ? token.close : top().mark === token.mark;
+      const closes =
+        token.mark === "u" ? token.close : top().mark === token.mark;
       if (closes && top().mark === token.mark) {
         const done = stack.pop()!;
         top().children.push({ kind: token.mark, children: done.children });
@@ -86,26 +93,42 @@ export function parseInline(source: string): Inline[] {
 }
 
 function cells(line: string): string[] {
-  return line.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
+  return line
+    .trim()
+    .replace(/^\|/, "")
+    .replace(/\|$/, "")
+    .split("|")
+    .map((c) => c.trim());
 }
 
 /** Parse a whole passage or prompt into blocks. */
 export function parseRichText(source: string): Block[] {
   const blocks: Block[] = [];
-  const chunks = source.replace(/\r\n/g, "\n").trim().split(/\n\s*\n/);
+  const chunks = source
+    .replace(/\r\n/g, "\n")
+    .trim()
+    .split(/\n\s*\n/);
 
   for (const chunk of chunks) {
     const lines = chunk.split("\n").filter((l) => l.trim() !== "");
     if (lines.length === 0) continue;
 
     if (lines.every((l) => l.trimStart().startsWith("- "))) {
-      blocks.push({ kind: "list", items: lines.map((l) => parseInline(l.trimStart().slice(2))) });
+      blocks.push({
+        kind: "list",
+        items: lines.map((l) => parseInline(l.trimStart().slice(2))),
+      });
     } else if (lines.every((l) => l.trimStart().startsWith("|"))) {
-      const rows = lines.filter((l) => !/^\s*\|?\s*:?-{2,}/.test(l)).map((l) => cells(l).map(parseInline));
+      const rows = lines
+        .filter((l) => !/^\s*\|?\s*:?-{2,}/.test(l))
+        .map((l) => cells(l).map(parseInline));
       const [header = [], ...body] = rows;
       blocks.push({ kind: "table", header, rows: body });
     } else {
-      blocks.push({ kind: "paragraph", children: parseInline(lines.join("\n")) });
+      blocks.push({
+        kind: "paragraph",
+        children: parseInline(lines.join("\n")),
+      });
     }
   }
   return blocks;
@@ -115,7 +138,15 @@ export function parseRichText(source: string): Block[] {
 export function toPlainText(source: string): string {
   const flatten = (nodes: Inline[]): string =>
     nodes
-      .map((n) => (n.kind === "text" ? n.text : n.kind === "blank" ? "____" : n.kind === "break" ? " " : flatten(n.children)))
+      .map((n) =>
+        n.kind === "text"
+          ? n.text
+          : n.kind === "blank"
+            ? "____"
+            : n.kind === "break"
+              ? " "
+              : flatten(n.children),
+      )
       .join("");
   return parseRichText(source)
     .map((b) =>
@@ -123,7 +154,9 @@ export function toPlainText(source: string): string {
         ? flatten(b.children)
         : b.kind === "list"
           ? b.items.map(flatten).join(" ")
-          : [b.header, ...b.rows].map((r) => r.map(flatten).join(" ")).join(" "),
+          : [b.header, ...b.rows]
+              .map((r) => r.map(flatten).join(" "))
+              .join(" "),
     )
     .join(" ");
 }

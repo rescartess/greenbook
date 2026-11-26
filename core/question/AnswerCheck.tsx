@@ -15,7 +15,13 @@ export type CheckFeedback = {
 
 type Props = {
   number: number;
-  question: { passage: string | null; image?: string | null; prompt: string; choices: QuestionChoice[]; type?: string };
+  question: {
+    passage: string | null;
+    image?: string | null;
+    prompt: string;
+    choices: QuestionChoice[];
+    type?: string;
+  };
   /** Feedback already given earlier (e.g. after reloading the page). */
   initialFeedback?: CheckFeedback | null;
   /** Sends the answer to the server and returns its verdict. Throw to show an error. */
@@ -26,10 +32,21 @@ type Props = {
 };
 
 /** Answer a question, check it right away, see why. Used by practice and by Mistakes. */
-export function AnswerCheck({ number, question, initialFeedback = null, onCheck, after, className }: Props) {
-  const [picked, setPicked] = useState<string | null>(initialFeedback?.answer ?? null);
+export function AnswerCheck({
+  number,
+  question,
+  initialFeedback = null,
+  onCheck,
+  after,
+  className,
+}: Props) {
+  const [picked, setPicked] = useState<string | null>(
+    initialFeedback?.answer ?? null,
+  );
   const [typed, setTyped] = useState(initialFeedback?.answer ?? "");
-  const [feedback, setFeedback] = useState<CheckFeedback | null>(initialFeedback);
+  const [feedback, setFeedback] = useState<CheckFeedback | null>(
+    initialFeedback,
+  );
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
   const typedAnswer = question.type === "spr";
@@ -42,7 +59,9 @@ export function AnswerCheck({ number, question, initialFeedback = null, onCheck,
       try {
         setFeedback(await onCheck(answer));
       } catch (e) {
-        setError(e instanceof Error ? e.message : "That didn’t work. Try again.");
+        setError(
+          e instanceof Error ? e.message : "That didn’t work. Try again.",
+        );
       }
     });
   };
@@ -65,7 +84,9 @@ export function AnswerCheck({ number, question, initialFeedback = null, onCheck,
                   disabled={Boolean(feedback)}
                   inputMode="decimal"
                   maxLength={6}
-                  onChange={(e) => setTyped(e.target.value.replace(/[^0-9./-]/g, ""))}
+                  onChange={(e) =>
+                    setTyped(e.target.value.replace(/[^0-9./-]/g, ""))
+                  }
                   className="rounded-choice border-[1.5px] border-control bg-paper px-4 py-3 text-lg tabular-nums outline-none focus:border-pine"
                 />
                 {feedback ? (
@@ -83,15 +104,27 @@ export function AnswerCheck({ number, question, initialFeedback = null, onCheck,
         <div
           className={cn(
             "mt-4 rounded-panel border px-6 py-5",
-            feedback.isCorrect ? "border-pine bg-pine-tint" : "border-hairline bg-paper",
+            feedback.isCorrect
+              ? "border-pine bg-pine-tint"
+              : "border-hairline bg-paper",
           )}
           aria-live="polite"
         >
-          <p className={cn("text-lg font-extrabold", feedback.isCorrect && "text-pine")}>
-            {feedback.isCorrect ? "Correct" : `Not quite. The answer is ${feedback.correctAnswer}.`}
+          <p
+            className={cn(
+              "text-lg font-extrabold",
+              feedback.isCorrect && "text-pine",
+            )}
+          >
+            {feedback.isCorrect
+              ? "Correct"
+              : `Not quite. The answer is ${feedback.correctAnswer}.`}
           </p>
           {feedback.explanation ? (
-            <RichText source={feedback.explanation} className="mt-1.5 text-[15px] leading-relaxed text-ink-soft" />
+            <RichText
+              source={feedback.explanation}
+              className="mt-1.5 text-[15px] leading-relaxed text-ink-soft"
+            />
           ) : null}
           {after ? <div className="mt-4">{after(feedback)}</div> : null}
         </div>

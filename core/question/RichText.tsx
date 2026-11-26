@@ -12,15 +12,27 @@ function renderInline(nodes: Inline[], keyPrefix = ""): ReactNode[] {
         return <br key={key} />;
       case "blank":
         return (
-          <span key={key} role="img" aria-label="blank" className="mx-0.5 inline-block w-[4.5em] border-b-[1.5px] border-ink align-baseline" />
+          <span
+            key={key}
+            role="img"
+            aria-label="blank"
+            className="mx-0.5 inline-block w-[4.5em] border-b-[1.5px] border-ink align-baseline"
+          />
         );
       case "em":
         return <em key={key}>{renderInline(node.children, `${key}-`)}</em>;
       case "strong":
-        return <strong key={key} className="font-bold">{renderInline(node.children, `${key}-`)}</strong>;
+        return (
+          <strong key={key} className="font-bold">
+            {renderInline(node.children, `${key}-`)}
+          </strong>
+        );
       case "u":
         return (
-          <u key={key} className="decoration-ink decoration-[1.5px] underline-offset-[3px]">
+          <u
+            key={key}
+            className="decoration-ink decoration-[1.5px] underline-offset-[3px]"
+          >
             {renderInline(node.children, `${key}-`)}
           </u>
         );
@@ -29,7 +41,8 @@ function renderInline(nodes: Inline[], keyPrefix = ""): ReactNode[] {
 }
 
 function renderBlock(block: Block, i: number): ReactNode {
-  if (block.kind === "paragraph") return <p key={i}>{renderInline(block.children)}</p>;
+  if (block.kind === "paragraph")
+    return <p key={i}>{renderInline(block.children)}</p>;
   if (block.kind === "list") {
     return (
       <ul key={i} className="list-disc space-y-1.5 pl-6 marker:text-graphite">
@@ -45,7 +58,11 @@ function renderBlock(block: Block, i: number): ReactNode {
         <thead>
           <tr>
             {block.header.map((cell, j) => (
-              <th key={j} scope="col" className="border border-control bg-mist px-3 py-2 text-left font-bold">
+              <th
+                key={j}
+                scope="col"
+                className="border border-control bg-mist px-3 py-2 text-left font-bold"
+              >
                 {renderInline(cell)}
               </th>
             ))}
@@ -55,7 +72,13 @@ function renderBlock(block: Block, i: number): ReactNode {
           {block.rows.map((row, r) => (
             <tr key={r}>
               {row.map((cell, j) => (
-                <td key={j} className={cn("border border-control px-3 py-2", j > 0 && "tabular-nums")}>
+                <td
+                  key={j}
+                  className={cn(
+                    "border border-control px-3 py-2",
+                    j > 0 && "tabular-nums",
+                  )}
+                >
                   {renderInline(cell)}
                 </td>
               ))}
@@ -68,7 +91,15 @@ function renderBlock(block: Block, i: number): ReactNode {
 }
 
 /** Draws question text in GreenBook's text format (see rich-text.ts). */
-export function RichText({ source, className, ...rest }: { source: string; className?: string; "data-passage"?: boolean }) {
+export function RichText({
+  source,
+  className,
+  ...rest
+}: {
+  source: string;
+  className?: string;
+  "data-passage"?: boolean;
+}) {
   return (
     <div className={cn("space-y-4", className)} {...rest}>
       {parseRichText(source).map(renderBlock)}
@@ -78,5 +109,11 @@ export function RichText({ source, className, ...rest }: { source: string; class
 
 /** One line of formatted text without paragraph spacing, e.g. an answer choice. */
 export function RichLine({ source }: { source: string }) {
-  return <>{parseRichText(source).flatMap((b) => (b.kind === "paragraph" ? renderInline(b.children) : []))}</>;
+  return (
+    <>
+      {parseRichText(source).flatMap((b) =>
+        b.kind === "paragraph" ? renderInline(b.children) : [],
+      )}
+    </>
+  );
 }

@@ -113,6 +113,13 @@
   --color-incorrect: var(--gb-incorrect);
   --color-incorrect-tint: var(--gb-incorrect-tint);
   --color-flag: var(--gb-flag);
+  /* Highlighter colors on exam screens; same in light and dark so marked text stays readable. */
+  --color-hl-yellow: #fdf0a6;
+  --color-hl-blue: #cfe6fb;
+  --color-hl-pink: #f9cdea;
+  --color-hl-yellow-strong: #f7dc4f;
+  --color-hl-blue-strong: #86c0f2;
+  --color-hl-pink-strong: #f08ccd;
   /* The homepage hero stays deep green in both themes. */
   --color-brand: #2d5652;
   --color-brand-up: #36645f;
@@ -183,10 +190,36 @@
   font-family: "Noto Serif Variable", "Noto Serif", Georgia, serif;
 }
 
-/* Passage highlights on the test screen (CSS Custom Highlight API). */
-::highlight(gb-mark) {
-  background-color: var(--gb-mark);
-  color: inherit;
+/* Passage highlights on exam screens (CSS Custom Highlight API): three colors and underline, like
+   Bluebook. The one being edited is drawn darker. Fixed colors so text stays readable in dark mode. */
+::highlight(gb-yellow) {
+  background-color: var(--color-hl-yellow);
+  color: #1a1a1a;
+}
+::highlight(gb-blue) {
+  background-color: var(--color-hl-blue);
+  color: #1a1a1a;
+}
+::highlight(gb-pink) {
+  background-color: var(--color-hl-pink);
+  color: #1a1a1a;
+}
+::highlight(gb-yellow-active) {
+  background-color: var(--color-hl-yellow-strong);
+  color: #1a1a1a;
+}
+::highlight(gb-blue-active) {
+  background-color: var(--color-hl-blue-strong);
+  color: #1a1a1a;
+}
+::highlight(gb-pink-active) {
+  background-color: var(--color-hl-pink-strong);
+  color: #1a1a1a;
+}
+::highlight(gb-underline) {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
 }
 
 @layer base {

@@ -81,13 +81,19 @@ export function QuestionView({
         className={cn(
           "flex flex-col",
           hasPassage && "@2xl:flex-row",
-          fillHeight && "@2xl:min-h-[calc(100dvh-146px)]",
+          // Between the exam bars (87px top, 79px bottom): passage and question scroll on their own, like Bluebook.
+          fillHeight && "@2xl:h-[calc(100dvh-166px)]",
         )}
         style={{ "--pw": `${passageWidth}%` } as CSSProperties}
       >
         {hasPassage ? (
           <>
-            <div className="px-6 py-7 text-[17px] leading-[1.7] @2xl:w-[var(--pw)] @2xl:shrink-0 @2xl:px-10 @2xl:py-8">
+            <div
+              className={cn(
+                "px-6 py-7 text-[17px] leading-[1.7] @2xl:w-[var(--pw)] @2xl:shrink-0 @2xl:px-10 @2xl:py-8",
+                fillHeight && "@2xl:overflow-y-auto @2xl:overscroll-contain",
+              )}
+            >
               {question.image ? (
                 // eslint-disable-next-line @next/next/no-img-element -- stored pictures of any size; no resizing service needed
                 <img
@@ -97,7 +103,9 @@ export function QuestionView({
                   loading="eager"
                 />
               ) : null}
-              {question.passage?.trim() ? <RichText source={question.passage} data-passage /> : null}
+              {question.passage?.trim() ? (
+                <RichText source={question.passage} data-passage />
+              ) : null}
             </div>
             <div
               className={cn(
@@ -150,6 +158,7 @@ export function QuestionView({
         <div
           className={cn(
             "flex min-w-0 flex-1 flex-col gap-5 px-6 py-7 @2xl:px-10 @2xl:py-8",
+            fillHeight && "@2xl:overflow-y-auto @2xl:overscroll-contain",
             !hasPassage && "mx-auto w-full max-w-3xl",
           )}
         >
@@ -180,9 +189,14 @@ export function QuestionView({
                 const isCorrect = correctId === choice.id;
                 const isSelected = selectedId === choice.id;
                 // Green: the right answer, or the student's pick when we only say it was right.
-                const green = isCorrect || (isSelected && !reviewing && pickVerdict === "right");
+                const green =
+                  isCorrect ||
+                  (isSelected && !reviewing && pickVerdict === "right");
                 // Red: the student's wrong pick.
-                const red = isSelected && !isCorrect && (reviewing || pickVerdict === "wrong");
+                const red =
+                  isSelected &&
+                  !isCorrect &&
+                  (reviewing || pickVerdict === "wrong");
                 const isOut = eliminated.includes(choice.id) && !isSelected;
                 // Pine: the student's current pick while answering.
                 const picked = isSelected && !reviewing && !pickVerdict;

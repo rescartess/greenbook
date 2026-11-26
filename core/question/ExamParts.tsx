@@ -2,6 +2,8 @@
 
 import { useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useTheme } from "@/core/design/theme";
+import type { ActiveHighlight } from "./exam-hooks";
+import { HIGHLIGHT_COLORS, type HighlightColor } from "./highlights";
 import { Button, cn } from "@/core/design/ui";
 
 /*
@@ -129,8 +131,24 @@ export function ExamClock({
       {!mounted ? (
         <span className="h-7" aria-hidden="true" />
       ) : hidden ? (
-        <span className="flex h-7 items-center text-sm text-graphite">
-          Timer hidden
+        <span
+          className="flex h-8 items-center text-graphite"
+          aria-label="Time hidden"
+        >
+          <svg
+            width="26"
+            height="26"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            aria-hidden="true"
+          >
+            <path d="M9.5 2.5h5M12 2.5v3M18.5 6.5l1.5-1.5" />
+            <circle cx="12" cy="13.5" r="7.5" />
+            <path d="M12 13.5V9.5M12 13.5h3" />
+          </svg>
         </span>
       ) : (
         <span
@@ -895,10 +913,114 @@ export function ExamProblem({ message }: { message: string | null }) {
 }
 
 /** The hint shown while the highlighter is on. */
+const SWATCH: Record<HighlightColor, string> = {
+  yellow: "bg-hl-yellow",
+  blue: "bg-hl-blue",
+  pink: "bg-hl-pink",
+};
+const COLOR_NAME: Record<HighlightColor, string> = {
+  yellow: "Yellow",
+  blue: "Blue",
+  pink: "Pink",
+};
+
+/** The floating menu for one highlight: pick a color, underline it, or delete it. Opens above the words. */
+export function HighlightMenu({
+  active,
+  onColor,
+  onUnderline,
+  onDelete,
+}: {
+  active: ActiveHighlight;
+  onColor: (c: HighlightColor) => void;
+  onUnderline: () => void;
+  onDelete: () => void;
+}) {
+  const above = active.top > 170;
+  return (
+    <div
+      role="toolbar"
+      aria-label="Highlight"
+      className="exam fixed z-40 flex -translate-x-1/2 items-center gap-2.5 rounded-full border border-hairline bg-paper px-3 py-2 shadow-xl"
+      style={{
+        top: above ? active.top - 66 : active.bottom + 12,
+        left: `clamp(170px, ${active.left}px, calc(100vw - 170px))`,
+      }}
+      onMouseUp={(e) => e.stopPropagation()}
+      onTouchEnd={(e) => e.stopPropagation()}
+    >
+      {HIGHLIGHT_COLORS.map((c) => {
+        const on = active.mark.color === c;
+        return (
+          <button
+            key={c}
+            type="button"
+            aria-label={`${COLOR_NAME[c]} highlight`}
+            aria-pressed={on}
+            onClick={() => onColor(c)}
+            className={cn(
+              "flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] text-ink",
+              SWATCH[c],
+              on ? "border-[3px] border-ink" : "border-graphite",
+            )}
+          >
+            {on ? (
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                aria-hidden="true"
+              >
+                <path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z" />
+              </svg>
+            ) : null}
+          </button>
+        );
+      })}
+      <button
+        type="button"
+        aria-label="Underline"
+        aria-pressed={active.mark.underline}
+        onClick={onUnderline}
+        className={cn(
+          "flex h-10 w-10 items-center justify-center rounded-full text-[18px] font-bold underline underline-offset-4",
+          active.mark.underline ? "bg-ink text-paper" : "hover:bg-wash",
+        )}
+      >
+        U
+      </button>
+      <span className="h-6 w-px bg-hairline" aria-hidden="true" />
+      <button
+        type="button"
+        aria-label="Delete highlight"
+        onClick={onDelete}
+        className="flex h-10 w-10 items-center justify-center rounded-full border-[1.5px] border-graphite hover:bg-wash"
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinecap="round"
+          aria-hidden="true"
+        >
+          <path d="M4 7h16M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13M10 11v6M14 11v6" />
+        </svg>
+      </button>
+    </div>
+  );
+}
+
 export function HighlightHint() {
   return (
     <p className="fixed inset-x-0 top-[86px] z-20 mx-auto w-fit rounded-full bg-ink px-4 py-1.5 font-sans text-[13px] font-semibold text-paper">
-      Select words in the passage to highlight them
+      Select words in the passage to highlight them. Tap a highlight to change
+      or delete it.
     </p>
   );
 }
