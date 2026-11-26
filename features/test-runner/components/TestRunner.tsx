@@ -19,6 +19,7 @@ import {
   MarkForReviewButton,
   MenuItem,
   ThemeTool,
+  FullscreenTool,
   ModuleOverScreen,
   MoreTool,
   QuestionMapGrid,
@@ -246,7 +247,9 @@ export function TestRunner({
           <ExamTitle
             title={
               <>
-                <span className="hidden sm:inline">Section {sectionNumber}, </span>
+                <span className="hidden sm:inline">
+                  Section {sectionNumber},{" "}
+                </span>
                 {moduleLabel}
                 <span className="hidden sm:inline">: {sectionName}</span>
               </>
@@ -258,14 +261,20 @@ export function TestRunner({
         right={
           <>
             {tools.includes("annotate") ? (
-              <HighlightTool on={highlighting} onToggle={() => setHighlighting((h) => !h)} />
+              <HighlightTool
+                on={highlighting}
+                onToggle={() => setHighlighting((h) => !h)}
+              />
             ) : null}
+            <FullscreenTool />
             <ThemeTool />
             {tools.includes("calculator") && DESMOS_KEY ? (
               <ToolButton
                 label="Calculator"
                 pressed={panel === "calculator"}
-                onClick={() => setPanel((p) => (p === "calculator" ? null : "calculator"))}
+                onClick={() =>
+                  setPanel((p) => (p === "calculator" ? null : "calculator"))
+                }
               >
                 <path d="M6 3h12v18H6zM9 7h6M9 12h1M14 12h1M9 16h1M14 16h1" />
               </ToolButton>
@@ -274,7 +283,9 @@ export function TestRunner({
               <ToolButton
                 label="Reference"
                 pressed={panel === "reference"}
-                onClick={() => setPanel((p) => (p === "reference" ? null : "reference"))}
+                onClick={() =>
+                  setPanel((p) => (p === "reference" ? null : "reference"))
+                }
               >
                 <path d="M5 4h10l4 4v12H5zM9 11h6M9 15h4M14 4v5h5" />
               </ToolButton>
@@ -305,13 +316,23 @@ export function TestRunner({
                 <div className="px-4 py-3">
                   <p className="font-bold">Delete this attempt?</p>
                   <p className="mt-1 text-[13px] text-graphite">
-                    Your answers in this test will be lost. You can start the test again later.
+                    Your answers in this test will be lost. You can start the
+                    test again later.
                   </p>
                   <div className="mt-3 flex gap-2">
-                    <Button size="sm" variant="quiet" disabled={exiting !== null} onClick={() => setExitStep("menu")}>
+                    <Button
+                      size="sm"
+                      variant="quiet"
+                      disabled={exiting !== null}
+                      onClick={() => setExitStep("menu")}
+                    >
                       Keep it
                     </Button>
-                    <Button size="sm" disabled={exiting !== null} onClick={() => void exit("delete")}>
+                    <Button
+                      size="sm"
+                      disabled={exiting !== null}
+                      onClick={() => void exit("delete")}
+                    >
                       {exiting === "delete" ? "Deleting…" : "Delete and exit"}
                     </Button>
                   </div>
@@ -329,7 +350,10 @@ export function TestRunner({
         ref={mainRef}
         onMouseUp={highlights.addFromSelection}
         onTouchEnd={highlights.addFromSelection}
-        className={cn("mx-auto max-w-[1600px] pb-28", highlighting && "[&_[data-passage]]:cursor-text")}
+        className={cn(
+          "mx-auto max-w-[1600px] pb-28",
+          highlighting && "[&_[data-passage]]:cursor-text",
+        )}
       >
         {current ? (
           <QuestionView
@@ -351,7 +375,9 @@ export function TestRunner({
                     const r = responses[current.id] ?? EMPTY;
                     const out = r.eliminated.includes(id);
                     update(current.id, {
-                      eliminated: out ? r.eliminated.filter((e) => e !== id) : [...r.eliminated, id],
+                      eliminated: out
+                        ? r.eliminated.filter((e) => e !== id)
+                        : [...r.eliminated, id],
                       answer: !out && r.answer === id ? null : r.answer,
                     });
                   }
@@ -363,15 +389,24 @@ export function TestRunner({
             headerExtra={
               <MarkForReviewButton
                 marked={responses[current.id]?.marked ?? false}
-                onToggle={() => update(current.id, { marked: !(responses[current.id]?.marked ?? false) })}
+                onToggle={() =>
+                  update(current.id, {
+                    marked: !(responses[current.id]?.marked ?? false),
+                  })
+                }
               />
             }
             headerRight={
               <>
                 {mounted && highlights.marks[current.id]?.length ? (
-                  <ClearHighlightsButton onClick={() => highlights.clear(current.id)} />
+                  <ClearHighlightsButton
+                    onClick={() => highlights.clear(current.id)}
+                  />
                 ) : null}
-                <CrossOutToggle on={crossOut} onToggle={() => setCrossOut((c) => !c)} />
+                <CrossOutToggle
+                  on={crossOut}
+                  onToggle={() => setCrossOut((c) => !c)}
+                />
               </>
             }
             answerSlot={
@@ -379,7 +414,9 @@ export function TestRunner({
                 <TypedAnswer
                   key={current.id}
                   initial={responses[current.id]?.answer ?? ""}
-                  onCommit={(value) => update(current.id, { answer: value || null })}
+                  onCommit={(value) =>
+                    update(current.id, { answer: value || null })
+                  }
                 />
               ) : undefined
             }
@@ -397,9 +434,13 @@ export function TestRunner({
                     : `${questions.length - answeredCount} question${questions.length - answeredCount === 1 ? " is" : "s are"} unanswered. Unanswered questions count as wrong.`}
                 </p>
                 <p>
-                  {module.isLast ? "Select " : "When you’re ready to move on, select "}
+                  {module.isLast
+                    ? "Select "
+                    : "When you’re ready to move on, select "}
                   <strong>Next</strong>
-                  {module.isLast ? " to finish the test." : ". You can’t come back to this module."}
+                  {module.isLast
+                    ? " to finish the test."
+                    : ". You can’t come back to this module."}
                 </p>
               </>
             }
@@ -411,22 +452,32 @@ export function TestRunner({
         <QuestionMapPopover
           title={`Section ${sectionNumber}, ${moduleLabel}: ${sectionName} Questions`}
           onClose={() => setMapOpen(false)}
-          footer={
-            <GoToReviewButton onClick={() => go({ kind: "review" })} />
-          }
+          footer={<GoToReviewButton onClick={() => go({ kind: "review" })} />}
         >
-          <QuestionMapGrid items={mapItems} currentId={current?.id} onPick={pickById} />
+          <QuestionMapGrid
+            items={mapItems}
+            currentId={current?.id}
+            onPick={pickById}
+          />
         </QuestionMapPopover>
       ) : null}
 
       {finishing ? (
         <ModuleOverScreen
           title={module.isLast ? "This Test Is Over" : "This Module Is Over"}
-          next={module.isLast ? "Your results open in a moment." : "The next module starts in a moment."}
+          next={
+            module.isLast
+              ? "Your results open in a moment."
+              : "The next module starts in a moment."
+          }
         />
       ) : null}
-      {panel === "calculator" ? <Calculator onClose={() => setPanel(null)} /> : null}
-      {panel === "reference" ? <ReferenceSheet onClose={() => setPanel(null)} /> : null}
+      {panel === "calculator" ? (
+        <Calculator onClose={() => setPanel(null)} />
+      ) : null}
+      {panel === "reference" ? (
+        <ReferenceSheet onClose={() => setPanel(null)} />
+      ) : null}
       {highlighting ? <HighlightHint /> : null}
 
       <ExamBottomBar
@@ -443,7 +494,13 @@ export function TestRunner({
         right={
           view.kind === "review" ? (
             <>
-              <Button onClick={() => go({ kind: "question", index: questions.length - 1 })}>Back</Button>
+              <Button
+                onClick={() =>
+                  go({ kind: "question", index: questions.length - 1 })
+                }
+              >
+                Back
+              </Button>
               <Button onClick={() => void finish()} disabled={finishing}>
                 Next
               </Button>
@@ -451,7 +508,13 @@ export function TestRunner({
           ) : (
             <>
               {view.index > 0 ? (
-                <Button onClick={() => go({ kind: "question", index: view.index - 1 })}>Back</Button>
+                <Button
+                  onClick={() =>
+                    go({ kind: "question", index: view.index - 1 })
+                  }
+                >
+                  Back
+                </Button>
               ) : null}
               <Button
                 onClick={() =>

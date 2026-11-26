@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type ReactNode } from "react";
+import { useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useTheme } from "@/core/design/theme";
 import { Button, cn } from "@/core/design/ui";
 
@@ -10,7 +10,15 @@ import { Button, cn } from "@/core/design/ui";
  */
 
 /** Top bar: title and directions on the left, clock in the middle, tools on the right. */
-export function ExamTopBar({ left, center, right }: { left: ReactNode; center?: ReactNode; right: ReactNode }) {
+export function ExamTopBar({
+  left,
+  center,
+  right,
+}: {
+  left: ReactNode;
+  center?: ReactNode;
+  right: ReactNode;
+}) {
   return (
     <header className="sticky top-0 z-30 bg-pine-tint font-sans">
       <div className="mx-auto grid min-h-[84px] max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-8">
@@ -18,7 +26,9 @@ export function ExamTopBar({ left, center, right }: { left: ReactNode; center?: 
         <div className="flex flex-col items-center gap-1" aria-live="polite">
           {center}
         </div>
-        <div className="flex items-center justify-end gap-1 sm:gap-2">{right}</div>
+        <div className="flex items-center justify-end gap-1 sm:gap-2">
+          {right}
+        </div>
       </div>
       <div className="border-b-[3px] border-dashed border-ink/70" />
     </header>
@@ -26,21 +36,39 @@ export function ExamTopBar({ left, center, right }: { left: ReactNode; center?: 
 }
 
 /** Bottom bar: name on the left, question map button in the middle, Back/Next on the right. */
-export function ExamBottomBar({ left, center, right }: { left?: ReactNode; center: ReactNode; right: ReactNode }) {
+export function ExamBottomBar({
+  left,
+  center,
+  right,
+}: {
+  left?: ReactNode;
+  center: ReactNode;
+  right: ReactNode;
+}) {
   return (
     <footer className="fixed inset-x-0 bottom-0 z-30 bg-pine-tint font-sans">
       <div className="border-t-[3px] border-dashed border-ink/70" />
       <div className="mx-auto grid h-[76px] max-w-[1600px] grid-cols-[auto_1fr] items-center gap-2 px-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-3 sm:px-8">
-        <span className="hidden min-w-0 truncate text-[19px] font-medium sm:block">{left}</span>
+        <span className="hidden min-w-0 truncate text-[19px] font-medium sm:block">
+          {left}
+        </span>
         <div className="sm:col-start-2">{center}</div>
-        <div className="flex justify-end gap-1.5 sm:gap-2 [&>button]:max-sm:px-3.5">{right}</div>
+        <div className="flex justify-end gap-1.5 sm:gap-2 [&>button]:max-sm:px-3.5">
+          {right}
+        </div>
       </div>
     </footer>
   );
 }
 
 /** Title line plus a "Directions" popover, for the left of the top bar. */
-export function ExamTitle({ title, directions }: { title: ReactNode; directions?: readonly string[] }) {
+export function ExamTitle({
+  title,
+  directions,
+}: {
+  title: ReactNode;
+  directions?: readonly string[];
+}) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -54,7 +82,9 @@ export function ExamTitle({ title, directions }: { title: ReactNode; directions?
             className="mt-1 flex items-center gap-1.5 text-[16px] font-medium hover:underline"
           >
             Directions
-            <Chevron className={cn("transition-transform", open && "rotate-180")} />
+            <Chevron
+              className={cn("transition-transform", open && "rotate-180")}
+            />
           </button>
           {open ? (
             <div
@@ -63,7 +93,10 @@ export function ExamTitle({ title, directions }: { title: ReactNode; directions?
               className="absolute left-0 top-full z-40 mt-3 w-[min(560px,90vw)] rounded-panel border border-hairline bg-paper p-6 shadow-lg"
             >
               {directions.map((d) => (
-                <p key={d} className="mb-3 text-[15px] leading-relaxed last:mb-0">
+                <p
+                  key={d}
+                  className="mb-3 text-[15px] leading-relaxed last:mb-0"
+                >
                   {d}
                 </p>
               ))}
@@ -81,7 +114,13 @@ export function ExamTitle({ title, directions }: { title: ReactNode; directions?
 }
 
 /** The clock with its Hide/Show pill. Pass `remaining` in milliseconds; null draws nothing. */
-export function ExamClock({ remaining, mounted }: { remaining: number | null; mounted: boolean }) {
+export function ExamClock({
+  remaining,
+  mounted,
+}: {
+  remaining: number | null;
+  mounted: boolean;
+}) {
   const [hidden, setHidden] = useState(false);
   if (remaining === null) return null;
   const low = remaining <= 5 * 60 * 1000;
@@ -90,10 +129,15 @@ export function ExamClock({ remaining, mounted }: { remaining: number | null; mo
       {!mounted ? (
         <span className="h-7" aria-hidden="true" />
       ) : hidden ? (
-        <span className="flex h-7 items-center text-sm text-graphite">Timer hidden</span>
+        <span className="flex h-7 items-center text-sm text-graphite">
+          Timer hidden
+        </span>
       ) : (
         <span
-          className={cn("text-[26px] font-bold leading-8 tabular-nums", low && "text-pine")}
+          className={cn(
+            "text-[26px] font-bold leading-8 tabular-nums",
+            low && "text-pine",
+          )}
           aria-label={`Time left ${formatClock(remaining)}`}
         >
           {formatClock(remaining)}
@@ -162,10 +206,86 @@ export function ToolButton({
 }
 
 /** Highlighter tool for the top bar. */
-export function HighlightTool({ on, onToggle }: { on: boolean; onToggle: () => void }) {
+export function HighlightTool({
+  on,
+  onToggle,
+}: {
+  on: boolean;
+  onToggle: () => void;
+}) {
   return (
     <ToolButton label="Highlight" pressed={on} onClick={onToggle}>
       <path d="M4 20h6M14.5 4.5l5 5L10 19H5v-5z" />
+    </ToolButton>
+  );
+}
+
+type FullscreenDoc = Document & {
+  webkitFullscreenElement?: Element | null;
+  webkitFullscreenEnabled?: boolean;
+  webkitExitFullscreen?: () => Promise<void> | void;
+};
+type FullscreenEl = HTMLElement & {
+  webkitRequestFullscreen?: () => Promise<void> | void;
+};
+
+function subscribeFullscreen(onChange: () => void) {
+  document.addEventListener("fullscreenchange", onChange);
+  document.addEventListener("webkitfullscreenchange", onChange);
+  return () => {
+    document.removeEventListener("fullscreenchange", onChange);
+    document.removeEventListener("webkitfullscreenchange", onChange);
+  };
+}
+const fullscreenSupported = () => {
+  const d = document as FullscreenDoc;
+  return Boolean(d.fullscreenEnabled || d.webkitFullscreenEnabled);
+};
+const inFullscreen = () => {
+  const d = document as FullscreenDoc;
+  return Boolean(d.fullscreenElement || d.webkitFullscreenElement);
+};
+
+/** Full screen switch in the top bar, next to Highlight. Hidden where the browser can't do it (iPhone). */
+export function FullscreenTool() {
+  const supported = useSyncExternalStore(
+    subscribeFullscreen,
+    fullscreenSupported,
+    () => false,
+  );
+  const on = useSyncExternalStore(
+    subscribeFullscreen,
+    inFullscreen,
+    () => false,
+  );
+  if (!supported) return null;
+  const toggle = () => {
+    const d = document as FullscreenDoc;
+    const el = document.documentElement as FullscreenEl;
+    try {
+      if (on)
+        void (d.exitFullscreen
+          ? d.exitFullscreen()
+          : d.webkitExitFullscreen?.());
+      else
+        void (el.requestFullscreen
+          ? el.requestFullscreen()
+          : el.webkitRequestFullscreen?.());
+    } catch {
+      // The browser refused (for example inside an embedded page); nothing else changes.
+    }
+  };
+  return (
+    <ToolButton
+      label={on ? "Exit full screen" : "Full screen"}
+      pressed={on}
+      onClick={toggle}
+    >
+      {on ? (
+        <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" />
+      ) : (
+        <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+      )}
     </ToolButton>
   );
 }
@@ -175,7 +295,11 @@ export function ThemeTool() {
   const { theme, toggle } = useTheme();
   const dark = theme === "dark";
   return (
-    <ToolButton label={dark ? "Light mode" : "Dark mode"} pressed={false} onClick={toggle}>
+    <ToolButton
+      label={dark ? "Light mode" : "Dark mode"}
+      pressed={false}
+      onClick={toggle}
+    >
       {dark ? (
         <>
           <circle cx="12" cy="12" r="4" />
@@ -245,15 +369,30 @@ export function MenuItem({
 }
 
 /** "Mark for Review" in the grey question bar. */
-export function MarkForReviewButton({ marked, onToggle }: { marked: boolean; onToggle: () => void }) {
+export function MarkForReviewButton({
+  marked,
+  onToggle,
+}: {
+  marked: boolean;
+  onToggle: () => void;
+}) {
   return (
     <button
       type="button"
       aria-pressed={marked}
       onClick={onToggle}
-      className={cn("flex items-center gap-2 text-[17px]", marked ? "font-medium" : "hover:underline")}
+      className={cn(
+        "flex items-center gap-2 text-[17px]",
+        marked ? "font-medium" : "hover:underline",
+      )}
     >
-      <svg width="17" height="20" viewBox="0 0 16 18" aria-hidden="true" className={marked ? "text-flag" : ""}>
+      <svg
+        width="17"
+        height="20"
+        viewBox="0 0 16 18"
+        aria-hidden="true"
+        className={marked ? "text-flag" : ""}
+      >
         <path
           d="M2.5 1.5h11v15L8 12.5l-5.5 4z"
           fill={marked ? "currentColor" : "none"}
@@ -268,7 +407,13 @@ export function MarkForReviewButton({ marked, onToggle }: { marked: boolean; onT
 }
 
 /** The ABC switch that turns on crossing out choices. */
-export function CrossOutToggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
+export function CrossOutToggle({
+  on,
+  onToggle,
+}: {
+  on: boolean;
+  onToggle: () => void;
+}) {
   return (
     <button
       type="button"
@@ -288,7 +433,11 @@ export function CrossOutToggle({ on, onToggle }: { on: boolean; onToggle: () => 
 
 export function ClearHighlightsButton({ onClick }: { onClick: () => void }) {
   return (
-    <button type="button" onClick={onClick} className="mr-3 text-[13px] text-ink-soft hover:underline">
+    <button
+      type="button"
+      onClick={onClick}
+      className="mr-3 text-[13px] text-ink-soft hover:underline"
+    >
       Clear highlights
     </button>
   );
@@ -328,7 +477,8 @@ export function TypedAnswer({
         className="rounded-choice border-[1.5px] border-control bg-paper px-4 py-3 text-lg tabular-nums outline-none focus:border-pine disabled:opacity-70"
       />
       <span className="text-[13px] text-graphite">
-        Up to 5 characters for a positive answer, 6 for a negative one. Fractions like 3/4 are fine.
+        Up to 5 characters for a positive answer, 6 for a negative one.
+        Fractions like 3/4 are fine.
       </span>
     </label>
   );
@@ -366,12 +516,16 @@ export function MapButton({
       ) : (
         label
       )}
-      <Chevron className={cn("transition-transform", !open && "rotate-180")} strokeWidth={1.8} />
+      <Chevron
+        className={cn("transition-transform", !open && "rotate-180")}
+        strokeWidth={1.8}
+      />
     </button>
   );
 }
 
-export type MapItemState = "unanswered" | "answered" | "correct" | "wrong" | "skipped";
+export type MapItemState =
+  "unanswered" | "answered" | "correct" | "wrong" | "skipped";
 
 export type MapItem = {
   id: string;
@@ -389,32 +543,75 @@ const STATE_LABEL: Record<MapItemState, string> = {
   skipped: "Skipped",
 };
 
-const STATE_ORDER: MapItemState[] = ["unanswered", "answered", "correct", "wrong", "skipped"];
+const STATE_ORDER: MapItemState[] = [
+  "unanswered",
+  "answered",
+  "correct",
+  "wrong",
+  "skipped",
+];
 
 /** The red bookmark that marks a question for review. */
-export function ReviewFlag({ size = 16, className }: { size?: number; className?: string }) {
+export function ReviewFlag({
+  size = 16,
+  className,
+}: {
+  size?: number;
+  className?: string;
+}) {
   return (
-    <svg width={size} height={size * 1.15} viewBox="0 0 16 18" aria-hidden="true" className={cn("text-flag", className)}>
-      <path d="M2.5 1.5h11v15L8 12.5l-5.5 4z" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    <svg
+      width={size}
+      height={size * 1.15}
+      viewBox="0 0 16 18"
+      aria-hidden="true"
+      className={cn("text-flag", className)}
+    >
+      <path
+        d="M2.5 1.5h11v15L8 12.5l-5.5 4z"
+        fill="currentColor"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
 function Pin({ className }: { className?: string }) {
   return (
-    <svg width="18" height="22" viewBox="0 0 18 22" aria-hidden="true" className={className}>
+    <svg
+      width="18"
+      height="22"
+      viewBox="0 0 18 22"
+      aria-hidden="true"
+      className={className}
+    >
       <path
         d="M9 20.5s7-6.2 7-11.5a7 7 0 1 0-14 0c0 5.3 7 11.5 7 11.5z"
         fill="none"
         stroke="currentColor"
         strokeWidth="1.8"
       />
-      <circle cx="9" cy="9" r="2.6" fill="none" stroke="currentColor" strokeWidth="1.8" />
+      <circle
+        cx="9"
+        cy="9"
+        r="2.6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
     </svg>
   );
 }
 
-function Square({ state, className }: { state: MapItemState; className?: string }) {
+function Square({
+  state,
+  className,
+}: {
+  state: MapItemState;
+  className?: string;
+}) {
   return (
     <span
       className={cn(
@@ -433,9 +630,19 @@ function Square({ state, className }: { state: MapItemState; className?: string 
 }
 
 /** Legend for the question map: Current (when shown), the states in use, and For Review. */
-export function MapLegend({ items, current = false }: { items: readonly MapItem[]; current?: boolean }) {
-  const states = STATE_ORDER.filter((s) => s !== "answered" && items.some((i) => i.state === s));
-  const inExam = items.some((i) => i.state === "answered" || i.state === "unanswered");
+export function MapLegend({
+  items,
+  current = false,
+}: {
+  items: readonly MapItem[];
+  current?: boolean;
+}) {
+  const states = STATE_ORDER.filter(
+    (s) => s !== "answered" && items.some((i) => i.state === s),
+  );
+  const inExam = items.some(
+    (i) => i.state === "answered" || i.state === "unanswered",
+  );
   if (inExam && !states.includes("unanswered")) states.unshift("unanswered");
   return (
     <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[16px]">
@@ -478,12 +685,19 @@ export function QuestionMapGrid({
           <MapLegend items={items} current={currentId !== undefined} />
         </div>
       ) : null}
-      <ol className={cn("grid grid-cols-[repeat(auto-fill,3rem)] justify-center gap-x-3 gap-y-6 pt-2 sm:gap-x-5 sm:gap-y-7", className)}>
+      <ol
+        className={cn(
+          "grid grid-cols-[repeat(auto-fill,3rem)] justify-center gap-x-3 gap-y-6 pt-2 sm:gap-x-5 sm:gap-y-7",
+          className,
+        )}
+      >
         {items.map((item) => {
           const isCurrent = item.id === currentId;
           return (
             <li key={item.id} className="relative">
-              {isCurrent ? <Pin className="pointer-events-none absolute -top-6 left-1/2 -translate-x-1/2" /> : null}
+              {isCurrent ? (
+                <Pin className="pointer-events-none absolute -top-6 left-1/2 -translate-x-1/2" />
+              ) : null}
               <button
                 type="button"
                 onClick={() => onPick(item.id)}
@@ -504,7 +718,10 @@ export function QuestionMapGrid({
                 {item.number}
               </button>
               {item.marked ? (
-                <ReviewFlag size={15} className="pointer-events-none absolute -right-2 -top-2.5" />
+                <ReviewFlag
+                  size={15}
+                  className="pointer-events-none absolute -right-2 -top-2.5"
+                />
               ) : null}
             </li>
           );
@@ -528,9 +745,15 @@ export function QuestionMapPopover({
 }) {
   return (
     <div className="fixed inset-x-3 bottom-[96px] z-40 mx-auto max-w-[760px] font-sans">
-      <div className="relative rounded-xl border border-hairline bg-paper px-5 pb-6 pt-5 shadow-xl sm:px-10" role="dialog" aria-label="Questions">
+      <div
+        className="relative rounded-xl border border-hairline bg-paper px-5 pb-6 pt-5 shadow-xl sm:px-10"
+        role="dialog"
+        aria-label="Questions"
+      >
         <div className="relative mb-4 flex items-center justify-center border-b border-control pb-4">
-          <p className="px-10 text-center text-[18px] font-bold sm:text-[21px]">{title}</p>
+          <p className="px-10 text-center text-[18px] font-bold sm:text-[21px]">
+            {title}
+          </p>
           <button
             type="button"
             onClick={onClose}
@@ -538,12 +761,21 @@ export function QuestionMapPopover({
             className="absolute right-0 rounded-full p-1.5 hover:bg-wash"
           >
             <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
-              <path d="M5 5l12 12M17 5 5 17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              <path
+                d="M5 5l12 12M17 5 5 17"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
             </svg>
           </button>
         </div>
-        <div className="max-h-[55dvh] overflow-y-auto px-1 pb-1">{children}</div>
-        {footer ? <div className="mt-7 flex justify-center gap-2">{footer}</div> : null}
+        <div className="max-h-[55dvh] overflow-y-auto px-1 pb-1">
+          {children}
+        </div>
+        {footer ? (
+          <div className="mt-7 flex justify-center gap-2">{footer}</div>
+        ) : null}
         <span
           aria-hidden="true"
           className="absolute -bottom-[9px] left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 border-b border-r border-hairline bg-paper"
@@ -580,7 +812,9 @@ export function CheckYourWork({
 }) {
   return (
     <section className="mx-auto max-w-[860px] px-4 pb-10 pt-8 text-center font-sans sm:pt-12">
-      <h1 className="text-[32px] font-normal sm:text-[42px]">Check Your Work</h1>
+      <h1 className="text-[32px] font-normal sm:text-[42px]">
+        Check Your Work
+      </h1>
       <div className="mt-4 space-y-2 text-[16px] sm:text-[18px]">{notes}</div>
       <div className="mt-10 rounded-xl border border-hairline bg-paper px-5 pb-8 pt-6 text-left shadow-lg sm:px-10">
         <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b border-control pb-5">
@@ -588,7 +822,12 @@ export function CheckYourWork({
           <MapLegend items={items} />
         </div>
         <div className="pt-8">
-          <QuestionMapGrid items={items} onPick={onPick} legend={false} className="md:grid-cols-[repeat(10,3rem)]" />
+          <QuestionMapGrid
+            items={items}
+            onPick={onPick}
+            legend={false}
+            className="md:grid-cols-[repeat(10,3rem)]"
+          />
         </div>
       </div>
     </section>
@@ -596,14 +835,33 @@ export function CheckYourWork({
 }
 
 /** Full-screen message while a module closes and the next one (or the results) loads. */
-export function ModuleOverScreen({ title, next }: { title: string; next: string }) {
+export function ModuleOverScreen({
+  title,
+  next,
+}: {
+  title: string;
+  next: string;
+}) {
   return (
-    <div className="exam fixed inset-0 z-[60] flex flex-col items-center justify-center bg-paper px-6 text-center" role="status">
-      <h1 className="text-[34px] font-light text-pine sm:text-[44px]">{title}</h1>
+    <div
+      className="exam fixed inset-0 z-[60] flex flex-col items-center justify-center bg-paper px-6 text-center"
+      role="status"
+    >
+      <h1 className="text-[34px] font-light text-pine sm:text-[44px]">
+        {title}
+      </h1>
       <p className="mt-8 text-[18px] sm:text-[21px]">Your answers are saved.</p>
       <p className="mt-4 text-[18px] sm:text-[21px]">{next}</p>
-      <p className="mt-4 text-[18px] sm:text-[21px]">Please don’t refresh or close this page.</p>
-      <svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true" className="mt-12 animate-spin [animation-duration:1.6s]">
+      <p className="mt-4 text-[18px] sm:text-[21px]">
+        Please don’t refresh or close this page.
+      </p>
+      <svg
+        width="64"
+        height="64"
+        viewBox="0 0 64 64"
+        aria-hidden="true"
+        className="mt-12 animate-spin [animation-duration:1.6s]"
+      >
         {Array.from({ length: 8 }, (_, i) => {
           const a = (i / 8) * Math.PI * 2;
           return (
@@ -625,8 +883,13 @@ export function ModuleOverScreen({ title, next }: { title: string; next: string 
 export function ExamProblem({ message }: { message: string | null }) {
   if (!message) return null;
   return (
-    <p role="alert" className="mx-auto mt-3 max-w-[1600px] px-4 font-sans sm:px-8">
-      <span className="block rounded-choice bg-wash px-4 py-2.5 text-[15px] font-semibold">{message}</span>
+    <p
+      role="alert"
+      className="mx-auto mt-3 max-w-[1600px] px-4 font-sans sm:px-8"
+    >
+      <span className="block rounded-choice bg-wash px-4 py-2.5 text-[15px] font-semibold">
+        {message}
+      </span>
     </p>
   );
 }
@@ -640,10 +903,27 @@ export function HighlightHint() {
   );
 }
 
-function Chevron({ className, strokeWidth = 1.6 }: { className?: string; strokeWidth?: number }) {
+function Chevron({
+  className,
+  strokeWidth = 1.6,
+}: {
+  className?: string;
+  strokeWidth?: number;
+}) {
   return (
-    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" className={className}>
-      <path d="m2 4 4 4 4-4" fill="none" stroke="currentColor" strokeWidth={strokeWidth} />
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      aria-hidden="true"
+      className={className}
+    >
+      <path
+        d="m2 4 4 4 4-4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={strokeWidth}
+      />
     </svg>
   );
 }

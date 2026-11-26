@@ -17,6 +17,7 @@ export {
   MoreTool,
   MenuItem,
   ThemeTool,
+  FullscreenTool,
   MarkForReviewButton,
   CrossOutToggle,
   ClearHighlightsButton,
