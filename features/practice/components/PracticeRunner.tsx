@@ -335,6 +335,12 @@ export function PracticeRunner({
               {exitStep === "menu" ? (
                 <>
                   <MenuItem
+                    title={finishing ? "Finishing…" : "Finish practice"}
+                    detail="See your score now. Answers you picked but didn’t check are checked too."
+                    disabled={finishing || exiting !== null}
+                    onClick={() => void finish()}
+                  />
+                  <MenuItem
                     title={exiting === "save" ? "Saving…" : "Save and exit"}
                     detail={
                       deadline === null
@@ -567,6 +573,10 @@ export function PracticeRunner({
             </>
           ) : (
             <>
+              <FinishEarly
+                finishing={finishing}
+                onFinish={() => void finish()}
+              />
               {view.index > 0 ? (
                 <Button
                   variant="quiet"
@@ -604,5 +614,43 @@ export function PracticeRunner({
         }
       />
     </div>
+  );
+}
+
+/**
+ * Finish whenever you like, even in "check as you go" without checking: unchecked picks are scored too.
+ * Asks once ("Finish now?") so a stray tap doesn't end the practice. Wide screens only; phones use More.
+ */
+function FinishEarly({
+  finishing,
+  onFinish,
+}: {
+  finishing: boolean;
+  onFinish: () => void;
+}) {
+  const [asking, setAsking] = useState(false);
+  if (asking) {
+    return (
+      <span className="hidden items-center gap-2 sm:flex">
+        <span className="text-[15px] font-medium">Finish now?</span>
+        <Button
+          variant="quiet"
+          onClick={() => setAsking(false)}
+          disabled={finishing}
+        >
+          Keep going
+        </Button>
+        <Button onClick={onFinish} disabled={finishing}>
+          {finishing ? "Finishing…" : "Finish"}
+        </Button>
+      </span>
+    );
+  }
+  return (
+    <span className="hidden sm:inline-flex">
+      <Button variant="quiet" onClick={() => setAsking(true)}>
+        Finish
+      </Button>
+    </span>
   );
 }
