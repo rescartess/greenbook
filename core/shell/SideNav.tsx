@@ -77,14 +77,19 @@ export function SideNav({
       <div className="flex flex-col items-center gap-2 border-t border-hairline pt-4 nav:flex-row nav:items-center nav:gap-2.5 nav:px-1">
         {user ? (
           <div className="flex min-w-0 items-center gap-2.5 nav:flex-1">
-            <span
+            <Link
+              href={`/${subject}/profile`}
+              aria-label="Profile"
+              aria-current={activePath === "profile" ? "page" : undefined}
               title={user.name}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-mist text-[12px] font-bold text-ink-soft ring-1 ring-hairline"
+              className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-mist text-[12px] font-bold text-ink-soft ring-1 ring-hairline hover:ring-pine", activePath === "profile" && "ring-2 ring-pine")}
             >
               {user.initials}
-            </span>
+            </Link>
             <span className="hidden min-w-0 nav:block">
-              <span className="block truncate text-[14px] font-semibold">{user.name}</span>
+              <Link href={`/${subject}/profile`} className="block truncate text-[14px] font-semibold hover:underline">
+                {user.name}
+              </Link>
               <span className="flex gap-3 text-[13px]">
                 {user.isAdmin ? (
                   <Link href="/admin" className="text-pine hover:underline">

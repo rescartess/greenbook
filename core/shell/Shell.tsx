@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { Logo } from "@/core/design/ui";
 import { BottomTabs } from "./SideNav";
+import { ProfileLink } from "./ProfileLink";
 import { ThemeButton } from "./ThemeButton";
 
 /**
@@ -19,7 +20,12 @@ export function Shell({ nav, children }: { nav: ReactNode; children: ReactNode }
             <Link href="/" className="text-ink">
               <Logo size={28} />
             </Link>
-            <ThemeButton />
+            <span className="flex gap-1">
+              <ThemeButton />
+              <Suspense fallback={<span className="h-8 w-8" />}>
+                <ProfileLink />
+              </Suspense>
+            </span>
           </div>
           {children}
         </div>
