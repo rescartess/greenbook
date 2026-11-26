@@ -177,6 +177,7 @@ export function QuestionView({
           <RichText
             source={question.prompt}
             className="text-[17px] leading-relaxed"
+            data-prompt
           />
 
           {answerSlot ?? (

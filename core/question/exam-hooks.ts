@@ -33,9 +33,17 @@ export function useMounted(): boolean {
   );
 }
 
+/** Where highlights can go: the passage, and the question itself. */
+type Area = "passage" | "prompt";
+const AREAS: Area[] = ["passage", "prompt"];
+/** Storage key per question and area (passage keeps the plain question id, as before). */
+const areaKey = (questionId: string, area: Area) =>
+  area === "passage" ? questionId : `${questionId}:prompt`;
+
 /** The highlight being edited, and where its menu goes on screen. */
 export type ActiveHighlight = {
   questionId: string;
+  area: Area;
   span: Span;
   mark: Mark;
   top: number;
@@ -44,7 +52,7 @@ export type ActiveHighlight = {
 };
 
 /**
- * Passage highlights for an exam screen, kept per question in this browser tab only.
+ * Highlights for an exam screen (passage and question text), kept per question in this browser tab only.
  * With the Highlight tool on, selecting words highlights them (in the last color used) and opens the
  * highlight menu. Tapping a highlight at any time opens the menu: change its color, underline it, or delete it.
  */
@@ -71,32 +79,35 @@ export function useHighlights(
   const [active, setActive] = useState<ActiveHighlight | null>(null);
   const shown = active && active.questionId === currentId ? active : null;
 
-  const passageEl = () =>
-    container.current?.querySelector<HTMLElement>("[data-passage]") ?? null;
+  const areaEl = (area: Area) =>
+    container.current?.querySelector<HTMLElement>(`[data-${area}]`) ?? null;
 
   // Show this question's highlights (drawn by the browser, not added to the page).
   useEffect(() => {
     paintHighlights(
-      passageEl(),
-      currentId ? (marks[currentId] ?? []) : [],
-      shown?.span ?? null,
+      AREAS.map((area) => ({
+        container: areaEl(area),
+        marks: currentId ? (marks[areaKey(currentId, area)] ?? []) : [],
+        active: shown?.area === area ? shown.span : null,
+      })),
     );
     try {
       window.sessionStorage.setItem(storageKey, JSON.stringify(marks));
     } catch {
       // Private browsing: highlights just won't survive a reload.
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- passageEl reads the ref
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- areaEl reads the ref
   }, [
     container,
     currentId,
     marks,
     storageKey,
+    shown?.area,
     shown?.span.start,
     shown?.span.end,
   ]);
 
-  // The menu closes when the passage scrolls or Escape is pressed.
+  // The menu closes when the page scrolls or Escape is pressed.
   useEffect(() => {
     if (!shown) return;
     const close = () => setActive(null);
@@ -111,12 +122,13 @@ export function useHighlights(
     };
   }, [shown]);
 
-  const open = (questionId: string, mark: Mark) => {
-    const passage = passageEl();
-    const rect = passage ? markRect(passage, mark) : null;
+  const open = (questionId: string, area: Area, mark: Mark) => {
+    const el = areaEl(area);
+    const rect = el ? markRect(el, mark) : null;
     if (!rect) return setActive(null);
     setActive({
       questionId,
+      area,
       span: { start: mark.start, end: mark.end },
       mark,
       top: rect.top,
@@ -125,46 +137,48 @@ export function useHighlights(
     });
   };
 
-  /** Call on mouse-up / touch-end in the passage area, with where the pointer was. */
+  /** Call on mouse-up / touch-end on the screen, with where the pointer was. */
   const onPointerUp = (x: number, y: number) => {
     if (!currentId) return;
-    const passage = passageEl();
-    if (!passage) return;
     const selection = window.getSelection();
     if (selection && !selection.isCollapsed && selection.rangeCount > 0) {
       if (!enabled) return;
-      const span = spanFromRange(passage, selection.getRangeAt(0));
-      if (!span) return;
-      const mark: Mark = { ...span, color, underline: false };
-      setMarks((all) => ({
-        ...all,
-        [currentId]: addMark(all[currentId] ?? [], mark),
-      }));
-      selection.removeAllRanges();
-      open(currentId, mark);
+      const range = selection.getRangeAt(0);
+      for (const area of AREAS) {
+        const el = areaEl(area);
+        const span = el ? spanFromRange(el, range) : null;
+        if (!span) continue;
+        const mark: Mark = { ...span, color, underline: false };
+        const key = areaKey(currentId, area);
+        setMarks((all) => ({ ...all, [key]: addMark(all[key] ?? [], mark) }));
+        selection.removeAllRanges();
+        open(currentId, area, mark);
+        return;
+      }
       return;
     }
-    const offset = offsetAtPoint(passage, x, y);
-    const hit = offset === null ? null : markAt(marks[currentId] ?? [], offset);
-    if (hit) open(currentId, hit);
-    else setActive(null);
+    for (const area of AREAS) {
+      const el = areaEl(area);
+      const offset = el ? offsetAtPoint(el, x, y) : null;
+      if (offset === null) continue;
+      const hit = markAt(marks[areaKey(currentId, area)] ?? [], offset);
+      if (hit) return open(currentId, area, hit);
+    }
+    setActive(null);
   };
 
   const changeActive = (
     change: Partial<Pick<Mark, "color" | "underline">> | null,
   ) => {
     if (!shown) return;
-    const { questionId, span } = shown;
-    const list = marks[questionId] ?? [];
+    const key = areaKey(shown.questionId, shown.area);
+    const list = marks[key] ?? [];
     const current = list.find(
-      (m) => m.start === span.start && m.end === span.end,
+      (m) => m.start === shown.span.start && m.end === shown.span.end,
     );
     if (!current) return setActive(null);
     if (change === null) {
-      setMarks((all) => ({
-        ...all,
-        [questionId]: list.filter((m) => m !== current),
-      }));
+      setMarks((all) => ({ ...all, [key]: list.filter((m) => m !== current) }));
       setActive(null);
       return;
     }
@@ -172,18 +186,25 @@ export function useHighlights(
     if (change.color) setColor(change.color);
     setMarks((all) => ({
       ...all,
-      [questionId]: list.map((m) => (m === current ? next : m)),
+      [key]: list.map((m) => (m === current ? next : m)),
     }));
     setActive({ ...shown, mark: next });
   };
 
   const clear = (questionId: string) => {
-    setMarks((all) => ({ ...all, [questionId]: [] }));
+    setMarks((all) => ({
+      ...all,
+      ...Object.fromEntries(AREAS.map((a) => [areaKey(questionId, a), []])),
+    }));
     setActive(null);
   };
 
+  /** Whether a question has any highlights (to show "Clear highlights"). */
+  const has = (questionId: string) =>
+    AREAS.some((a) => (marks[areaKey(questionId, a)] ?? []).length > 0);
+
   return {
-    marks,
+    has,
     onPointerUp,
     clear,
     active: shown,

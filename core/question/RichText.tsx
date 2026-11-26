@@ -99,6 +99,7 @@ export function RichText({
   source: string;
   className?: string;
   "data-passage"?: boolean;
+  "data-prompt"?: boolean;
 }) {
   return (
     <div className={cn("space-y-4", className)} {...rest}>

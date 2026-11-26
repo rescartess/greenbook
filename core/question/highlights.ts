@@ -161,11 +161,12 @@ function rangeFromSpan(container: HTMLElement, span: Span): Range | null {
   return null;
 }
 
-/** Shows the marks in the container, replacing whatever was highlighted before. The active one is drawn darker. */
+/**
+ * Shows the marks in each area (passage, question), replacing whatever was highlighted before.
+ * The active one is drawn darker.
+ */
 export function paintHighlights(
-  container: HTMLElement | null,
-  marks: Mark[],
-  active?: Span | null,
+  areas: { container: HTMLElement | null; marks: Mark[]; active?: Span | null }[],
 ) {
   if (typeof CSS === "undefined" || !("highlights" in CSS)) return;
   const groups: Record<string, Range[]> = {
@@ -175,21 +176,23 @@ export function paintHighlights(
     "gb-underline": [],
   };
   const activeRanges: Range[] = [];
-  for (const m of container ? marks : []) {
-    const range = rangeFromSpan(container!, m);
-    if (!range) continue;
-    const isActive = active && active.start === m.start && active.end === m.end;
-    if (isActive) activeRanges.push(range);
-    else groups[`gb-${m.color}`].push(range);
-    if (m.underline) groups["gb-underline"].push(range.cloneRange());
+  let activeMark: Mark | null = null;
+  for (const { container, marks, active } of areas) {
+    if (!container) continue;
+    for (const m of marks) {
+      const range = rangeFromSpan(container, m);
+      if (!range) continue;
+      if (active && active.start === m.start && active.end === m.end) {
+        activeRanges.push(range);
+        activeMark = m;
+      } else groups[`gb-${m.color}`].push(range);
+      if (m.underline) groups["gb-underline"].push(range.cloneRange());
+    }
   }
   for (const [name, ranges] of Object.entries(groups)) {
     if (ranges.length) CSS.highlights.set(name, new Highlight(...ranges));
     else CSS.highlights.delete(name);
   }
-  const activeMark = active
-    ? marks.find((m) => m.start === active.start && m.end === active.end)
-    : null;
   for (const c of HIGHLIGHT_COLORS) CSS.highlights.delete(`gb-${c}-active`);
   if (activeMark && activeRanges.length) {
     const h = new Highlight(...activeRanges);

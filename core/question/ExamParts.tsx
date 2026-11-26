@@ -1021,15 +1021,6 @@ export function HighlightMenu({
   );
 }
 
-export function HighlightHint() {
-  return (
-    <p className="fixed inset-x-0 top-[86px] z-20 mx-auto w-fit rounded-full bg-ink px-4 py-1.5 font-sans text-[13px] font-semibold text-paper">
-      Select words in the passage to highlight them. Tap a highlight to change
-      or delete it.
-    </p>
-  );
-}
-
 function Chevron({
   className,
   strokeWidth = 1.6,

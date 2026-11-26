@@ -13,7 +13,6 @@ import {
   ExamProblem,
   ExamTitle,
   ExamTopBar,
-  HighlightHint,
   HighlightMenu,
   HighlightTool,
   MapButton,
@@ -398,7 +397,8 @@ export function PracticeRunner({
         }}
         className={cn(
           "mx-auto max-w-[1600px] pb-28 min-[42rem]:pb-[79px]",
-          highlighting && "[&_[data-passage]]:cursor-text",
+          highlighting &&
+            "[&_[data-passage]]:cursor-text [&_[data-prompt]]:cursor-text",
         )}
       >
         {current && view.kind === "question" ? (
@@ -455,7 +455,7 @@ export function PracticeRunner({
                     className="mr-3"
                   />
                 ) : null}
-                {mounted && highlights.marks[current.id]?.length ? (
+                {mounted && highlights.has(current.id) ? (
                   <ClearHighlightsButton
                     onClick={() => highlights.clear(current.id)}
                   />
@@ -526,7 +526,6 @@ export function PracticeRunner({
           />
         </QuestionMapPopover>
       ) : null}
-      {highlighting ? <HighlightHint /> : null}
       {highlights.active ? (
         <HighlightMenu
           active={highlights.active}

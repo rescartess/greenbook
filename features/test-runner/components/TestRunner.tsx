@@ -13,7 +13,6 @@ import {
   ExamTitle,
   ExamTopBar,
   GoToReviewButton,
-  HighlightHint,
   HighlightMenu,
   HighlightTool,
   MapButton,
@@ -356,7 +355,8 @@ export function TestRunner({
         }}
         className={cn(
           "mx-auto max-w-[1600px] pb-28 min-[42rem]:pb-[79px]",
-          highlighting && "[&_[data-passage]]:cursor-text",
+          highlighting &&
+            "[&_[data-passage]]:cursor-text [&_[data-prompt]]:cursor-text",
         )}
       >
         {current ? (
@@ -402,7 +402,7 @@ export function TestRunner({
             }
             headerRight={
               <>
-                {mounted && highlights.marks[current.id]?.length ? (
+                {mounted && highlights.has(current.id) ? (
                   <ClearHighlightsButton
                     onClick={() => highlights.clear(current.id)}
                   />
@@ -482,7 +482,6 @@ export function TestRunner({
       {panel === "reference" ? (
         <ReferenceSheet onClose={() => setPanel(null)} />
       ) : null}
-      {highlighting ? <HighlightHint /> : null}
       {highlights.active ? (
         <HighlightMenu
           active={highlights.active}

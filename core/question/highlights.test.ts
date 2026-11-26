@@ -28,8 +28,12 @@ describe("colored highlights", () => {
 
   it("a new highlight replaces just the part it covers", async () => {
     const { addMark } = await import("./highlights");
-    const old = [{ start: 0, end: 20, color: "yellow" as const, underline: true }];
-    expect(addMark(old, { start: 5, end: 10, color: "pink", underline: false })).toEqual([
+    const old = [
+      { start: 0, end: 20, color: "yellow" as const, underline: true },
+    ];
+    expect(
+      addMark(old, { start: 5, end: 10, color: "pink", underline: false }),
+    ).toEqual([
       { start: 0, end: 5, color: "yellow", underline: true },
       { start: 5, end: 10, color: "pink", underline: false },
       { start: 10, end: 20, color: "yellow", underline: true },
@@ -38,7 +42,9 @@ describe("colored highlights", () => {
 
   it("finds the highlight under a position", async () => {
     const { markAt } = await import("./highlights");
-    const marks = [{ start: 3, end: 6, color: "blue" as const, underline: false }];
+    const marks = [
+      { start: 3, end: 6, color: "blue" as const, underline: false },
+    ];
     expect(markAt(marks, 3)?.color).toBe("blue");
     expect(markAt(marks, 6)).toBeNull();
   });

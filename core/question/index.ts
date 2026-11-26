@@ -27,7 +27,6 @@ export {
   formatClock,
   ToolButton,
   HighlightTool,
-  HighlightHint,
   MoreTool,
   MenuItem,
   ThemeTool,
