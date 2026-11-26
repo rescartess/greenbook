@@ -71,8 +71,7 @@ export function TopicGrid({ subject, topics }: { subject: SubjectSlug; topics: T
 
 function TopicCard({ subject, topic }: { subject: SubjectSlug; topic: TopicSummary }) {
   const ready = topic.total > 0;
-  const progress =
-    topic.open > 0 ? `${topic.open} unfinished` : topic.done > 0 ? `${topic.done} of ${topic.total} done` : "Not started";
+  const progress = topic.done > 0 ? `${topic.done} of ${topic.total} done` : "Not started";
   const share = ready ? Math.min(1, topic.done / topic.total) : 0;
   const body = (
     <>
@@ -90,14 +89,8 @@ function TopicCard({ subject, topic }: { subject: SubjectSlug; topic: TopicSumma
             {topic.counts.easy} easy, {topic.counts.medium} medium, {topic.counts.hard} hard
           </p>
           <div className="mt-auto pt-5">
-            <span
-              className={
-                topic.open > 0
-                  ? "flex h-10 items-center justify-center rounded-[10px] border border-hairline bg-mist text-[15px] font-bold text-ink"
-                  : "flex h-10 items-center justify-center rounded-[10px] bg-pine text-[15px] font-bold text-pine-ink"
-              }
-            >
-              {topic.open > 0 ? "Continue" : "Start practice"}
+            <span className="flex h-10 items-center justify-center rounded-[10px] bg-pine text-[15px] font-bold text-pine-ink">
+              Start practice
             </span>
           </div>
         </>

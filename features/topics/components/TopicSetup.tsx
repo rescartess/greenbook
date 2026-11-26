@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState, useState, type ReactNode } from "react";
 import {
   DEFAULT_PRACTICE_SIZE,
@@ -8,7 +7,6 @@ import {
   DIFFICULTY_LABEL,
   MAX_PRACTICE_SIZE,
   PRACTICE_SIZES,
-  rangeLabel,
   satPaceMinutes,
   satPaceSeconds,
   type CheckMode,
@@ -44,6 +42,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
   const [checkMode, setCheckMode] = useState<CheckMode>("each");
   const [timed, setTimed] = useState(false);
   const [minutesText, setMinutesText] = useState<string | null>(null); // null = follow SAT pace
+  const [nameText, setNameText] = useState<string | null>(null); // null = follow the suggested name
   const [state, action, pending] = useActionState(startAction, { message: null });
 
   const list = itemsFor(topic.items, difficulty);
@@ -73,34 +72,14 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
   };
 
   const levelWord = difficulty === "all" ? "" : `${DIFFICULTY_LABEL[difficulty].toLowerCase()} `;
+  const rangeText = count === 0 ? "" : safeFrom === to ? `#${safeFrom}` : `#${safeFrom}–${to}`;
+  const suggestedName = `${topic.title}, ${difficulty === "all" ? "all levels" : DIFFICULTY_LABEL[difficulty].toLowerCase()} ${rangeText}`.trim().slice(0, 60);
+  const name = nameText ?? suggestedName;
+  const nameOk = name.trim().length > 0 && name.trim().length <= 60;
 
   return (
     <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
       <div className="flex min-w-0 flex-col gap-5">
-        {topic.open.length > 0 ? (
-          <Section title="Pick up where you left off">
-            <ul className="-mx-2 divide-y divide-hairline">
-              {topic.open.map((o) => (
-                <li key={o.attemptId} className="flex flex-wrap items-center justify-between gap-3 px-2 py-3">
-                  <div>
-                    <p className="font-semibold">{rangeLabel(o)}</p>
-                    <p className="text-[14px] text-graphite">
-                      {o.answered} of {o.total} answered,{" "}
-                      {o.checkMode === "each" ? "checking as you go" : "checking at the end"}
-                    </p>
-                  </div>
-                  <Link
-                    href={`/practice/${o.attemptId}`}
-                    className="inline-flex h-9 items-center rounded-[10px] border border-hairline bg-mist px-4 text-[14px] font-bold hover:bg-canvas"
-                  >
-                    Continue
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </Section>
-        ) : null}
-
         <Section title="Difficulty">
           <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4" role="radiogroup" aria-label="Difficulty">
             {DIFFICULTIES.map((d) => (
@@ -212,6 +191,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
         <input type="hidden" name="count" value={count} />
         <input type="hidden" name="checkMode" value={checkMode} />
         <input type="hidden" name="minutes" value={timed ? minutes : ""} />
+        <input type="hidden" name="name" value={name} />
 
         <section className="rounded-[14px] border border-hairline bg-paper p-5 sm:p-6">
           <div className="rounded-[10px] bg-mist px-5 py-5 text-center">
@@ -237,6 +217,18 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
               </div>
             ) : null}
           </div>
+
+          <label htmlFor="practice-name" className="mb-2 mt-6 block text-[14px] font-semibold">
+            Practice name
+          </label>
+          <input
+            id="practice-name"
+            value={name}
+            maxLength={60}
+            onChange={(e) => setNameText(e.target.value)}
+            className="h-10 w-full rounded-[10px] border border-hairline bg-paper px-3 text-[15px] outline-none focus:border-pine"
+          />
+          <p className="mt-1.5 text-[13px] text-graphite">Find it again in Results by this name</p>
 
           <p className="mb-2.5 mt-6 text-[14px] font-semibold">Answers</p>
           <div className="flex flex-col gap-2" role="radiogroup" aria-label="When to check answers">
@@ -303,7 +295,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
             )}
           </div>
 
-          <Btn type="submit" className="mt-6 h-11 w-full text-[16px]" disabled={pending || count === 0 || !minutesOk}>
+          <Btn type="submit" className="mt-6 h-11 w-full text-[16px]" disabled={pending || count === 0 || !minutesOk || !nameOk}>
             {pending ? "Starting…" : count === 0 ? "No questions here yet" : `Start ${safeFrom === to ? `#${safeFrom}` : `#${safeFrom}–${to}`}`}
           </Btn>
           {state.message ? (

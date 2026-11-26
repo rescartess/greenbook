@@ -42,7 +42,7 @@ async function Practice({ attemptId }: { attemptId: Promise<string> }) {
         state={state}
         studentName={user.name}
         canHighlight={SUBJECTS[subject].tools.includes("annotate")}
-        exitHref={backHref}
+        exitHref={`/${subject}/results`}
       />
     );
   }

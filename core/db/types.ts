@@ -71,6 +71,7 @@ export type Database = {
       attempts: {
         Row: {
           check_mode: string
+          name: string | null
           options: Json | null
           finished_at: string | null
           id: string
@@ -86,6 +87,7 @@ export type Database = {
         }
         Insert: {
           check_mode?: string
+          name?: string | null
           options?: Json | null
           finished_at?: string | null
           id?: string
@@ -101,6 +103,7 @@ export type Database = {
         }
         Update: {
           check_mode?: string
+          name?: string | null
           options?: Json | null
           finished_at?: string | null
           id?: string
@@ -552,6 +555,7 @@ export type Database = {
       get_practice_state: { Args: { p_attempt_id: string }; Returns: Json }
       retry_mistake: { Args: { p_answer: string; p_question_id: string }; Returns: Json }
       start_practice: { Args: { p_set_id: string }; Returns: string }
+      list_my_attempts: { Args: { p_subject: string }; Returns: Json }
       list_topics:
         | { Args: { p_subject: string }; Returns: Json }
         | { Args: { p_collection: string; p_subject: string }; Returns: Json }
@@ -561,17 +565,30 @@ export type Database = {
       admin_set_invite_code: { Args: { p_code: string }; Returns: undefined }
       admin_import_questions: { Args: { p_items: Json; p_topic_id: string }; Returns: number }
       get_topic: { Args: { p_set_id: string }; Returns: Json }
-      start_topic_practice: {
-        Args: {
-          p_check_mode: string
-          p_count: number
-          p_difficulty: string
-          p_from: number
-          p_minutes: number | null
-          p_set_id: string
-        }
-        Returns: string
-      }
+      start_topic_practice:
+        | {
+            Args: {
+              p_check_mode: string
+              p_count: number
+              p_difficulty: string
+              p_from: number
+              p_minutes: number | null
+              p_set_id: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              p_check_mode: string
+              p_count: number
+              p_difficulty: string
+              p_from: number
+              p_minutes: number | null
+              p_name: string
+              p_set_id: string
+            }
+            Returns: string
+          }
       save_practice_response: {
         Args: {
           p_answer: string | null

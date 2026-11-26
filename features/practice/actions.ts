@@ -17,7 +17,7 @@ export async function startPractice(setId: string, _prev: StartState, _form: For
 
 /**
  * Starts a range of a topic: form fields setId, difficulty, from, count, checkMode ("each" | "end"),
- * and minutes (empty for no timer).
+ * minutes (empty for no timer) and name (the student's name for this practice, shown in Results).
  */
 export async function startTopicPractice(_prev: StartState, form: FormData): Promise<StartState> {
   const setId = String(form.get("setId") ?? "");
@@ -27,12 +27,15 @@ export async function startTopicPractice(_prev: StartState, form: FormData): Pro
   const checkMode = form.get("checkMode") === "end" ? "end" : "each";
   const minutesRaw = String(form.get("minutes") ?? "").trim();
   const minutes = minutesRaw === "" ? null : Number(minutesRaw);
+  const name = String(form.get("name") ?? "").replace(/\s+/g, " ").trim();
 
   if (!isDifficulty(difficulty)) return { message: "Pick a difficulty." };
   if (!Number.isInteger(from) || from < 1) return { message: "Pick where to start." };
   if (!Number.isInteger(count) || count < 1 || count > 600) return { message: "Pick between 1 and 600 questions." };
   if (minutes !== null && (!Number.isInteger(minutes) || minutes < 1 || minutes > 300))
     return { message: "Set the timer between 1 and 300 minutes." };
+  if (!name) return { message: "Give this practice a name." };
+  if (name.length > 60) return { message: "Use 60 characters or fewer for the name." };
 
   const supabase = await createDbClient();
   const { data, error } = await supabase.rpc("start_topic_practice", {
@@ -42,6 +45,7 @@ export async function startTopicPractice(_prev: StartState, form: FormData): Pro
     p_count: count,
     p_check_mode: checkMode,
     p_minutes: minutes,
+    p_name: name,
   });
   if (error || !data) {
     return {
