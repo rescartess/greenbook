@@ -1,77 +1,70 @@
+import Link from "next/link";
 import { Suspense } from "react";
-import { ButtonLink, EmptyState, Panel } from "@/core/design/ui";
+import { ButtonLink, EmptyState } from "@/core/design/ui";
 import { PageHeader } from "@/core/layout";
 import { SUBJECTS, type SubjectSlug } from "@/core/config/subjects";
-import { toPlainText } from "@/core/question";
 import { getMistakes } from "../queries";
-import { groupMistakes } from "../schema";
-import { MistakeRetry } from "./MistakeRetry";
+import { groupByPractice, type MistakePractice } from "../schema";
 
+/** Mistakes, listed by the practice they come from. Each one opens its own page of questions. */
 export function MistakesPage({ subject }: { subject: SubjectSlug }) {
   return (
     <>
       <PageHeader title="Mistakes" subtitle={SUBJECTS[subject].name} />
       <Suspense fallback={<div className="h-48 animate-pulse rounded-panel bg-paper" />}>
-        <MistakeList subject={subject} />
+        <PracticeList subject={subject} />
       </Suspense>
     </>
   );
 }
 
-async function MistakeList({ subject }: { subject: SubjectSlug }) {
+async function PracticeList({ subject }: { subject: SubjectSlug }) {
   const list = await getMistakes(subject);
   if (list.length === 0) {
     return (
       <EmptyState title="Nothing to review">
         Questions you miss in tests and practice show up here until you get them right twice in a row.
         <span className="mt-4 block">
-          <ButtonLink href={`/${subject}/full-tests`}>Take a full test</ButtonLink>
+          <ButtonLink href={`/${subject}/topics`}>Practice a topic</ButtonLink>
         </span>
       </EmptyState>
     );
   }
-
-  const groups = groupMistakes(list);
-  const numberOf = new Map(groups.flatMap((g) => g.topics.flatMap((t) => t.items)).map((m, i) => [m.id, i + 1]));
+  const practices = groupByPractice(list);
   return (
     <>
-      <p className="-mt-2 mb-6 max-w-2xl text-[17px] leading-relaxed text-ink-soft">
-        {list.length} question{list.length === 1 ? "" : "s"} to review. Get one right twice in a row and it leaves the list.
+      <p className="-mt-2 mb-7 max-w-2xl text-[17px] leading-relaxed text-ink-soft">
+        {list.length} question{list.length === 1 ? "" : "s"} to review. Choose a practice to see its mistakes. Get one
+        right twice in a row and it leaves the list.
       </p>
-      <div className="flex flex-col gap-6">
-        {groups.map((group) => (
-          <section key={group.area}>
-            <h2 className="mb-3 text-xl font-extrabold tracking-tight">{group.area}</h2>
-            <Panel className="p-0">
-              {group.topics.map((topic) => (
-                <div key={topic.topic} className="border-b border-hairline last:border-b-0">
-                  <h3 className="px-6 pb-2 pt-4 text-[15px] font-bold text-graphite">{topic.topic}</h3>
-                  <ul className="divide-y divide-hairline">
-                    {topic.items.map((m) => {
-                      const number = numberOf.get(m.id) ?? 1;
-                      return (
-                        <li key={m.id}>
-                          <details className="group">
-                            <summary className="flex cursor-pointer list-none items-center gap-4 px-6 py-3.5 hover:bg-mist [&::-webkit-details-marker]:hidden">
-                              <span className="min-w-0 flex-1 truncate text-[15px]">{toPlainText(m.passage || m.prompt)}</span>
-                              <span className="shrink-0 text-sm text-graphite">
-                                Missed {m.timesWrong === 1 ? "once" : `${m.timesWrong} times`}
-                              </span>
-                            </summary>
-                            <div className="border-t border-hairline bg-mist px-3 pb-5 pt-3 sm:px-5">
-                              <MistakeRetry mistake={m} number={number} />
-                            </div>
-                          </details>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              ))}
-            </Panel>
-          </section>
+      <ul className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-5">
+        {practices.map((p) => (
+          <li key={p.key}>
+            <PracticeCard subject={subject} practice={p} />
+          </li>
         ))}
-      </div>
+      </ul>
     </>
+  );
+}
+
+function PracticeCard({ subject, practice }: { subject: SubjectSlug; practice: MistakePractice }) {
+  const n = practice.items.length;
+  return (
+    <Link
+      href={`/${subject}/mistakes/${practice.key}`}
+      className="flex h-full flex-col rounded-xl border-[1.5px] border-control bg-paper p-6 transition-colors hover:border-pine focus-visible:outline-2 focus-visible:outline-pine"
+    >
+      <h2 className="text-[21px] font-extrabold leading-tight tracking-tight">{practice.title}</h2>
+      <p className="mt-1 text-[15px] text-graphite">{practice.label}</p>
+      <p className="mt-4 text-[16px] text-ink-soft tabular-nums">
+        {n} mistake{n === 1 ? "" : "s"}
+      </p>
+      <div className="mt-auto pt-6">
+        <span className="block rounded-lg bg-pine py-3 text-center text-[16px] font-bold text-pine-ink">
+          Review mistakes
+        </span>
+      </div>
+    </Link>
   );
 }

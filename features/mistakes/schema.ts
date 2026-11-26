@@ -11,6 +11,11 @@ export type Mistake = {
   domain: string;
   timesWrong: number;
   streak: number;
+  /** The practice (question set) it comes from; null when it isn't in any set. */
+  setId: string | null;
+  setTitle: string | null;
+  setKind: string | null;
+  collection: string | null;
 };
 
 export type RetryFeedback = CheckFeedback & { mastered: boolean };
@@ -32,6 +37,10 @@ export function parseMistakes(json: unknown): Mistake[] {
       domain: str(m.domain, "Other"),
       timesWrong: typeof m.timesWrong === "number" ? m.timesWrong : 1,
       streak: typeof m.streak === "number" ? m.streak : 0,
+      setId: typeof m.setId === "string" ? m.setId : null,
+      setTitle: typeof m.setTitle === "string" ? m.setTitle : null,
+      setKind: typeof m.setKind === "string" ? m.setKind : null,
+      collection: typeof m.collection === "string" ? m.collection : null,
     };
   });
 }
@@ -58,4 +67,44 @@ export function groupMistakes(list: Mistake[]) {
     topic.items.push(m);
   }
   return areas;
+}
+
+/** URL key for a practice's mistakes page ("other" for questions outside any set). */
+export const OTHER_KEY = "other";
+
+export type MistakePractice = {
+  key: string;
+  title: string;
+  /** What kind of practice it is, in plain words: "Topic", "SQB topic", "Full test"... */
+  label: string;
+  collection: string | null;
+  items: Mistake[];
+};
+
+function practiceLabel(kind: string | null, collection: string | null): string {
+  if (kind === "topic") return collection === "sqb" ? "SQB topic" : "Topic";
+  if (kind === "full_test") return "Full test";
+  if (kind === "monthly") return "Practice by month";
+  return kind ? "Practice" : "Other questions";
+}
+
+/** Groups mistakes by the practice they come from, in the order they first appear. */
+export function groupByPractice(list: Mistake[]): MistakePractice[] {
+  const out: MistakePractice[] = [];
+  for (const m of list) {
+    const key = m.setId ?? OTHER_KEY;
+    let p = out.find((x) => x.key === key);
+    if (!p) {
+      p = {
+        key,
+        title: m.setTitle ?? "Other questions",
+        label: practiceLabel(m.setKind, m.collection),
+        collection: m.collection,
+        items: [],
+      };
+      out.push(p);
+    }
+    p.items.push(m);
+  }
+  return out;
 }

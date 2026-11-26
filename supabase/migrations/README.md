@@ -34,3 +34,4 @@ retry_mistake, list_topics, get_topic, start_topic_practice, save_practice_respo
 only way students write activity, and each one checks the caller owns the attempt before doing anything.
 Helper functions live in the `private` schema and can't be called from the website.
 - 0017 SQB collection: question_sets.collection ('books'/'sqb'), 10 SQB topic sets, list_topics(subject, collection), get_topic returns collection, imports keep the explanation.
+- 0018 get_mistakes also returns the practice (question set) each mistake comes from, so Mistakes lists practices first.

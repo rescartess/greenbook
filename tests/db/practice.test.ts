@@ -94,6 +94,8 @@ describe("mistakes", () => {
     const list = (await t.one<{ m: { prompt: string; correctAnswer: string; timesWrong: number }[] }>(`select public.get_mistakes('english') m`)).m;
     expect(list.map((m) => m.prompt)).toEqual(["T1"]);
     expect(list[0]).toMatchObject({ correctAnswer: "A", timesWrong: 1 });
+    // Each mistake says which practice it comes from, so the page can list practices first.
+    expect(list[0]).toMatchObject({ setId: topicSet, setTitle: "Transitions 1", setKind: "topic", collection: "books" });
     await t.actAs(S2);
     expect((await t.one<{ m: unknown[] }>(`select public.get_mistakes('english') m`)).m).toEqual([]);
   });
