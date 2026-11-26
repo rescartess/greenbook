@@ -39,9 +39,8 @@ export const SUBJECTS: Record<SubjectSlug, Subject> = {
     tools: ["annotate"],
     sectionNumber: 1,
     directions: [
-      "Each question has a short passage, sometimes with a table or two texts, and four answer choices. Pick the one best answer.",
-      "You can move between questions and change your answers until the module ends. Unanswered questions count as wrong, so answer every one.",
-      "Use Highlight to mark words in a passage, ABC to cross out choices you’ve ruled out, and Mark for Review to find a question again later.",
+      "This section tests key reading and writing skills. Every question comes with one or more passages, and some passages include a table or graph. Read each passage and question carefully, then choose the answer that the passage(s) best support.",
+      "Every question in this section is multiple-choice with four answer choices, and each question has one best answer.",
     ],
     domains: [
       "Information and Ideas",

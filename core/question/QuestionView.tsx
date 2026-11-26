@@ -296,12 +296,12 @@ export function QuestionView({
                             type="button"
                             onClick={() => onToggleEliminate(choice.id)}
                             aria-label={`Cross out choice ${choice.id}`}
-                            className="relative flex h-6 w-6 items-center justify-center rounded-full border-[1.5px] border-ink font-sans text-[11px] font-bold hover:bg-wash"
+                            className="relative flex h-8 w-8 items-center justify-center rounded-full border-[1.5px] border-ink font-sans text-[14px] font-bold hover:bg-wash"
                           >
                             {choice.id}
                             <span
                               aria-hidden="true"
-                              className="absolute -inset-x-1 top-1/2 h-[1.5px] bg-ink"
+                              className="absolute -inset-x-1.5 top-1/2 h-[2px] bg-ink"
                             />
                           </button>
                         )}

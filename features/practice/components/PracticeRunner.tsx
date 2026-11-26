@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { DIFFICULTY_LABEL } from "@/core/config/practice";
+import { isSubjectSlug, SUBJECTS } from "@/core/config/subjects";
 import { Button, cn } from "@/core/design/ui";
 import {
   ClearHighlightsButton,
@@ -285,10 +287,10 @@ export function PracticeRunner({
 
   const range = state.options ? rangeLabel(state.options) : null;
   const directions = [
+    ...(isSubjectSlug(state.subject) ? SUBJECTS[state.subject].directions : []),
     checkEach
-      ? "Pick an answer, then press Check to see if you’re right. Once checked, an answer can’t be changed."
-      : "Answer every question. Your answers are checked when you finish, like the real test. You can change them until then.",
-    "Use Mark for Review to find a question again, ABC to cross out choices you’ve ruled out, and the question number at the bottom to jump around.",
+      ? "In this practice, pick an answer and then select Check to see if you’re right. Once checked, an answer can’t be changed."
+      : "In this practice, your answers are checked when you finish, like the real test. You can change them until then.",
   ];
 
   const currentFeedback = current ? feedback[current.id] : null;
@@ -302,9 +304,9 @@ export function PracticeRunner({
             title={
               <>
                 {state.title}
-                {range ? (
+                {state.options ? (
                   <span className="hidden font-semibold text-ink-soft sm:inline">
-                    : {range}
+                    : {DIFFICULTY_LABEL[state.options.difficulty]}
                   </span>
                 ) : null}
               </>

@@ -4,7 +4,7 @@ import { useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useTheme } from "@/core/design/theme";
 import type { ActiveHighlight } from "./exam-hooks";
 import { HIGHLIGHT_COLORS, type HighlightColor } from "./highlights";
-import { Button, cn } from "@/core/design/ui";
+import { cn } from "@/core/design/ui";
 
 /*
  * The pieces of the Bluebook-style exam screen, shared by the timed test and by practice.
@@ -92,20 +92,23 @@ export function ExamTitle({
             <div
               role="dialog"
               aria-label="Directions"
-              className="absolute left-0 top-full z-40 mt-3 w-[min(560px,90vw)] rounded-panel border border-hairline bg-paper p-6 shadow-lg"
+              className="fixed inset-x-0 bottom-[79px] top-[87px] z-40 flex flex-col overflow-y-auto bg-paper px-6 pb-6 pt-7 font-serif text-ink sm:px-10"
             >
-              {directions.map((d) => (
-                <p
-                  key={d}
-                  className="mb-3 text-[15px] leading-relaxed last:mb-0"
+              <div className="max-w-[1500px] flex-1 text-[17px] leading-[1.7] sm:text-[19px]">
+                {directions.map((d) => (
+                  <p key={d} className="mb-3 last:mb-0">
+                    {d}
+                  </p>
+                ))}
+              </div>
+              <div className="mt-6 flex justify-end font-sans">
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="rounded-full border-[1.5px] border-ink bg-hl-yellow-strong px-10 py-3 text-[18px] font-bold text-ink hover:brightness-95"
                 >
-                  {d}
-                </p>
-              ))}
-              <div className="mt-4 flex justify-end">
-                <Button size="sm" onClick={() => setOpen(false)}>
                   Close
-                </Button>
+                </button>
               </div>
             </div>
           ) : null}
@@ -440,8 +443,10 @@ export function CrossOutToggle({
       title="Cross out answer choices"
       onClick={onToggle}
       className={cn(
-        "rounded-md border-[1.5px] border-ink px-1.5 py-px text-[12px] font-bold line-through decoration-[1.5px]",
-        on ? "bg-ink text-paper" : "bg-paper hover:bg-wash",
+        "rounded-md border-[1.5px] px-1.5 py-0.5 text-[13px] font-bold line-through decoration-[1.5px]",
+        on
+          ? "border-pine bg-pine text-pine-ink"
+          : "border-ink bg-paper hover:bg-wash",
       )}
     >
       ABC
