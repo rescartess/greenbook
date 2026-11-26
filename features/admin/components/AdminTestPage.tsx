@@ -48,7 +48,7 @@ async function TestDetail({ setId }: { setId: Promise<string> }) {
           <Panel key={module.id} className="p-0">
             <div className="flex flex-wrap items-center justify-between gap-4 px-6 pb-3 pt-5">
               <div>
-                <h2 className="text-xl font-extrabold tracking-tight">
+                <h2 className="text-[17px] font-bold">
                   {module.label}
                 </h2>
                 <p className="text-[15px] text-graphite">
@@ -89,7 +89,7 @@ async function TestDetail({ setId }: { setId: Promise<string> }) {
                     <span className="hidden text-sm text-ink-soft md:block">
                       {difficultyLabel(q.difficulty)}
                     </span>
-                    <span className="justify-self-end rounded-full bg-pine-tint px-2.5 py-0.5 text-sm font-bold text-pine">
+                    <span className="justify-self-end rounded-[6px] bg-pine-tint px-2 py-0.5 text-[13px] font-semibold text-pine">
                       {q.answer}
                     </span>
                   </Link>

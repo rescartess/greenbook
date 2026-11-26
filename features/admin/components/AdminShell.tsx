@@ -1,14 +1,14 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ButtonLink, Logo } from "@/core/design/ui";
-import { ThemeToggle } from "@/core/layout";
+import { Logo } from "@/core/design/ui";
+import { BtnLink, ThemeButton } from "@/core/shell";
 
-/** Frame for admin pages: a floating glass bar and a wide content column. */
+/** Frame for admin pages: a flat top bar and a wide content column. */
 export function AdminShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-dvh bg-canvas">
-      <header className="sticky top-0 z-20 px-3 pt-3 sm:px-5">
-        <div className="glass mx-auto flex h-[54px] max-w-[1280px] items-center justify-between gap-3 rounded-full pl-4 pr-2">
+      <header className="sticky top-0 z-20 border-b border-hairline bg-paper">
+        <div className="mx-auto flex h-14 max-w-[1280px] items-center justify-between gap-3 px-4 sm:px-6">
           <Link href="/admin" className="flex items-center gap-2.5 text-ink">
             <Logo size={28} />
             <span className="text-[15px] font-semibold text-graphite">
@@ -16,14 +16,14 @@ export function AdminShell({ children }: { children: ReactNode }) {
             </span>
           </Link>
           <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <ButtonLink href="/english/dashboard" variant="quiet" size="sm">
+            <ThemeButton />
+            <BtnLink href="/english/dashboard" tone="quiet" className="h-9 px-3.5 text-[14px]">
               Student view
-            </ButtonLink>
+            </BtnLink>
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-[1280px] px-3 pb-20 pt-7 sm:px-5">
+      <main className="mx-auto max-w-[1280px] px-4 pb-20 pt-8 sm:px-6">
         {children}
       </main>
     </div>
@@ -44,16 +44,16 @@ export function AdminTitle({
       {back ? (
         <Link
           href={back.href}
-          className="text-[15px] font-semibold text-pine underline-offset-4 hover:underline"
+          className="text-[14px] font-semibold text-graphite hover:text-ink"
         >
           {back.label}
         </Link>
       ) : null}
-      <h1 className="mt-1 text-3xl font-extrabold tracking-tight sm:text-[38px] sm:leading-tight">
+      <h1 className="mt-1 text-[28px] font-bold leading-tight tracking-[-0.01em] sm:text-[32px]">
         {title}
       </h1>
       {subtitle ? (
-        <p className="mt-1 text-[17px] text-graphite">{subtitle}</p>
+        <p className="mt-1 text-[15px] text-graphite">{subtitle}</p>
       ) : null}
     </header>
   );
@@ -61,6 +61,6 @@ export function AdminTitle({
 
 export function LoadingBlock({ height = 240 }: { height?: number }) {
   return (
-    <div className="animate-pulse rounded-panel bg-paper" style={{ height }} />
+    <div className="rounded-[14px] border border-hairline bg-paper" style={{ height }} />
   );
 }

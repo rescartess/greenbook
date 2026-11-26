@@ -26,7 +26,7 @@ export function ImportForm({ moduleId, moduleLabel, backHref }: { moduleId: stri
   if (state.step === "done") {
     return (
       <div className="rounded-panel border border-hairline bg-paper p-6">
-        <p className="text-xl font-extrabold">
+        <p className="text-[19px] font-bold">
           {state.count} question{state.count === 1 ? "" : "s"} added to {moduleLabel}.
         </p>
         <p className="mt-1 text-[15px] text-graphite">They are drafts until you publish the test.</p>

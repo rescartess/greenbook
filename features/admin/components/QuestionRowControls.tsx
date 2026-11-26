@@ -7,7 +7,7 @@ import { moveInModule, removeFromModule } from "../actions";
 export function QuestionRowControls({ moduleId, questionId, first, last }: { moduleId: string; questionId: string; first: boolean; last: boolean }) {
   const [pending, start] = useTransition();
   const [confirm, setConfirm] = useState(false);
-  const btn = "rounded-full px-2.5 py-1 text-[13px] font-semibold text-ink-soft hover:bg-wash disabled:opacity-40";
+  const btn = "rounded-[6px] px-2.5 py-1 text-[13px] font-semibold text-ink-soft hover:bg-mist disabled:opacity-40";
 
   if (confirm) {
     return (
@@ -17,7 +17,7 @@ export function QuestionRowControls({ moduleId, questionId, first, last }: { mod
         </button>
         <button
           type="button"
-          className="rounded-full bg-ink px-2.5 py-1 text-[13px] font-semibold text-paper"
+          className="rounded-[6px] bg-ink px-2.5 py-1 text-[13px] font-semibold text-paper"
           disabled={pending}
           onClick={() => start(() => removeFromModule(moduleId, questionId))}
         >

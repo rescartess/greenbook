@@ -37,7 +37,7 @@ async function InviteCode() {
   const code = await getInviteCode();
   return (
     <Panel className="mt-8">
-      <h2 className="text-lg font-extrabold tracking-tight">Student login</h2>
+      <h2 className="text-[17px] font-bold">Student login</h2>
       <p className="mb-4 mt-1 text-[15px] text-graphite">
         Students log in with their email and this code. Anyone with the code can make an account, so change it if it
         spreads.
@@ -81,8 +81,8 @@ async function TestsList() {
               <span
                 className={
                   test.published
-                    ? "rounded-full bg-pine px-3 py-1 text-sm font-bold text-pine-ink"
-                    : "rounded-full bg-wash px-3 py-1 text-sm font-bold text-ink-soft"
+                    ? "rounded-[6px] bg-pine-tint px-2 py-0.5 text-[13px] font-semibold text-pine"
+                    : "rounded-[6px] bg-mist px-2 py-0.5 text-[13px] font-semibold text-ink-soft"
                 }
               >
                 {test.published ? "Published" : "Draft"}

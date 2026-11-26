@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ButtonLink, Logo } from "@/core/design/ui";
+import { Logo } from "@/core/design/ui";
+import { BtnLink } from "@/core/shell";
 
 export default function NotFound() {
   return (
@@ -8,14 +9,14 @@ export default function NotFound() {
         <Logo size={34} />
       </Link>
       <div>
-        <h1 className="text-3xl font-extrabold tracking-tight">This page doesn’t exist</h1>
-        <p className="mt-2 text-[17px] text-graphite">The link may be old, or the page was moved.</p>
+        <h1 className="text-[28px] font-bold tracking-[-0.01em]">This page doesn’t exist</h1>
+        <p className="mt-2 text-[16px] text-graphite">The link may be old, or the page was moved.</p>
       </div>
       <div className="flex gap-2.5">
-        <ButtonLink href="/english/dashboard">Go to your dashboard</ButtonLink>
-        <ButtonLink href="/" variant="quiet">
+        <BtnLink href="/english/dashboard">Go to your dashboard</BtnLink>
+        <BtnLink href="/" tone="quiet">
           Home
-        </ButtonLink>
+        </BtnLink>
       </div>
     </main>
   );

@@ -186,7 +186,7 @@ export function ImportBook({ topics }: { topics: TopicOption[] }) {
             multiple
             disabled={running}
             onChange={(e) => void choose(e.target.files)}
-            className="text-[15px] file:mr-4 file:rounded-full file:border-0 file:bg-pine file:px-5 file:py-2.5 file:font-bold file:text-pine-ink"
+            className="text-[15px] file:mr-4 file:rounded-[10px] file:border-0 file:bg-pine file:px-5 file:py-2.5 file:font-bold file:text-pine-ink"
           />
         </label>
       </Panel>
@@ -203,7 +203,7 @@ export function ImportBook({ topics }: { topics: TopicOption[] }) {
       {files.length ? (
         <Panel className="p-0">
           <div className="px-6 pb-3 pt-6">
-            <h2 className="text-xl font-extrabold tracking-tight">
+            <h2 className="text-[17px] font-bold">
               What will be added
             </h2>
             <p className="text-[15px] text-graphite">
@@ -298,7 +298,7 @@ export function ImportBook({ topics }: { topics: TopicOption[] }) {
 
       {report ? (
         <Panel>
-          <h2 className="text-xl font-extrabold tracking-tight">Done</h2>
+          <h2 className="text-[17px] font-bold">Done</h2>
           <ul className="mt-2 flex flex-col gap-1 text-[15px]">
             {report.map((l) => (
               <li key={l}>{l}</li>

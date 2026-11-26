@@ -42,7 +42,7 @@ async function QuestionPreview({
               {place.testTitle}
             </Link>
           ) : null}
-          <h1 className="text-3xl font-extrabold tracking-tight sm:text-[38px] sm:leading-tight">
+          <h1 className="text-[28px] font-bold leading-tight tracking-[-0.01em] sm:text-[32px]">
             {place
               ? `Question ${place.position} of ${place.total}`
               : q.externalId}
@@ -90,7 +90,7 @@ async function QuestionPreview({
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_20rem]">
         <Panel>
-          <h2 className="text-xl font-extrabold tracking-tight">
+          <h2 className="text-[17px] font-bold">
             {q.correctId ? `Answer: ${q.correctId}` : "No answer saved yet"}
           </h2>
           {q.explanation ? (
