@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { ButtonLink, EmptyState, Panel } from "@/core/design/ui";
+import { EmptyState, Panel } from "@/core/design/ui";
+import { BtnLink } from "@/core/shell";
 import { SUBJECTS, isSubjectSlug } from "@/core/config/subjects";
 import { requireAdmin } from "@/features/auth";
 import { getInviteCode, listTests } from "../queries";
@@ -16,10 +17,10 @@ export function AdminTestsPage() {
           subtitle="Everything you have added, including drafts students can’t see yet."
         />
         <div className="mb-6 flex gap-2">
-          <ButtonLink href="/admin/import" variant="quiet">
+          <BtnLink href="/admin/import" tone="quiet">
             Import a book
-          </ButtonLink>
-          <ButtonLink href="/admin/tests/new">New test or set</ButtonLink>
+          </BtnLink>
+          <BtnLink href="/admin/tests/new">New test or set</BtnLink>
         </div>
       </div>
       <Suspense fallback={<LoadingBlock />}>

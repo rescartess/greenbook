@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState, useState, type ReactNode } from "react";
-import { Button, ButtonLink, cn } from "@/core/design/ui";
+import { cn } from "@/core/design/ui";
+import { Btn, BtnLink } from "@/core/shell";
 import { QuestionView, RichText } from "@/core/question";
 import type { SkillGroup } from "../queries";
 import { CHOICE_IDS, type QuestionFormState } from "../schema";
@@ -235,12 +236,12 @@ export function QuestionEditor({
         ) : null}
 
         <div className="flex flex-wrap gap-2.5 border-t border-hairline pt-5">
-          <Button type="submit" disabled={pending}>
+          <Btn type="submit" disabled={pending}>
             {pending ? "Saving…" : submitLabel}
-          </Button>
-          <ButtonLink href={cancelHref} variant="quiet">
+          </Btn>
+          <BtnLink href={cancelHref} tone="quiet">
             Discard changes
-          </ButtonLink>
+          </BtnLink>
         </div>
       </div>
 

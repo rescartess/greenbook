@@ -1,4 +1,4 @@
-import { Button } from "@/core/design/ui";
+import { Btn } from "@/core/shell";
 import { setTestPublished } from "../actions";
 
 /** Publish or hide a test. When something is missing, explains what instead of offering the button. */
@@ -14,9 +14,9 @@ export function PublishTestButton({
   if (published) {
     return (
       <form action={setTestPublished.bind(null, setId, false)}>
-        <Button type="submit" variant="quiet">
+        <Btn type="submit" tone="quiet">
           Hide from students
-        </Button>
+        </Btn>
       </form>
     );
   }
@@ -34,7 +34,7 @@ export function PublishTestButton({
   }
   return (
     <form action={setTestPublished.bind(null, setId, true)}>
-      <Button type="submit">Publish to students</Button>
+      <Btn type="submit">Publish to students</Btn>
     </form>
   );
 }

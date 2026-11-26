@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { Button, ButtonLink, Panel } from "@/core/design/ui";
+import { Panel } from "@/core/design/ui";
+import { Btn, BtnLink } from "@/core/shell";
 import { SUBJECTS, isSubjectSlug } from "@/core/config/subjects";
 import { requireAdmin } from "@/features/auth";
 import { addModule } from "../actions";
@@ -57,12 +58,12 @@ async function TestDetail({ setId }: { setId: Promise<string> }) {
                 </p>
               </div>
               <div className="flex gap-2">
-                <ButtonLink href={`/admin/modules/${module.id}/import`} variant="quiet" size="sm">
+                <BtnLink href={`/admin/modules/${module.id}/import`} tone="quiet" className="h-9 px-3.5 text-[14px]">
                   Import
-                </ButtonLink>
-                <ButtonLink href={`/admin/modules/${module.id}/add`} size="sm">
+                </BtnLink>
+                <BtnLink href={`/admin/modules/${module.id}/add`} className="h-9 px-3.5 text-[14px]">
                   Add question
-                </ButtonLink>
+                </BtnLink>
               </div>
             </div>
             {module.questions.length === 0 ? (
@@ -118,9 +119,9 @@ async function TestDetail({ setId }: { setId: Promise<string> }) {
                 Students who do {tier === "easier" ? "less well" : "well"} on module 1 get this module.
               </p>
             </div>
-            <Button type="submit" variant="quiet">
+            <Btn type="submit" tone="quiet">
               Add module 2 ({tier})
-            </Button>
+            </Btn>
           </form>
         ))}
       </div>

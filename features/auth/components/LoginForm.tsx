@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Button } from "@/core/design/ui";
+import { Btn } from "@/core/shell";
 import { loginWithInviteCode, sendLoginLink } from "../actions";
 import type { CodeLoginState, LoginState } from "../schema";
 
@@ -10,7 +10,7 @@ const START: LoginState = { status: "idle" };
 const CODE_START: CodeLoginState = { status: "idle" };
 
 const FIELD =
-  "h-12 rounded-choice border-[1.5px] border-control bg-paper px-4 text-base text-ink placeholder:text-graphite focus:border-pine focus:outline-none";
+  "h-11 rounded-[10px] border border-hairline bg-paper px-3.5 text-[16px] text-ink placeholder:text-graphite focus:border-pine focus:outline-none";
 
 /** Students log in with their email and the invite code; admins use the emailed link. */
 export function LoginForm() {
@@ -25,7 +25,7 @@ export function LoginForm() {
       <button
         type="button"
         onClick={() => setUseLink(!useLink)}
-        className="mt-5 text-[14px] font-semibold text-pine underline-offset-4 hover:underline"
+        className="mt-5 text-[14px] font-semibold text-graphite underline-offset-4 hover:text-ink hover:underline"
       >
         {useLink ? "Log in with an invite code" : "Email me a sign-in link instead"}
       </button>
@@ -37,9 +37,9 @@ function CodeForm({ next }: { next: string }) {
   const [state, action, pending] = useActionState(loginWithInviteCode, CODE_START);
   const error = state.status === "error" ? state.message : null;
   return (
-    <form action={action} className="mt-8 flex flex-col gap-3 text-left" noValidate>
+    <form action={action} className="mt-7 flex flex-col gap-2 text-left" noValidate>
       <input type="hidden" name="next" value={next} />
-      <label htmlFor="code-email" className="text-[15px] font-bold">
+      <label htmlFor="code-email" className="text-[14px] font-semibold">
         Email
       </label>
       <input
@@ -52,7 +52,7 @@ function CodeForm({ next }: { next: string }) {
         placeholder="you@example.com"
         className={FIELD}
       />
-      <label htmlFor="code" className="mt-2 text-[15px] font-bold">
+      <label htmlFor="code" className="mt-3 text-[14px] font-semibold">
         Invite code
       </label>
       <input
@@ -73,9 +73,9 @@ function CodeForm({ next }: { next: string }) {
           {error}
         </p>
       ) : null}
-      <Button type="submit" size="lg" className="mt-2 w-full" disabled={pending}>
+      <Btn type="submit" className="mt-4 h-11 w-full text-[16px]" disabled={pending}>
         {pending ? "Logging in…" : "Log in"}
-      </Button>
+      </Btn>
     </form>
   );
 }
@@ -85,8 +85,8 @@ function LinkForm({ next, expired }: { next: string; expired: boolean }) {
 
   if (state.status === "sent") {
     return (
-      <div className="mt-8 text-left" role="status">
-        <p className="text-lg font-bold">Check your email</p>
+      <div className="mt-7 text-left" role="status">
+        <p className="text-[17px] font-bold">Check your email</p>
         <p className="mt-2 text-[15px] leading-relaxed text-graphite">
           We sent a sign-in link to <span className="font-bold text-ink">{state.email}</span>. Open it on this device
           to continue. It can take a minute to arrive; check spam if you don’t see it.
@@ -96,14 +96,14 @@ function LinkForm({ next, expired }: { next: string; expired: boolean }) {
   }
 
   return (
-    <form action={action} className="mt-8 flex flex-col gap-3 text-left" noValidate>
+    <form action={action} className="mt-7 flex flex-col gap-2 text-left" noValidate>
       <input type="hidden" name="next" value={next} />
       {expired && state.status === "idle" ? (
-        <p className="rounded-choice bg-pine-tint px-4 py-3 text-sm font-semibold text-ink" role="status">
+        <p className="mb-2 rounded-[10px] border border-hairline bg-mist px-4 py-3 text-[14px] font-semibold text-ink" role="status">
           That sign-in link has expired or was already used. Enter your email for a new one.
         </p>
       ) : null}
-      <label htmlFor="email" className="text-[15px] font-bold">
+      <label htmlFor="email" className="text-[14px] font-semibold">
         Email
       </label>
       <input
@@ -123,9 +123,9 @@ function LinkForm({ next, expired }: { next: string; expired: boolean }) {
           {state.message}
         </p>
       ) : null}
-      <Button type="submit" size="lg" className="mt-2 w-full" disabled={pending}>
+      <Btn type="submit" className="mt-4 h-11 w-full text-[16px]" disabled={pending}>
         {pending ? "Sending link…" : "Email me a sign-in link"}
-      </Button>
+      </Btn>
     </form>
   );
 }

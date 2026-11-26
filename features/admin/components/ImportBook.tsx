@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { createBrowserDbClient } from "@/core/db/browser";
-import { Button, Panel, cn } from "@/core/design/ui";
+import { Panel, cn } from "@/core/design/ui";
+import { Btn } from "@/core/shell";
 import { QUESTION_IMAGE_BUCKET } from "@/core/question";
 import { setTestPublished } from "../actions";
 import {
@@ -268,13 +269,13 @@ export function ImportBook({ topics }: { topics: TopicOption[] }) {
               />
               Publish these topics when done
             </label>
-            <Button
-              size="lg"
+            <Btn
+              className="h-11 px-5 text-[16px]"
               onClick={() => void run()}
               disabled={!ready || running}
             >
               {running ? "Importing…" : `Import ${totalQuestions} questions`}
-            </Button>
+            </Btn>
           </div>
         </Panel>
       ) : null}

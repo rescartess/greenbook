@@ -17,14 +17,14 @@ export function Card({ className, children, flush, ...rest }: ComponentProps<"se
 }
 
 type Tone = "primary" | "quiet";
-const BTN = "inline-flex h-10 items-center justify-center rounded-[10px] px-[18px] text-[15px] font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pine";
+const BTN = "inline-flex h-10 disabled:opacity-50 items-center justify-center rounded-[10px] px-[18px] text-[15px] font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pine";
 const TONE: Record<Tone, string> = {
   primary: "bg-pine text-pine-ink hover:brightness-110",
   quiet: "border border-hairline bg-mist text-ink hover:bg-canvas",
 };
 
-export function Btn({ tone = "primary", className, ...rest }: ComponentProps<"button"> & { tone?: Tone }) {
-  return <button className={cn(BTN, TONE[tone], className)} {...rest} />;
+export function Btn({ tone = "primary", className, type = "button", ...rest }: ComponentProps<"button"> & { tone?: Tone }) {
+  return <button type={type} className={cn(BTN, TONE[tone], className)} {...rest} />;
 }
 
 export function BtnLink({ tone = "primary", className, ...rest }: ComponentProps<typeof Link> & { tone?: Tone }) {

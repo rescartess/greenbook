@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Button, ButtonLink } from "@/core/design/ui";
+import { Btn, BtnLink } from "@/core/shell";
 import { importQuestions, type ImportState } from "../actions";
 
 const EXAMPLE = `[
@@ -31,10 +31,10 @@ export function ImportForm({ moduleId, moduleLabel, backHref }: { moduleId: stri
         </p>
         <p className="mt-1 text-[15px] text-graphite">They are drafts until you publish the test.</p>
         <div className="mt-5 flex gap-2.5">
-          <ButtonLink href={`/admin/questions/${state.firstId}`}>Look at the first one</ButtonLink>
-          <ButtonLink href={backHref} variant="quiet">
+          <BtnLink href={`/admin/questions/${state.firstId}`}>Look at the first one</BtnLink>
+          <BtnLink href={backHref} tone="quiet">
             Back to the test
-          </ButtonLink>
+          </BtnLink>
         </div>
       </div>
     );
@@ -73,18 +73,18 @@ export function ImportForm({ moduleId, moduleLabel, backHref }: { moduleId: stri
               All {state.count} question{state.count === 1 ? "" : "s"} look right.
             </p>
             <input type="hidden" name="confirm" value="yes" />
-            <Button type="submit" disabled={pending}>
+            <Btn type="submit" disabled={pending}>
               {pending ? "Importing…" : `Add ${state.count} to ${moduleLabel}`}
-            </Button>
+            </Btn>
           </div>
         ) : (
           <div className="flex gap-2.5">
-            <Button type="submit" disabled={pending}>
+            <Btn type="submit" disabled={pending}>
               {pending ? "Checking…" : "Check questions"}
-            </Button>
-            <ButtonLink href={backHref} variant="quiet">
+            </Btn>
+            <BtnLink href={backHref} tone="quiet">
               Cancel
-            </ButtonLink>
+            </BtnLink>
           </div>
         )}
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { Button, ButtonLink } from "@/core/design/ui";
+import { Btn, BtnLink } from "@/core/shell";
 import { createTest, type SimpleState } from "../actions";
 import type { SkillGroup } from "../queries";
 
@@ -125,12 +125,12 @@ export function NewTestForm({ skills }: { skills: Record<"english" | "math", Ski
         </p>
       ) : null}
       <div className="flex gap-2.5">
-        <Button type="submit" disabled={pending}>
+        <Btn type="submit" disabled={pending}>
           {pending ? "Creating…" : "Create"}
-        </Button>
-        <ButtonLink href="/admin" variant="quiet">
+        </Btn>
+        <BtnLink href="/admin" tone="quiet">
           Cancel
-        </ButtonLink>
+        </BtnLink>
       </div>
     </form>
   );

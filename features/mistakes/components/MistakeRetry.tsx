@@ -25,12 +25,12 @@ export function MistakeRetry({ mistake, number }: { mistake: Mistake; number: nu
         ) : f.isCorrect ? (
           <div className="flex flex-wrap items-center gap-3">
             <p className="text-[15px] text-ink-soft">Get it right once more to clear it.</p>
-            <button type="button" onClick={() => setRound((r) => r + 1)} className="rounded-full bg-wash px-4 py-2 text-sm font-bold hover:bg-hairline">
+            <button type="button" onClick={() => setRound((r) => r + 1)} className="inline-flex h-9 items-center rounded-[10px] border border-hairline bg-paper px-4 text-[14px] font-bold hover:bg-mist">
               Try again
             </button>
           </div>
         ) : (
-          <button type="button" onClick={() => setRound((r) => r + 1)} className="rounded-full bg-wash px-4 py-2 text-sm font-bold hover:bg-hairline">
+          <button type="button" onClick={() => setRound((r) => r + 1)} className="inline-flex h-9 items-center rounded-[10px] border border-hairline bg-paper px-4 text-[14px] font-bold hover:bg-mist">
             Try again
           </button>
         )

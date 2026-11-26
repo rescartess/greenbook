@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense, type ComponentType } from "react";
 import { FullTestsPreview } from "@/features/full-tests";
 import { MistakeSetPreview, MistakesPreview } from "@/features/mistakes";
+import { MonthlyPreview } from "@/features/practice";
 import { ResultPreview, ResultsPreview } from "@/features/results";
 import { TopicPreview, TopicsPreview } from "@/features/topics";
 
@@ -17,6 +18,7 @@ const PAGES: Record<string, ComponentType> = {
   result: ResultPreview,
   mistakes: MistakesPreview,
   "mistake-set": MistakeSetPreview,
+  monthly: MonthlyPreview,
 };
 
 export default function Page({ params }: { params: Promise<{ name: string }> }) {

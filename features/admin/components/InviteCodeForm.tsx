@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Button } from "@/core/design/ui";
+import { Btn } from "@/core/shell";
 import { setInviteCode, type InviteCodeState } from "../actions";
 
 const START: InviteCodeState = { message: null, saved: false };
@@ -25,9 +25,9 @@ export function InviteCodeForm({ code }: { code: string | null }) {
           className="h-11 rounded-choice border-[1.5px] border-control bg-paper px-4 text-base uppercase text-ink placeholder:normal-case placeholder:text-graphite focus:border-pine focus:outline-none"
         />
       </div>
-      <Button type="submit" disabled={pending}>
+      <Btn type="submit" disabled={pending}>
         {pending ? "Saving…" : "Save code"}
-      </Button>
+      </Btn>
       {state.message ? (
         <p className="w-full text-sm font-semibold text-ink" role="status">
           {state.message}

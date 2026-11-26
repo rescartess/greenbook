@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { ButtonLink, Panel } from "@/core/design/ui";
+import { Panel } from "@/core/design/ui";
+import { BtnLink } from "@/core/shell";
 import { QuestionView, RichText } from "@/core/question";
 import { requireAdmin } from "@/features/auth";
 import { getQuestionPreview } from "../queries";
@@ -54,26 +55,26 @@ async function QuestionPreview({
           ) : null}
         </div>
         <div className="flex flex-wrap gap-2">
-          <ButtonLink
+          <BtnLink
             href={`/admin/questions/${q.externalId}/edit`}
-            variant="quiet"
+            tone="quiet"
           >
             Edit question
-          </ButtonLink>
+          </BtnLink>
           {place ? (
             <nav className="flex gap-2" aria-label="Move between questions">
               {place.previousId ? (
-                <ButtonLink
+                <BtnLink
                   href={`/admin/questions/${place.previousId}`}
-                  variant="quiet"
+                  tone="quiet"
                 >
                   Previous
-                </ButtonLink>
+                </BtnLink>
               ) : null}
               {place.nextId ? (
-                <ButtonLink href={`/admin/questions/${place.nextId}`}>
+                <BtnLink href={`/admin/questions/${place.nextId}`}>
                   Next
-                </ButtonLink>
+                </BtnLink>
               ) : null}
             </nav>
           ) : null}
