@@ -72,7 +72,6 @@ export function DashboardView({
   design?: React.ReactNode;
 }) {
   const measured = data.domains.filter((d) => d.accuracy !== null).map((d) => d.accuracy!);
-  const weakest = measured.length > 1 ? Math.min(...measured) : null;
   const firstTime = !data.resume && !data.score && measured.length === 0;
   return (
     <>
@@ -87,35 +86,8 @@ export function DashboardView({
         {data.resume ? <ContinueCard resume={data.resume} /> : null}
         {data.resume ? <RoastCard first={roast} /> : null}
 
-        <Card className={data.resume ? "lg:col-span-2" : undefined}>
-          <h2 className="text-[17px] font-bold">Accuracy by area</h2>
-          <ul className="mt-3">
-            {data.domains.map((d) => {
-              const weak = d.accuracy !== null && d.accuracy === weakest;
-              return (
-                <li key={d.name} className="border-t border-hairline py-2.5 first:border-t-0">
-                  <div className="flex items-baseline justify-between gap-3 text-[15px]">
-                    <span className="font-medium">
-                      {d.name}
-                      {weak ? <span className="ml-2 text-[12px] font-semibold text-pine">Weakest</span> : null}
-                    </span>
-                    <span className={cn("tabular-nums", d.accuracy === null ? "text-graphite" : "font-semibold")}>
-                      {d.accuracy === null ? "Not yet" : `${d.accuracy}%`}
-                    </span>
-                  </div>
-                  <div className="mt-2 h-1.5 overflow-hidden rounded-[3px] bg-mist">
-                    <div
-                      className={cn("h-full rounded-[3px]", weak ? "bg-pine" : "bg-graphite/50")}
-                      style={{ width: `${Math.max(d.accuracy ?? 0, d.accuracy === null ? 0 : 1)}%` }}
-                    />
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </Card>
 
-        {data.resume ? null : <RoastCard first={roast} />}
+        {data.resume ? null : <RoastCard first={roast} className="lg:col-span-2" />}
 
         {design ? (
           <Card className="lg:col-span-2">

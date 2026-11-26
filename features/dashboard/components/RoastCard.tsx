@@ -5,10 +5,10 @@ import { Btn, Card } from "@/core/shell";
 import { pickRoast } from "../roasts";
 
 /** A random roast line, new on every page load; "Roast me again" picks another one. */
-export function RoastCard({ first }: { first: string }) {
+export function RoastCard({ first, className }: { first: string; className?: string }) {
   const [line, setLine] = useState(first);
   return (
-    <Card className="flex flex-col">
+    <Card className={className ? `flex flex-col ${className}` : "flex flex-col"}>
       <p aria-live="polite" className="text-[22px] font-bold leading-snug tracking-[-0.01em] sm:text-[24px]">
         {line}
       </p>
