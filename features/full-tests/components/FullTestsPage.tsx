@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { ESTIMATED_SCORES, SUBJECTS, type SubjectSlug } from "@/core/config/subjects";
-import { BtnLink, Card, CardSkeleton, Empty, Note, PageTitle } from "@/core/shell";
+import { CardSkeleton, Empty, Note, PageTitle } from "@/core/shell";
 import { listFullTests, type FullTestRow } from "../queries";
 import { StartTestButton } from "./StartTestButton";
 
@@ -36,43 +36,29 @@ export function FullTestList({ subject, tests }: { subject: SubjectSlug; tests: 
     return <Empty title="No full tests yet">New {SUBJECTS[subject].name} tests will appear here as soon as they’re published.</Empty>;
   }
   return (
-    <Card flush>
-      <ul className="divide-y divide-hairline">
-        {tests.map((test) => (
-          <li key={test.id} className="flex flex-wrap items-center gap-x-6 gap-y-3 px-5 py-4 sm:px-6">
-            <div className="min-w-0 flex-1">
-              <p className="flex flex-wrap items-baseline gap-x-2.5 text-[16px] font-bold">
-                {test.title}
-                {!test.published ? <Note>Draft, only you can see it</Note> : null}
+    <ul className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
+      {tests.map((test) => (
+        <li key={test.id}>
+          <article className="flex h-full flex-col rounded-[14px] border border-hairline bg-paper p-5">
+            <h2 className="text-[18px] font-bold leading-snug">{test.title}</h2>
+            <p className="mt-1 text-[14px] text-graphite tabular-nums">
+              {test.last
+                ? `Last score ${test.last.score ?? `${test.last.raw} correct`}${test.last.score && ESTIMATED_SCORES ? " (estimated)" : ""}`
+                : "Not taken yet"}
+            </p>
+            {!test.published ? (
+              <p className="mt-1">
+                <Note>Draft, only you can see it</Note>
               </p>
-              <p className="mt-0.5 text-[14px] text-graphite tabular-nums">
-                {test.questions} questions, {test.minutes} minutes
-                {test.inProgressId ? ", in progress" : ""}
-              </p>
-            </div>
-            {test.last ? (
-              <div className="w-24 text-right">
-                <p className="text-[22px] font-bold leading-none tabular-nums">{test.last.score ?? test.last.raw}</p>
-                <p className="mt-1 text-[12px] text-graphite">
-                  {test.last.score ? (ESTIMATED_SCORES ? "Last score, est." : "Last score") : "Last, correct"}
-                </p>
-              </div>
             ) : null}
-            <div className="flex flex-wrap items-start gap-2">
-              {test.last ? (
-                <BtnLink href={`/${subject}/results/${test.last.attemptId}`} tone="quiet">
-                  See results
-                </BtnLink>
-              ) : null}
-              {test.inProgressId ? (
-                <StartTestButton setId={test.id} label="Resume test" />
-              ) : (
-                <StartTestButton setId={test.id} label={test.last ? "Take again" : "Start test"} variant={test.last ? "quiet" : "primary"} />
-              )}
+            <p className="mt-4 text-[15px] text-ink-soft tabular-nums">{test.questions} questions</p>
+            <p className="mt-0.5 text-[14px] text-graphite tabular-nums">{test.minutes} minutes</p>
+            <div className="mt-auto pt-5">
+              <StartTestButton setId={test.id} />
             </div>
-          </li>
-        ))}
-      </ul>
-    </Card>
+          </article>
+        </li>
+      ))}
+    </ul>
   );
 }
