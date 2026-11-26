@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { SUBJECTS, isSubjectSlug } from "@/core/config/subjects";
 import { Logo } from "@/core/design/ui";
-import { ThemeToggle } from "@/core/layout";
+import { ThemeButton } from "@/core/shell";
 import { getCurrentUser } from "@/features/auth";
 import { getPracticeState } from "../queries";
 import { PracticeResults } from "./PracticeResults";
@@ -48,21 +48,35 @@ async function Practice({ attemptId }: { attemptId: Promise<string> }) {
   }
 
   return (
-    <div className="min-h-dvh bg-canvas">
-      <header className="sticky top-0 z-20 px-3 pb-4 pt-3 sm:px-5">
-        <div className="glass mx-auto flex h-[54px] max-w-[1480px] items-center justify-between rounded-full pl-4 pr-2">
-          <Link href={`/${subject}/dashboard`} className="text-ink" aria-label="Dashboard">
-            <Logo size={28} />
-          </Link>
-          <ThemeToggle />
-        </div>
-      </header>
+    <FinishedFrame subject={subject}>
       <PracticeResults
         state={state}
         studentName={user.name}
-        backHref={backHref}
-        backLabel={state.kind === "monthly" ? "Back to monthly sets" : `Back to ${state.title}`}
+        backHref={`/${subject}/results`}
+        backLabel="All results"
       />
+    </FinishedFrame>
+  );
+}
+
+/** Page frame for a finished practice: a flat top bar with the logo, Results and the theme button. */
+export function FinishedFrame({ subject, children }: { subject: string; children: React.ReactNode }) {
+  return (
+    <div className="gb-colors min-h-dvh bg-canvas">
+      <header className="border-b border-hairline bg-paper">
+        <div className="mx-auto flex h-14 max-w-[1440px] items-center justify-between gap-3 px-4 sm:px-8">
+          <Link href={`/${subject}/dashboard`} className="text-ink" aria-label="Dashboard">
+            <Logo size={28} />
+          </Link>
+          <div className="flex items-center gap-3">
+            <Link href={`/${subject}/results`} className="text-[15px] font-semibold text-ink-soft hover:text-ink">
+              Results
+            </Link>
+            <ThemeButton />
+          </div>
+        </div>
+      </header>
+      <div className="pt-8">{children}</div>
     </div>
   );
 }

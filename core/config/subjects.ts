@@ -111,3 +111,17 @@ export function requireSubject(value: string): SubjectSlug {
  * (supabase/migrations/..._estimated_scores.sql). While true, every score says "estimated".
  */
 export const ESTIMATED_SCORES = true;
+
+/** Which SAT domain each skill (topic) belongs to, for the Domain column of the question overview. */
+export const SKILL_DOMAIN: Record<string, string> = {
+  "Central Ideas and Details": "Information and Ideas",
+  "Command of Evidence": "Information and Ideas",
+  Inferences: "Information and Ideas",
+  "Words in Context": "Craft and Structure",
+  "Text Structure and Purpose": "Craft and Structure",
+  "Cross-Text Connections": "Craft and Structure",
+  "Rhetorical Synthesis": "Expression of Ideas",
+  Transitions: "Expression of Ideas",
+  Boundaries: "Standard English Conventions",
+  "Form, Structure, and Sense": "Standard English Conventions",
+};

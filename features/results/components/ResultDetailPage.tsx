@@ -2,11 +2,11 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ESTIMATED_SCORES, SUBJECTS, type SubjectSlug } from "@/core/config/subjects";
 import { cn } from "@/core/design/ui";
+import { QuestionsOverview } from "@/core/question";
 import { Card, CardSkeleton, PageTitle, ScoreScale } from "@/core/shell";
 import { getCurrentUser } from "@/features/auth";
 import { getResults } from "../queries";
 import { accuracyByArea, formatDate, moduleLabel, type TestResults } from "../schema";
-import { AnswerReview } from "./AnswerReview";
 import { DeleteAttemptButton } from "./DeleteAttemptButton";
 
 export function ResultDetailPage({ subject, attemptId }: { subject: SubjectSlug; attemptId: Promise<string> }) {
@@ -103,12 +103,12 @@ export function ResultsView({ r, subject, studentName }: { r: TestResults; subje
         </Card>
       </div>
 
-      <AnswerReview
+      <QuestionsOverview
         title={r.title}
         studentName={studentName}
-        groups={r.modules.map((m) => ({
-          label: `Section ${s.sectionNumber}, ${moduleLabel(m)}: ${s.name}`,
-          items: m.questions.map((q) => ({
+        subtitle="Review your results for each question from this practice test."
+        items={r.modules.flatMap((m) =>
+          m.questions.map((q) => ({
             id: q.id,
             number: q.position,
             group: moduleLabel(m),
@@ -122,8 +122,10 @@ export function ResultsView({ r, subject, studentName }: { r: TestResults; subje
             isCorrect: q.isCorrect,
             marked: q.marked,
             explanation: q.explanation,
+            section: s.name,
+            domain: q.domain || null,
           })),
-        }))}
+        )}
       />
     </>
   );
