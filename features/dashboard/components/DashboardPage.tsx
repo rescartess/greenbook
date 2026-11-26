@@ -1,10 +1,11 @@
-import Link from "next/link";
 import { Suspense } from "react";
 import { SUBJECTS, type SubjectSlug } from "@/core/config/subjects";
 import { cn } from "@/core/design/ui";
 import { BtnLink, Bubbles, Card, PageTitle } from "@/core/shell";
 import { ColorSettings, getLook } from "@/features/profile";
 import { getDashboard, type DashboardData } from "../queries";
+import { pickRoast } from "../roasts";
+import { RoastCard } from "./RoastCard";
 
 /** An SAT section is scored from 200 to 800 (English and Math alike). */
 const SCALE_MIN = 200;
@@ -36,10 +37,19 @@ function DashboardLoading() {
 
 async function DashboardContent({ subject }: { subject: SubjectSlug }) {
   const [data, look] = await Promise.all([getDashboard(subject), getLook()]);
-  return <DashboardView subject={subject} data={data} design={<ColorSettings initial={look.colors} compact />} />;
+  return <DashboardView subject={subject} data={data} roast={pickRoast()} design={<ColorSettings initial={look.colors} compact />} />;
 }
 
-export function DashboardView({ subject, data, design }: { subject: SubjectSlug; data: DashboardData; design?: React.ReactNode }) {
+export function DashboardView({
+  data,
+  roast,
+  design,
+}: {
+  subject: SubjectSlug;
+  data: DashboardData;
+  roast: string;
+  design?: React.ReactNode;
+}) {
   const measured = data.domains.filter((d) => d.accuracy !== null).map((d) => d.accuracy!);
   const weakest = measured.length > 1 ? Math.min(...measured) : null;
   const firstTime = !data.resume && !data.score && measured.length === 0;
@@ -84,27 +94,7 @@ export function DashboardView({ subject, data, design }: { subject: SubjectSlug;
           </ul>
         </Card>
 
-        <Card>
-          <h2 className="text-[17px] font-bold">Up next</h2>
-          <ul className="mt-2">
-            {data.next.map((item) => (
-              <li key={item.title} className="flex items-center justify-between gap-4 border-t border-hairline py-3.5 first:border-t-0">
-                <div className="min-w-0">
-                  <p className="text-[15px] font-semibold">{item.title}</p>
-                  <p className="mt-0.5 text-[14px] text-ink-soft tabular-nums">{item.detail}</p>
-                </div>
-                <BtnLink href={item.href} tone={item.primary ? "primary" : "quiet"} className="shrink-0">
-                  {item.primary ? "Start" : "Open"}
-                </BtnLink>
-              </li>
-            ))}
-          </ul>
-          {data.next.length === 0 ? (
-            <p className="mt-3 text-[14px] text-ink-soft">
-              Nothing waiting. <Link href={`/${subject}/topics`} className="font-semibold text-pine hover:underline">Practice a topic</Link>
-            </p>
-          ) : null}
-        </Card>
+        <RoastCard first={roast} />
 
         {design ? (
           <Card className="lg:col-span-2">

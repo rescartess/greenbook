@@ -35,7 +35,7 @@ export function DashboardPreview() {
   return (
     <Shell nav={<SideNav user={{ name: "ravshanbekrahmonov91", initials: "RA", isAdmin: true }} badges={{ english: { mistakes: 65 } }} />}>
       <PageTitle title="Dashboard" subtitle={SUBJECTS.english.name} />
-      <DashboardView subject="english" data={SAMPLE} design={<ColorSettings initial={{ main: null, background: null }} compact />} />
+      <DashboardView subject="english" data={SAMPLE} roast="1500+ is the only way to get her. Grind!" design={<ColorSettings initial={{ main: null, background: null }} compact />} />
     </Shell>
   );
 }
