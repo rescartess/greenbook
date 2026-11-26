@@ -3,8 +3,18 @@ import { ESTIMATED_SCORES, SUBJECTS, type SubjectSlug } from "@/core/config/subj
 import { createDbClient } from "@/core/db/server";
 
 export type DashboardData = {
-  resume: { title: string; detail: string; progress: number; href: string } | null;
-  score: { value: number; changeSinceFirst: number | null; trend: number[]; detail: string } | null;
+  resume: { title: string; detail: string; progress: number; done: number; total: number; href: string } | null;
+  score: {
+    value: number;
+    /** The first full test's score, when there is more than one. */
+    first: number | null;
+    changeSinceFirst: number | null;
+    trend: number[];
+    /** Which test and when, e.g. "Practice test 1, November 26". */
+    latest: string;
+    estimated: boolean;
+    detail: string;
+  } | null;
   domains: { name: string; accuracy: number | null; answered: number }[];
   next: { title: string; detail: string; href: string; primary?: boolean }[];
   mistakeCount: number;
@@ -61,7 +71,7 @@ export async function getDashboard(subject: SubjectSlug): Promise<DashboardData>
     const title = open.question_sets?.title ?? "Your test";
     resume =
       open.mode === "practice"
-        ? { title, detail: `${answered} of ${total} checked`, progress: total ? answered / total : 0, href: `/practice/${open.id}` }
+        ? { title, detail: `${answered} of ${total} checked`, progress: total ? answered / total : 0, done: answered, total, href: `/practice/${open.id}` }
         : {
             title: `${title}, module ${running?.modules?.module_number ?? 1}`,
             detail:
@@ -69,6 +79,8 @@ export async function getDashboard(subject: SubjectSlug): Promise<DashboardData>
                 ? `${answered} of ${total} answered. Paused with ${Math.max(1, Math.round(running.paused_remaining_sec / 60))} minutes left.`
                 : `${answered} of ${total} answered. The timer is still running.`,
             progress: total ? answered / total : 0,
+            done: answered,
+            total,
             href: `/test/${open.id}`,
           };
   }
@@ -80,6 +92,9 @@ export async function getDashboard(subject: SubjectSlug): Promise<DashboardData>
     const last = scored[scored.length - 1];
     score = {
       value: last.scaled_score!,
+      first: scored.length > 1 ? scored[0].scaled_score! : null,
+      latest: `${last.question_sets?.title ?? "Full test"}${last.finished_at ? `, ${dateText(last.finished_at)}` : ""}`,
+      estimated: ESTIMATED_SCORES,
       changeSinceFirst: scored.length > 1 ? last.scaled_score! - scored[0].scaled_score! : null,
       trend: scored.slice(-8).map((a) => a.scaled_score!),
       detail: `${last.question_sets?.title ?? "Full test"}, ${last.finished_at ? dateText(last.finished_at) : ""}.${ESTIMATED_SCORES ? " Estimated, not an official score." : ""}`,

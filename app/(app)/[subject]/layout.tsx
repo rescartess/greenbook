@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { AppShell, SideNav, SideNavPlaceholder } from "@/core/layout";
+import { Shell, SideNav, SideNavPlaceholder } from "@/core/shell";
 import { SUBJECT_SLUGS } from "@/core/config/subjects";
 import { getCurrentUser, signOut } from "@/features/auth";
 import { getMistakeCounts } from "@/features/mistakes";
@@ -16,7 +16,7 @@ async function SignedInNav() {
 
 export default function SubjectLayout({ children }: LayoutProps<"/[subject]">) {
   return (
-    <AppShell
+    <Shell
       nav={
         <Suspense fallback={<SideNavPlaceholder />}>
           <SignedInNav />
@@ -24,6 +24,6 @@ export default function SubjectLayout({ children }: LayoutProps<"/[subject]">) {
       }
     >
       {children}
-    </AppShell>
+    </Shell>
   );
 }

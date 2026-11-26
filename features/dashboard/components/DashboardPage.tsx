@@ -1,145 +1,180 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { AccentPanel, ButtonLink, Panel, cn } from "@/core/design/ui";
-import { PageHeader } from "@/core/layout";
 import { SUBJECTS, type SubjectSlug } from "@/core/config/subjects";
+import { cn } from "@/core/design/ui";
+import { BtnLink, Bubbles, Card, PageTitle } from "@/core/shell";
 import { getDashboard, type DashboardData } from "../queries";
-import { getCurrentUser } from "@/features/auth";
 
-function Trend({ values }: { values: number[] }) {
-  const min = Math.min(...values) - 10;
-  const max = Math.max(...values) + 10;
-  const points = values
-    .map((v, i) => `${6 + (i * 168) / (values.length - 1)},${58 - ((v - min) / (max - min)) * 52}`)
-    .join(" ");
-  return (
-    <svg width="180" height="64" viewBox="0 0 180 64" role="img" aria-label={`Score trend over ${values.length} tests, from ${values[0]} to ${values[values.length - 1]}`}>
-      <polyline points={points} fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-    </svg>
-  );
-}
+/** An SAT section is scored from 200 to 800 (English and Math alike). */
+const SCALE_MIN = 200;
+const SCALE_MAX = 800;
+/** Up to this many questions, progress is drawn as answer bubbles; above it, as a thin bar. */
+const MAX_BUBBLES = 40;
 
 /** The dashboard frame shows at once; the student's own numbers stream in. */
 export function DashboardPage({ subject }: { subject: SubjectSlug }) {
   return (
-    <Suspense fallback={<DashboardLoading subject={subject} />}>
-      <DashboardContent subject={subject} />
-    </Suspense>
+    <>
+      <PageTitle title="Dashboard" subtitle={SUBJECTS[subject].name} />
+      <Suspense fallback={<DashboardLoading />}>
+        <DashboardContent subject={subject} />
+      </Suspense>
+    </>
   );
 }
 
-function DashboardLoading({ subject }: { subject: SubjectSlug }) {
+function DashboardLoading() {
   return (
-    <>
-      <PageHeader title="Welcome back" subtitle={SUBJECTS[subject].name} />
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2" aria-busy="true">
-        {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="h-[220px] rounded-panel border border-hairline bg-paper" />
-        ))}
-      </div>
-    </>
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.7fr_1fr]" aria-busy="true">
+      {[0, 1, 2, 3].map((i) => (
+        <div key={i} className="h-[248px] rounded-[14px] border border-hairline bg-paper" />
+      ))}
+    </div>
   );
 }
 
 async function DashboardContent({ subject }: { subject: SubjectSlug }) {
-  const [user, data] = await Promise.all([getCurrentUser(), getDashboard(subject)]);
-  return <DashboardView subject={subject} data={data} firstName={user.name.split(" ")[0]} />;
+  const data = await getDashboard(subject);
+  return <DashboardView subject={subject} data={data} />;
 }
 
-function DashboardView({ subject, data, firstName }: { subject: SubjectSlug; data: DashboardData; firstName: string }) {
+export function DashboardView({ subject, data }: { subject: SubjectSlug; data: DashboardData }) {
   const measured = data.domains.filter((d) => d.accuracy !== null).map((d) => d.accuracy!);
   const weakest = measured.length > 1 ? Math.min(...measured) : null;
   const firstTime = !data.resume && !data.score && measured.length === 0;
+  const both = Boolean(data.resume && data.score);
   return (
     <>
-      <PageHeader title={`Welcome back, ${firstName}`} subtitle={SUBJECTS[subject].name} />
       {firstTime ? (
-        <p className="-mt-2 mb-6 max-w-2xl text-[17px] leading-relaxed text-ink-soft">
+        <p className="-mt-3 mb-6 max-w-2xl text-[15px] leading-relaxed text-ink-soft">
           Start with a full test or a short topic set. Your score, accuracy and mistakes will show up here as you go.
         </p>
       ) : null}
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        {data.resume ? (
-          <AccentPanel className="flex min-h-[220px] flex-col justify-between gap-6">
-            <div>
-              <p className="text-[15px] font-semibold opacity-75">Continue where you left off</p>
-              <h2 className="mt-2 text-[28px] font-extrabold tracking-tight">{data.resume.title}</h2>
-              <p className="mt-1 text-base opacity-80">{data.resume.detail}</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-pine-ink/20">
-                <div className="h-1.5 rounded-full bg-pine-ink" style={{ width: `${Math.round(data.resume.progress * 100)}%` }} />
-              </div>
-              <Link href={data.resume.href} className="rounded-full bg-pine-ink px-6 py-3 text-base font-extrabold text-pine">
-                Resume
-              </Link>
-            </div>
-          </AccentPanel>
-        ) : null}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.7fr_1fr]">
+        {data.score ? <ScoreCard score={data.score} className={both ? undefined : "lg:col-span-2"} /> : null}
+        {data.resume ? <ContinueCard resume={data.resume} className={both ? undefined : "lg:col-span-2"} /> : null}
 
-        {data.score ? (
-          <Panel className="flex min-h-[220px] flex-col gap-4">
-            <p className="text-[15px] font-semibold text-graphite">Latest estimated score</p>
-            <div className="flex items-end justify-between gap-4">
-              <div>
-                <p className="text-[56px] font-extrabold leading-none tracking-tight">{data.score.value}</p>
-                <p className="mt-2 text-[15px] font-bold text-pine">
-                  {data.score.changeSinceFirst === null
-                    ? "Your first full test"
-                    : `${data.score.changeSinceFirst >= 0 ? "+" : "−"}${Math.abs(data.score.changeSinceFirst)} since your first test`}
-                </p>
-              </div>
-              {data.score.trend.length > 1 ? (
-                <span className="text-pine">
-                  <Trend values={data.score.trend} />
-                </span>
-              ) : null}
-            </div>
-            <p className="text-sm text-graphite">{data.score.detail}</p>
-          </Panel>
-        ) : null}
+        <Card>
+          <h2 className="text-[17px] font-bold">Accuracy by area</h2>
+          <ul className="mt-3">
+            {data.domains.map((d) => {
+              const weak = d.accuracy !== null && d.accuracy === weakest;
+              return (
+                <li key={d.name} className="border-t border-hairline py-2.5 first:border-t-0">
+                  <div className="flex items-baseline justify-between gap-3 text-[15px]">
+                    <span className="font-medium">
+                      {d.name}
+                      {weak ? <span className="ml-2 text-[12px] font-semibold text-pine">Weakest</span> : null}
+                    </span>
+                    <span className={cn("tabular-nums", d.accuracy === null ? "text-graphite" : "font-semibold")}>
+                      {d.accuracy === null ? "Not yet" : `${d.accuracy}%`}
+                    </span>
+                  </div>
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-[3px] bg-mist">
+                    <div
+                      className={cn("h-full rounded-[3px]", weak ? "bg-pine" : "bg-graphite/50")}
+                      style={{ width: `${Math.max(d.accuracy ?? 0, d.accuracy === null ? 0 : 1)}%` }}
+                    />
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </Card>
 
-        <Panel className="flex flex-col gap-4">
-          <h2 className="text-xl font-extrabold tracking-tight">Accuracy by area</h2>
-          {data.domains.map((d) => (
-            <div key={d.name} className="flex flex-col gap-2">
-              <div className="flex justify-between gap-3 text-[15px]">
-                <span className="font-semibold">{d.name}</span>
-                <span className={cn("tabular-nums", d.accuracy === null ? "text-graphite" : "font-bold")}>
-                  {d.accuracy === null ? "Not yet" : `${d.accuracy}%`}
-                </span>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-mist">
-                <div
-                  className={cn("h-2 rounded-full", d.accuracy === weakest ? "bg-pine-soft" : "bg-pine")}
-                  style={{ width: `${d.accuracy ?? 0}%` }}
-                />
-              </div>
-            </div>
-          ))}
-        </Panel>
-
-        <Panel>
-          <h2 className="mb-2 text-xl font-extrabold tracking-tight">Up next</h2>
-          <ul>
-            {data.next.map((item, i) => (
-              <li
-                key={item.title}
-                className={cn("flex items-center justify-between gap-3 py-4", i < data.next.length - 1 && "border-b border-hairline")}
-              >
-                <div>
-                  <p className="text-base font-bold">{item.title}</p>
-                  <p className="mt-0.5 text-sm text-graphite">{item.detail}</p>
+        <Card>
+          <h2 className="text-[17px] font-bold">Up next</h2>
+          <ul className="mt-2">
+            {data.next.map((item) => (
+              <li key={item.title} className="flex items-center justify-between gap-4 border-t border-hairline py-3.5 first:border-t-0">
+                <div className="min-w-0">
+                  <p className="text-[15px] font-semibold">{item.title}</p>
+                  <p className="mt-0.5 text-[14px] text-ink-soft tabular-nums">{item.detail}</p>
                 </div>
-                <ButtonLink href={item.href} size="sm" variant={item.primary ? "primary" : "quiet"}>
+                <BtnLink href={item.href} tone={item.primary ? "primary" : "quiet"} className="shrink-0">
                   {item.primary ? "Start" : "Open"}
-                </ButtonLink>
+                </BtnLink>
               </li>
             ))}
           </ul>
-        </Panel>
+          {data.next.length === 0 ? (
+            <p className="mt-3 text-[14px] text-ink-soft">
+              Nothing waiting. <Link href={`/${subject}/topics`} className="font-semibold text-pine hover:underline">Practice a topic</Link>
+            </p>
+          ) : null}
+        </Card>
       </div>
     </>
+  );
+}
+
+const at = (score: number) => `${((Math.min(Math.max(score, SCALE_MIN), SCALE_MAX) - SCALE_MIN) / (SCALE_MAX - SCALE_MIN)) * 100}%`;
+
+/** The one rich moment: the latest score on the 200 to 800 section scale, next to where the student started. */
+function ScoreCard({ score, className }: { score: NonNullable<DashboardData["score"]>; className?: string }) {
+  const change = score.changeSinceFirst;
+  const ticks = Array.from({ length: (SCALE_MAX - SCALE_MIN) / 100 + 1 }, (_, i) => SCALE_MIN + i * 100);
+  return (
+    <Card className={className}>
+      <p className="text-[14px] font-medium text-ink-soft">Latest {score.estimated ? "estimated " : ""}score</p>
+      <div className="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <p className="text-[56px] font-bold leading-none tracking-[-0.02em] tabular-nums">{score.value}</p>
+        <p className="text-[15px] font-semibold text-pine tabular-nums">
+          {change === null ? "Your first full test" : `${change >= 0 ? "+" : "−"}${Math.abs(change)} vs your first test`}
+        </p>
+      </div>
+
+      <div className="mt-7" role="img" aria-label={`${score.value} on a scale from ${SCALE_MIN} to ${SCALE_MAX}${score.first !== null ? `, up from ${score.first}` : ""}`}>
+        <div className="relative h-2.5 rounded-[5px] bg-mist ring-1 ring-hairline ring-inset">
+          <div className="absolute inset-y-0 left-0 rounded-[5px] bg-pine" style={{ width: at(score.value) }} />
+          {score.first !== null ? (
+            <span className="absolute -top-1.5 h-[22px] w-0.5 -translate-x-1/2 rounded-[1px] bg-graphite/70" style={{ left: at(score.first) }} />
+          ) : null}
+          <span className="absolute -top-1.5 h-[22px] w-0.5 -translate-x-1/2 rounded-[1px] bg-ink" style={{ left: at(score.value) }} />
+        </div>
+        <div className="mt-2.5 flex justify-between text-[12px] text-graphite tabular-nums">
+          {ticks.map((t) => (
+            <span key={t}>{t}</span>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-[13px] text-ink-soft tabular-nums">
+        <span className="flex items-center gap-1.5">
+          <i className="inline-block h-0.5 w-2.5 bg-ink" aria-hidden="true" />
+          {score.latest}: {score.value}
+        </span>
+        {score.first !== null ? (
+          <span className="flex items-center gap-1.5">
+            <i className="inline-block h-0.5 w-2.5 bg-graphite/70" aria-hidden="true" />
+            First test: {score.first}
+          </span>
+        ) : null}
+      </div>
+      {score.estimated ? <p className="mt-4 text-[13px] text-graphite">Estimated from your answers, not an official score</p> : null}
+    </Card>
+  );
+}
+
+function ContinueCard({ resume, className }: { resume: NonNullable<DashboardData["resume"]>; className?: string }) {
+  return (
+    <Card className={cn("flex flex-col", className)}>
+      <p className="text-[14px] font-medium text-ink-soft">Continue where you left off</p>
+      <h2 className="mt-1.5 text-[24px] font-bold leading-tight">{resume.title}</h2>
+      <p className="mt-1 text-[15px] text-ink-soft tabular-nums">{resume.detail}</p>
+      <div className="mb-5 mt-5">
+        {resume.total > 0 && resume.total <= MAX_BUBBLES ? (
+          <Bubbles done={resume.done} total={resume.total} label={resume.detail} />
+        ) : (
+          <div className="h-1.5 overflow-hidden rounded-[3px] bg-mist">
+            <div className="h-full rounded-[3px] bg-pine" style={{ width: `${Math.round(resume.progress * 100)}%` }} />
+          </div>
+        )}
+      </div>
+      <div className="mt-auto">
+        <BtnLink href={resume.href}>Resume</BtnLink>
+      </div>
+    </Card>
   );
 }
