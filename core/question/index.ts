@@ -16,7 +16,7 @@ export {
   HighlightHint,
   MoreTool,
   MenuItem,
-  ThemeMenuItem,
+  ThemeTool,
   MarkForReviewButton,
   CrossOutToggle,
   ClearHighlightsButton,

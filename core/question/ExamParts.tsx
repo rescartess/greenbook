@@ -170,6 +170,24 @@ export function HighlightTool({ on, onToggle }: { on: boolean; onToggle: () => v
   );
 }
 
+/** Light/dark switch in the top bar, next to Highlight. Doesn't touch the clock or answers. */
+export function ThemeTool() {
+  const { theme, toggle } = useTheme();
+  const dark = theme === "dark";
+  return (
+    <ToolButton label={dark ? "Light mode" : "Dark mode"} pressed={false} onClick={toggle}>
+      {dark ? (
+        <>
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" />
+        </>
+      ) : (
+        <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />
+      )}
+    </ToolButton>
+  );
+}
+
 /** The three-dots "More" tool; the menu content is up to the screen. */
 export function MoreTool({
   open,
@@ -201,18 +219,6 @@ export function MoreTool({
 }
 
 /** One choice in the More menu: a bold line and a plain explanation. */
-/** More menu item that switches between light and dark mode without leaving the test. */
-export function ThemeMenuItem() {
-  const { theme, toggle } = useTheme();
-  return (
-    <MenuItem
-      title={theme === "dark" ? "Light mode" : "Dark mode"}
-      detail={theme === "dark" ? "Switch back to the light screen." : "Easier on the eyes in a dark room."}
-      onClick={toggle}
-    />
-  );
-}
-
 export function MenuItem({
   title,
   detail,

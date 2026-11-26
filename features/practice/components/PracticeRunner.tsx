@@ -16,7 +16,7 @@ import {
   MapButton,
   MarkForReviewButton,
   MenuItem,
-  ThemeMenuItem,
+  ThemeTool,
   MoreTool,
   QuestionMapGrid,
   QuestionMapPopover,
@@ -254,6 +254,7 @@ export function PracticeRunner({ state, studentName, canHighlight, exitHref }: P
         right={
           <>
             {canHighlight ? <HighlightTool on={highlighting} onToggle={() => setHighlighting((h) => !h)} /> : null}
+            <ThemeTool />
             <MoreTool
               open={moreOpen}
               onToggle={() => {
@@ -263,7 +264,6 @@ export function PracticeRunner({ state, studentName, canHighlight, exitHref }: P
             >
               {exitStep === "menu" ? (
                 <>
-                  <ThemeMenuItem />
                   <MenuItem
                     title={exiting === "save" ? "Saving…" : "Save and exit"}
                     detail={

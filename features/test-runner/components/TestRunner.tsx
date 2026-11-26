@@ -18,7 +18,7 @@ import {
   MapButton,
   MarkForReviewButton,
   MenuItem,
-  ThemeMenuItem,
+  ThemeTool,
   ModuleOverScreen,
   MoreTool,
   QuestionMapGrid,
@@ -260,6 +260,7 @@ export function TestRunner({
             {tools.includes("annotate") ? (
               <HighlightTool on={highlighting} onToggle={() => setHighlighting((h) => !h)} />
             ) : null}
+            <ThemeTool />
             {tools.includes("calculator") && DESMOS_KEY ? (
               <ToolButton
                 label="Calculator"
@@ -287,7 +288,6 @@ export function TestRunner({
             >
               {exitStep === "menu" ? (
                 <>
-                  <ThemeMenuItem />
                   <MenuItem
                     title={exiting === "save" ? "Saving…" : "Save and exit"}
                     detail="Your answers and time left are kept. The timer stops until you come back."
