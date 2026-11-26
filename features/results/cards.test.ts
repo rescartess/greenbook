@@ -20,7 +20,7 @@ describe("Results cards", () => {
       { label: "Answered", value: "7", of: "of 20" },
       { label: "Left", value: "13", of: null },
     ]);
-    expect(v.rows).toEqual([{ label: "Easy, #21–40", value: "7/20", share: 7 / 20 }]);
+    expect(v.rows).toEqual([{ label: "Easy, questions 21–40", value: "7/20", share: 7 / 20 }]);
     expect(v.primary).toEqual({ label: "Continue", href: "/practice/1" });
   });
 
@@ -33,10 +33,14 @@ describe("Results cards", () => {
     expect(v.canRetake).toBe(true);
   });
 
+  it("hides the old '#' in names made before 27 Nov", () => {
+    expect(cardView({ ...unfinished, name: "Boundaries, easy #1–20" }, "english").title).toBe("Boundaries, easy 1–20");
+  });
+
   it("a finished practice without a name uses the topic and range", () => {
     const v = cardView(practice, "english");
     expect(v.title).toBe("Inferences");
-    expect(v.subtitle).toBe("Topic practice, #1–10");
+    expect(v.subtitle).toBe("Topic practice, questions 1–10");
     expect(v.stats[1]).toEqual({ label: "Accuracy", value: "60%", of: null });
     expect(v.primary.href).toBe("/practice/3");
   });

@@ -51,8 +51,8 @@ describe("topics", () => {
   });
 
   it("labels ranges and works out SAT pace", () => {
-    expect(rangeLabel({ difficulty: "easy", from: 1, to: 25 })).toBe("Easy, #1–25");
-    expect(rangeLabel({ difficulty: "all", from: 7, to: 7 })).toBe("All levels, #7");
+    expect(rangeLabel({ difficulty: "easy", from: 1, to: 25 })).toBe("Easy, questions 1–25");
+    expect(rangeLabel({ difficulty: "all", from: 7, to: 7 })).toBe("All levels, question 7");
     expect(satPaceMinutes("english", 27)).toBe(32);
     expect(satPaceMinutes("english", 25)).toBe(30);
   });

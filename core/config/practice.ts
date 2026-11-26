@@ -26,10 +26,14 @@ export function isDifficulty(v: unknown): v is Difficulty {
   return typeof v === "string" && (DIFFICULTIES as readonly string[]).includes(v);
 }
 
-/** "Easy, #1–25" or "All levels, #26–50"; a single question reads "#7". */
+/** "questions 1–25"; a single one reads "question 7". No "#" (owner request, 27 Nov 2026). */
+export function numbersText(from: number, to: number): string {
+  return from === to ? `question ${from}` : `questions ${from}–${to}`;
+}
+
+/** "Easy, questions 1–25" or "All levels, questions 26–50"; a single question reads "question 7". */
 export function rangeLabel(o: { difficulty: Difficulty; from: number; to: number }): string {
-  const range = o.from === o.to ? `#${o.from}` : `#${o.from}–${o.to}`;
-  return `${DIFFICULTY_LABEL[o.difficulty]}, ${range}`;
+  return `${DIFFICULTY_LABEL[o.difficulty]}, ${numbersText(o.from, o.to)}`;
 }
 
 /** Minutes for `count` questions at the real test's pace (English: 32 minutes for 27 questions). */

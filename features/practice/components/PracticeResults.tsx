@@ -13,6 +13,7 @@ import {
   type ReviewItem,
 } from "@/core/question";
 import { startTopicPractice, type StartState } from "../actions";
+import { numbersText } from "@/core/config/practice";
 import { rangeLabel, scorePractice, type PracticeState } from "../schema";
 
 type Props = {
@@ -230,7 +231,7 @@ function NextRange({ state }: { state: PracticeState }) {
       <input type="hidden" name="checkMode" value={state.checkMode} />
       <input type="hidden" name="minutes" value={o.minutes ?? ""} />
       <Button type="submit" variant="quiet" size="lg" disabled={pending}>
-        {pending ? "Starting…" : from === to ? `Start the next one, #${from}` : `Start the next ones, #${from}–${to}`}
+        {pending ? "Starting…" : `Start ${numbersText(from, to)}`}
       </Button>
       {result.message ? <p className="mt-2 text-sm text-graphite">{result.message}</p> : null}
     </form>

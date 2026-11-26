@@ -1,3 +1,4 @@
+import { numbersText } from "@/core/config/practice";
 import { parseChoices, type QuestionChoice } from "@/core/question";
 
 export type ResultQuestion = {
@@ -177,7 +178,7 @@ export function cardView(a: AttemptSummary, subject: string): CardView {
   const total = a.modules.reduce((s, m) => s + m.total, 0);
   const answered = a.modules.reduce((s, m) => s + m.answered, 0);
   const correct = a.modules.reduce((s, m) => s + (m.correct ?? 0), 0);
-  const range = a.options ? (a.options.from === a.options.to ? `#${a.options.from}` : `#${a.options.from}–${a.options.to}`) : "";
+  const range = a.options ? numbersText(a.options.from, a.options.to) : "";
   const kindLabel =
     a.setKind === "full_test" ? "Full test" : a.setKind === "monthly" ? "Monthly set" : `Topic: ${a.setTitle}`;
 
@@ -212,7 +213,8 @@ export function cardView(a: AttemptSummary, subject: string): CardView {
     : { label: "Continue", href: a.setKind === "full_test" ? `/test/${a.id}` : `/practice/${a.id}` };
 
   return {
-    title: a.name ?? a.setTitle,
+    // Names made before 27 Nov 2026 were suggested as "Boundaries, easy #1–20"; the "#" is no longer shown.
+    title: a.name ? a.name.replace(/#(?=\d)/g, "") : a.setTitle,
     subtitle: a.name ? kindLabel : a.setKind === "topic" ? `Topic practice${range ? `, ${range}` : ""}` : kindLabel,
     finished,
     stats,

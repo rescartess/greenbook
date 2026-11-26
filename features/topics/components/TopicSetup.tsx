@@ -11,6 +11,7 @@ import {
   satPaceSeconds,
   type CheckMode,
   type Difficulty,
+  numbersText,
 } from "@/core/config/practice";
 import type { SubjectSlug } from "@/core/config/subjects";
 import { cn } from "@/core/design/ui";
@@ -72,7 +73,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
   };
 
   const levelWord = difficulty === "all" ? "" : `${DIFFICULTY_LABEL[difficulty].toLowerCase()} `;
-  const rangeText = count === 0 ? "" : safeFrom === to ? `#${safeFrom}` : `#${safeFrom}–${to}`;
+  const rangeText = count === 0 ? "" : safeFrom === to ? `${safeFrom}` : `${safeFrom}–${to}`;
   const suggestedName = `${topic.title}, ${difficulty === "all" ? "all levels" : DIFFICULTY_LABEL[difficulty].toLowerCase()} ${rangeText}`.trim().slice(0, 60);
   const name = nameText ?? suggestedName;
   const nameOk = name.trim().length > 0 && name.trim().length <= 60;
@@ -109,7 +110,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
 
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <NumberField
-              label="Start at question #"
+              label="Start at question"
               value={fromText}
               min={1}
               max={Math.max(1, total)}
@@ -146,7 +147,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
           </div>
           {count > 0 && count < size ? (
             <p className="mt-3 text-[14px] text-graphite">
-              Only {count} question{count === 1 ? "" : "s"} left from #{safeFrom}, so you’ll do #{safeFrom}–{to}.
+              Only {count} question{count === 1 ? "" : "s"} left from question {safeFrom}, so you’ll do {numbersText(safeFrom, to)}.
             </p>
           ) : null}
 
@@ -166,7 +167,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
                   )}
                 >
                   <span className="block font-semibold tabular-nums">
-                    #{r.from}–{r.to}
+                    {r.from}–{r.to}
                   </span>
                   <span
                     className={cn(
@@ -197,7 +198,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
           <div className="rounded-[10px] bg-mist px-5 py-5 text-center">
             <p className="text-[14px] font-medium text-graphite">You’ll do</p>
             <p className="mt-0.5 text-[34px] font-bold leading-tight tracking-[-0.01em] tabular-nums">
-              {count === 0 ? "Nothing yet" : safeFrom === to ? `#${safeFrom}` : `#${safeFrom}–${to}`}
+              {count === 0 ? "Nothing yet" : numbersText(safeFrom, to).replace(/^q/, "Q")}
             </p>
             <p className="text-[15px] text-ink-soft">
               {count} {levelWord}question{count === 1 ? "" : "s"}, in order
@@ -296,7 +297,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
           </div>
 
           <Btn type="submit" className="mt-6 h-11 w-full text-[16px]" disabled={pending || count === 0 || !minutesOk || !nameOk}>
-            {pending ? "Starting…" : count === 0 ? "No questions here yet" : `Start ${safeFrom === to ? `#${safeFrom}` : `#${safeFrom}–${to}`}`}
+            {pending ? "Starting…" : count === 0 ? "No questions here yet" : "Start practice"}
           </Btn>
           {state.message ? (
             <p role="alert" className="mt-3 text-center text-[14px] font-semibold">
