@@ -18,6 +18,7 @@ import {
   MapButton,
   MarkForReviewButton,
   MenuItem,
+  ThemeMenuItem,
   ModuleOverScreen,
   MoreTool,
   QuestionMapGrid,
@@ -286,6 +287,7 @@ export function TestRunner({
             >
               {exitStep === "menu" ? (
                 <>
+                  <ThemeMenuItem />
                   <MenuItem
                     title={exiting === "save" ? "Saving…" : "Save and exit"}
                     detail="Your answers and time left are kept. The timer stops until you come back."

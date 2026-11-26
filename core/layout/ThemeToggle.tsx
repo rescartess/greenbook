@@ -1,40 +1,12 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useTheme } from "@/core/design/theme";
 import { Icon, cn } from "@/core/design/ui";
-
-type Theme = "light" | "dark";
-
-function currentTheme(): Theme {
-  const set = document.documentElement.getAttribute("data-theme");
-  if (set === "light" || set === "dark") return set;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-}
-
-function subscribe(onChange: () => void) {
-  const observer = new MutationObserver(onChange);
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-  const media = window.matchMedia("(prefers-color-scheme: dark)");
-  media.addEventListener("change", onChange);
-  return () => {
-    observer.disconnect();
-    media.removeEventListener("change", onChange);
-  };
-}
 
 /** Light/dark button. The choice is remembered on this device. */
 export function ThemeToggle({ className }: { className?: string }) {
-  const theme = useSyncExternalStore<Theme>(subscribe, currentTheme, () => "light");
-  const next: Theme = theme === "dark" ? "light" : "dark";
-
-  function toggle() {
-    document.documentElement.setAttribute("data-theme", next);
-    try {
-      localStorage.setItem("theme", next);
-    } catch {
-      // Storage can be blocked (private mode); the theme still changes for this visit.
-    }
-  }
+  const { theme, toggle } = useTheme();
+  const next = theme === "dark" ? "light" : "dark";
 
   return (
     <button

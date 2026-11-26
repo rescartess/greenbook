@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, type ReactNode } from "react";
+import { useTheme } from "@/core/design/theme";
 import { Button, cn } from "@/core/design/ui";
 
 /*
@@ -200,6 +201,18 @@ export function MoreTool({
 }
 
 /** One choice in the More menu: a bold line and a plain explanation. */
+/** More menu item that switches between light and dark mode without leaving the test. */
+export function ThemeMenuItem() {
+  const { theme, toggle } = useTheme();
+  return (
+    <MenuItem
+      title={theme === "dark" ? "Light mode" : "Dark mode"}
+      detail={theme === "dark" ? "Switch back to the light screen." : "Easier on the eyes in a dark room."}
+      onClick={toggle}
+    />
+  );
+}
+
 export function MenuItem({
   title,
   detail,
