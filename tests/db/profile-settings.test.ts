@@ -35,6 +35,7 @@ describe("profile settings", () => {
     await expect(t.db.query(`update public.profiles set accent_color = '#FFF' where id = $1`, [S1])).rejects.toThrow();
     await expect(t.db.query(`update public.profiles set avatar_path = $2 where id = $1`, [S1, `${S2}/x.webp`])).rejects.toThrow();
     await expect(t.db.query(`update public.profiles set avatar_path = $2 where id = $1`, [S1, `${S1}/x.png`])).rejects.toThrow();
+    await t.db.query(`update public.profiles set avatar_path = $2 where id = $1`, [S1, `${S1}/fromsafari.jpg`]);
   });
 
   it("still can't change their role or someone else's profile", async () => {

@@ -5,8 +5,11 @@ import { removeAvatar, saveAvatar } from "../actions";
 
 const SIZE = 256;
 
-/** Cuts the picture to a centered square, 256 px, as WebP, in the browser (so uploads stay small). */
-async function toSquareWebp(file: File): Promise<Blob> {
+/**
+ * Cuts the picture to a centered square, 256 px, in the browser (so uploads stay small).
+ * WebP where the browser can make it; Safari can't, so there it becomes JPEG.
+ */
+async function toSquarePhoto(file: File): Promise<Blob> {
   const bitmap = await createImageBitmap(file);
   const side = Math.min(bitmap.width, bitmap.height);
   const canvas = document.createElement("canvas");
@@ -15,9 +18,12 @@ async function toSquareWebp(file: File): Promise<Blob> {
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("no canvas");
   ctx.drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, SIZE, SIZE);
-  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/webp", 0.85));
-  if (!blob || blob.type !== "image/webp") throw new Error("no webp");
-  return blob;
+  const make = (type: string) => new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, type, 0.85));
+  const webp = await make("image/webp");
+  if (webp && webp.type === "image/webp") return webp;
+  const jpeg = await make("image/jpeg");
+  if (jpeg && jpeg.type === "image/jpeg") return jpeg;
+  throw new Error("can't encode");
 }
 
 /** The round photo at the top of the profile, with Change photo and Remove. */
@@ -31,9 +37,9 @@ export function AvatarPicker({ initials, url }: { initials: string; url: string 
     start(async () => {
       setMessage(null);
       try {
-        const blob = await toSquareWebp(file);
+        const blob = await toSquarePhoto(file);
         const form = new FormData();
-        form.append("photo", new File([blob], "photo.webp", { type: "image/webp" }));
+        form.append("photo", new File([blob], blob.type === "image/webp" ? "photo.webp" : "photo.jpg", { type: blob.type }));
         const r = await saveAvatar(form);
         if (r.ok && r.url) setSrc(r.url);
         setMessage(r.ok ? null : r.message);

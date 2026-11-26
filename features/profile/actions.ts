@@ -63,19 +63,20 @@ export async function saveTestDate(_prev: ProfileFormState, formData: FormData):
 const MAX_PHOTO_BYTES = 500_000;
 
 /**
- * Saves a profile photo. The browser has already cut it to a 256 px square webp, so it is small.
+ * Saves a profile photo. The browser has already cut it to a 256 px square (WebP, or JPEG from Safari), so it is small.
  * It goes into the student's own folder in the "avatars" bucket; the old photo is removed.
  */
 export async function saveAvatar(formData: FormData): Promise<ProfileFormState & { url?: string }> {
   const file = formData.get("photo");
-  if (!(file instanceof File) || file.type !== "image/webp" || file.size === 0 || file.size > MAX_PHOTO_BYTES) {
+  const ext = file instanceof File ? (file.type === "image/webp" ? "webp" : file.type === "image/jpeg" ? "jpg" : null) : null;
+  if (!(file instanceof File) || !ext || file.size === 0 || file.size > MAX_PHOTO_BYTES) {
     return { ok: false, message: "Use a JPG, PNG or WebP picture." };
   }
   const { supabase, id } = await userId();
   if (!id) return { ok: false, message: "Log in again to save." };
   const { data: before } = await supabase.from("profiles").select("avatar_path").eq("id", id).maybeSingle();
-  const path = `${id}/${crypto.randomUUID().replace(/-/g, "").slice(0, 16)}.webp`;
-  const up = await supabase.storage.from("avatars").upload(path, file, { contentType: "image/webp" });
+  const path = `${id}/${crypto.randomUUID().replace(/-/g, "").slice(0, 16)}.${ext}`;
+  const up = await supabase.storage.from("avatars").upload(path, file, { contentType: file.type });
   if (up.error) return { ok: false, message: "The photo couldn’t be uploaded. Try again." };
   const { error } = await supabase.from("profiles").update({ avatar_path: path }).eq("id", id);
   if (error) {
