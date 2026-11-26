@@ -89,28 +89,36 @@ export function ExamTitle({
             />
           </button>
           {open ? (
-            <div
-              role="dialog"
-              aria-label="Directions"
-              className="fixed inset-x-0 bottom-[79px] top-[87px] z-40 flex flex-col overflow-y-auto bg-paper px-6 pb-6 pt-7 font-serif text-ink sm:px-10"
-            >
-              <div className="max-w-[1500px] flex-1 text-[17px] leading-[1.7] sm:text-[19px]">
-                {directions.map((d) => (
-                  <p key={d} className="mb-3 last:mb-0">
-                    {d}
-                  </p>
-                ))}
+            <>
+              {/* Dims the page between the bars; a click outside closes the directions. */}
+              <div aria-hidden="true" onClick={() => setOpen(false)} className="fixed inset-x-0 bottom-[79px] top-[87px] z-30 bg-ink/20" />
+              <div
+                role="dialog"
+                aria-label="Directions"
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") setOpen(false);
+                }}
+                className="fixed left-3 top-[95px] z-40 flex max-h-[calc(100dvh-87px-79px-16px)] w-[min(680px,calc(100vw-24px))] flex-col overflow-y-auto rounded-[10px] border border-control bg-paper px-5 pb-5 pt-5 font-serif text-ink shadow-[0_8px_30px_rgb(0_0_0/0.18)] sm:left-6 sm:px-7"
+              >
+                <div className="text-[16px] leading-[1.65] sm:text-[17px]">
+                  {directions.map((d) => (
+                    <p key={d} className="mb-3 last:mb-0">
+                      {d}
+                    </p>
+                  ))}
+                </div>
+                <div className="mt-5 flex justify-end font-sans">
+                  <button
+                    type="button"
+                    autoFocus
+                    onClick={() => setOpen(false)}
+                    className="rounded-full border-[1.5px] border-ink bg-hl-yellow-strong px-7 py-2 text-[16px] font-bold text-ink hover:brightness-95"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
-              <div className="mt-6 flex justify-end font-sans">
-                <button
-                  type="button"
-                  onClick={() => setOpen(false)}
-                  className="rounded-full border-[1.5px] border-ink bg-hl-yellow-strong px-10 py-3 text-[18px] font-bold text-ink hover:brightness-95"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
+            </>
           ) : null}
         </>
       ) : null}
