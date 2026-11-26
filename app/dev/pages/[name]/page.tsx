@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense, type ComponentType } from "react";
+import { FullTestsPreview } from "@/features/full-tests";
+import { MistakeSetPreview, MistakesPreview } from "@/features/mistakes";
+import { ResultPreview, ResultsPreview } from "@/features/results";
 import { TopicPreview, TopicsPreview } from "@/features/topics";
 
 export const metadata: Metadata = { title: "Page preview", robots: { index: false } };
@@ -9,6 +12,11 @@ export const metadata: Metadata = { title: "Page preview", robots: { index: fals
 const PAGES: Record<string, ComponentType> = {
   topics: TopicsPreview,
   topic: TopicPreview,
+  "full-tests": FullTestsPreview,
+  results: ResultsPreview,
+  result: ResultPreview,
+  mistakes: MistakesPreview,
+  "mistake-set": MistakeSetPreview,
 };
 
 export default function Page({ params }: { params: Promise<{ name: string }> }) {

@@ -7,3 +7,4 @@ export { SubjectSegment } from "./SubjectSegment";
 export { ThemeButton } from "./ThemeButton";
 export { Card, Btn, BtnLink, Bubbles, Meta, SegmentLinks, Empty, Note, CardSkeleton } from "./ui";
 export { DevShell } from "./DevShell";
+export { ScoreScale } from "./ScoreScale";

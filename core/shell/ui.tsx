@@ -7,10 +7,10 @@ import { cn } from "@/core/design/ui";
  * The exam keeps its own pieces in core/design/ui and core/question; nothing here touches them.
  */
 
-/** A white surface with a hairline: 14px corners, 24px inside. */
-export function Card({ className, children, ...rest }: ComponentProps<"section">) {
+/** A white surface with a hairline: 14px corners, 24px inside (`flush`: no padding, for lists of rows). */
+export function Card({ className, children, flush, ...rest }: ComponentProps<"section"> & { flush?: boolean }) {
   return (
-    <section className={cn("rounded-[14px] border border-hairline bg-paper p-5 sm:p-6", className)} {...rest}>
+    <section className={cn("rounded-[14px] border border-hairline bg-paper", !flush && "p-5 sm:p-6", className)} {...rest}>
       {children}
     </section>
   );

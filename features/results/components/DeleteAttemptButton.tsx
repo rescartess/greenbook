@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Button } from "@/core/design/ui";
+import { Btn } from "@/core/shell";
 import { removeAttempt } from "../actions";
 
 /** "Delete this attempt", with a second step so it isn't pressed by accident. */
@@ -12,19 +12,19 @@ export function DeleteAttemptButton({ attemptId, subject }: { attemptId: string;
 
   if (!confirming) {
     return (
-      <Button variant="quiet" size="sm" onClick={() => setConfirming(true)}>
+      <Btn tone="quiet" className="h-9 px-3.5 text-[14px]" onClick={() => setConfirming(true)}>
         Delete this attempt
-      </Button>
+      </Btn>
     );
   }
   return (
     <div className="flex flex-wrap items-center gap-2">
       <span className="text-[14px] font-semibold">Delete it from your results?</span>
-      <Button variant="quiet" size="sm" disabled={pending} onClick={() => setConfirming(false)}>
+      <Btn tone="quiet" className="h-9 px-3.5 text-[14px]" disabled={pending} onClick={() => setConfirming(false)}>
         Keep it
-      </Button>
-      <Button
-        size="sm"
+      </Btn>
+      <Btn
+        className="h-9 px-3.5 text-[14px]"
         disabled={pending}
         onClick={() =>
           start(async () => {
@@ -34,7 +34,7 @@ export function DeleteAttemptButton({ attemptId, subject }: { attemptId: string;
         }
       >
         {pending ? "Deleting…" : "Delete"}
-      </Button>
+      </Btn>
       {message ? <span className="text-[14px] text-incorrect">{message}</span> : null}
     </div>
   );

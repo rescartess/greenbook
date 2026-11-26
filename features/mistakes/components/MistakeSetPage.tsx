@@ -1,17 +1,16 @@
-import Link from "next/link";
 import { Suspense } from "react";
 import { SQB_CREDIT } from "@/core/config/practice";
 import type { SubjectSlug } from "@/core/config/subjects";
-import { ButtonLink, EmptyState, Panel } from "@/core/design/ui";
+import { BtnLink, Card, CardSkeleton, Empty, PageTitle } from "@/core/shell";
 import { toPlainText } from "@/core/question";
 import { getMistakes } from "../queries";
-import { groupByPractice, groupMistakes, type Mistake } from "../schema";
+import { groupByPractice, groupMistakes, type Mistake, type MistakePractice } from "../schema";
 import { MistakeRetry } from "./MistakeRetry";
 
 /** All mistakes from one practice (a topic or a test), to open and try again. */
 export function MistakeSetPage({ subject, practiceKey }: { subject: SubjectSlug; practiceKey: Promise<string> }) {
   return (
-    <Suspense fallback={<div className="h-96 animate-pulse rounded-panel bg-paper" />}>
+    <Suspense fallback={<CardSkeleton className="h-96" />}>
       <Practice subject={subject} practiceKey={practiceKey} />
     </Suspense>
   );
@@ -20,37 +19,32 @@ export function MistakeSetPage({ subject, practiceKey }: { subject: SubjectSlug;
 async function Practice({ subject, practiceKey }: { subject: SubjectSlug; practiceKey: Promise<string> }) {
   const key = await practiceKey;
   const practice = groupByPractice(await getMistakes(subject)).find((p) => p.key === key);
-  const back = (
-    <Link href={`/${subject}/mistakes`} className="text-[15px] font-semibold text-pine hover:underline">
-      Mistakes
-    </Link>
-  );
+  return <MistakeSetView subject={subject} practice={practice ?? null} />;
+}
+
+export function MistakeSetView({ subject, practice }: { subject: SubjectSlug; practice: MistakePractice | null }) {
+  const back = { href: `/${subject}/mistakes`, label: "Mistakes" };
   if (!practice) {
     return (
       <>
-        <header className="mb-6 pt-1 sm:pt-3">{back}</header>
-        <EmptyState title="No mistakes left here">
+        <PageTitle title="No mistakes left here" back={back} subjectSwitch={false} />
+        <Empty title="All cleared" action={<BtnLink href={`/${subject}/mistakes`}>Back to Mistakes</BtnLink>}>
           You cleared every question from this practice.
-          <span className="mt-4 block">
-            <ButtonLink href={`/${subject}/mistakes`}>Back to Mistakes</ButtonLink>
-          </span>
-        </EmptyState>
+        </Empty>
       </>
     );
   }
   const n = practice.items.length;
   return (
     <>
-      <header className="mb-6 pt-1 sm:pt-3">
-        {back}
-        <h1 className="mt-1 text-3xl font-extrabold tracking-tight sm:text-[40px] sm:leading-tight">{practice.title}</h1>
-        <p className="mt-1 text-[17px] text-graphite">
-          {practice.label}. {n} question{n === 1 ? "" : "s"} to review. Get one right twice in a row and it leaves the
-          list.
-        </p>
-      </header>
+      <PageTitle
+        title={practice.title}
+        back={back}
+        subjectSwitch={false}
+        subtitle={`${practice.label}. ${n} question${n === 1 ? "" : "s"} to review. Get one right twice in a row and it leaves the list.`}
+      />
       <MistakeQuestions list={practice.items} />
-      {practice.collection === "sqb" ? <p className="mt-8 text-[14px] text-graphite">{SQB_CREDIT}</p> : null}
+      {practice.collection === "sqb" ? <p className="mt-8 max-w-2xl text-[13px] text-graphite">{SQB_CREDIT}</p> : null}
     </>
   );
 }
@@ -63,21 +57,21 @@ function MistakeQuestions({ list }: { list: Mistake[] }) {
     <div className="flex flex-col gap-6">
       {groups.map((group) => (
         <section key={group.area}>
-          <h2 className="mb-3 text-xl font-extrabold tracking-tight">{group.area}</h2>
-          <Panel className="p-0">
+          <h2 className="mb-3 text-[17px] font-bold">{group.area}</h2>
+          <Card flush className="overflow-hidden">
             {group.topics.map((topic) => (
               <div key={topic.topic} className="border-b border-hairline last:border-b-0">
-                <h3 className="px-6 pb-2 pt-4 text-[15px] font-bold text-graphite">{topic.topic}</h3>
+                <h3 className="px-5 pb-2 pt-4 text-[14px] font-semibold text-graphite sm:px-6">{topic.topic}</h3>
                 <ul className="divide-y divide-hairline">
                   {topic.items.map((m) => (
                     <li key={m.id}>
                       <details className="group">
-                        <summary className="flex cursor-pointer list-none items-center gap-4 px-6 py-3.5 hover:bg-mist [&::-webkit-details-marker]:hidden">
-                          <span className="w-7 shrink-0 text-[15px] font-bold tabular-nums text-graphite">
+                        <summary className="flex cursor-pointer list-none items-center gap-4 px-5 py-3.5 hover:bg-mist sm:px-6 [&::-webkit-details-marker]:hidden">
+                          <span className="w-7 shrink-0 text-[14px] font-semibold tabular-nums text-graphite">
                             {numberOf.get(m.id)}
                           </span>
                           <span className="min-w-0 flex-1 truncate text-[15px]">{toPlainText(m.passage || m.prompt)}</span>
-                          <span className="shrink-0 text-sm text-graphite">
+                          <span className="shrink-0 text-[13px] text-graphite tabular-nums">
                             Missed {m.timesWrong === 1 ? "once" : `${m.timesWrong} times`}
                           </span>
                         </summary>
@@ -90,7 +84,7 @@ function MistakeQuestions({ list }: { list: Mistake[] }) {
                 </ul>
               </div>
             ))}
-          </Panel>
+          </Card>
         </section>
       ))}
     </div>

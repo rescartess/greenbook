@@ -2,3 +2,4 @@
 export { MistakesPage } from "./components/MistakesPage";
 export { getMistakeCounts } from "./queries";
 export { MistakeSetPage } from "./components/MistakeSetPage";
+export { MistakesPreview, MistakeSetPreview } from "./components/MistakesPreview";
