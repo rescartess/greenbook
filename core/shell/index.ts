@@ -8,3 +8,6 @@ export { ThemeButton } from "./ThemeButton";
 export { Card, Btn, BtnLink, Bubbles, Meta, SegmentLinks, Empty, Note, CardSkeleton } from "./ui";
 export { DevShell } from "./DevShell";
 export { ScoreScale } from "./ScoreScale";
+export { UserColorsStyle } from "./UserColorsStyle";
+export { MAIN_PRESETS, BACKGROUND_PRESETS, DEFAULT_MAIN, DEFAULT_BACKGROUND, USER_COLORS_STYLE_ID, userColorsCss, isHex, type UserColors } from "./colors";
+export { avatarUrl } from "./avatar";

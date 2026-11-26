@@ -12,7 +12,7 @@ import { ThemeButton } from "./ThemeButton";
  */
 export function Shell({ nav, children }: { nav: ReactNode; children: ReactNode }) {
   return (
-    <div className="flex min-h-dvh bg-canvas">
+    <div className="gb-colors flex min-h-dvh bg-canvas">
       {nav}
       <main className="min-w-0 flex-1 px-4 pb-28 pt-4 sm:px-8 sm:pb-12 sm:pt-8 nav:px-10">
         <div className="mx-auto max-w-[1280px]">

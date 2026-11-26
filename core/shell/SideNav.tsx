@@ -26,7 +26,7 @@ export function SideNav({
   signOutAction,
 }: {
   /** null while the signed-in student is still loading. */
-  user: ShellUser | null;
+  user: (ShellUser & { avatarUrl?: string | null }) | null;
   badges?: ShellBadges;
   signOutAction?: () => Promise<void>;
 }) {
@@ -82,9 +82,14 @@ export function SideNav({
               aria-label="Profile"
               aria-current={activePath === "profile" ? "page" : undefined}
               title={user.name}
-              className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-mist text-[12px] font-bold text-ink-soft ring-1 ring-hairline hover:ring-pine", activePath === "profile" && "ring-2 ring-pine")}
+              className={cn("flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-mist text-[12px] font-bold text-ink-soft ring-1 ring-hairline hover:ring-pine", activePath === "profile" && "ring-2 ring-pine")}
             >
-              {user.initials}
+              {user.avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element -- small public photo, no resizing needed
+                <img src={user.avatarUrl} alt="" width={32} height={32} className="h-full w-full object-cover" />
+              ) : (
+                user.initials
+              )}
             </Link>
             <span className="hidden min-w-0 nav:block">
               <Link href={`/${subject}/profile`} className="block truncate text-[14px] font-semibold hover:underline">

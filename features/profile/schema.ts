@@ -32,3 +32,25 @@ export function lastSevenDays(now: Date): string[] {
     return d.toISOString().slice(0, 10);
   });
 }
+
+/** A color from the picker: '#rrggbb' (lower case) or null for GreenBook's own. */
+export function parseColor(raw: unknown): { ok: true; color: string | null } | { ok: false } {
+  const text = String(raw ?? "").trim().toLowerCase();
+  if (!text) return { ok: true, color: null };
+  return /^#[0-9a-f]{6}$/.test(text) ? { ok: true, color: text } : { ok: false };
+}
+
+/** The SAT date: YYYY-MM-DD between 2024 and 2035, or empty to clear it. */
+export function parseTestDate(raw: unknown): { ok: true; date: string | null } | { ok: false; message: string } {
+  const text = String(raw ?? "").trim();
+  if (!text) return { ok: true, date: null };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(text) || Number.isNaN(Date.parse(`${text}T00:00:00Z`)) || text < "2024-01-01" || text > "2035-12-31") {
+    return { ok: false, message: "Pick a date between 2024 and 2035." };
+  }
+  return { ok: true, date: text };
+}
+
+/** Whole days from `today` (YYYY-MM-DD) to `date`; negative once it has passed. */
+export function daysUntil(date: string, today: string): number {
+  return Math.round((Date.parse(`${date}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / 86400000);
+}

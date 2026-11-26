@@ -17,6 +17,7 @@ export function ProfilePreview() {
         profile={{
           name: "Ravshanbek", initials: "RA", email: "ravshanbekrahmonov91@gmail.com", role: "admin", target: 1400,
           memberSince: "November 24, 2026", stats: { answered: 312, cleared: 18, fullTests: 2 }, week,
+          colors: { main: null, background: null }, avatarUrl: null, testDate: "2026-12-05", today: "2026-11-26",
         }}
       />
     </Shell>

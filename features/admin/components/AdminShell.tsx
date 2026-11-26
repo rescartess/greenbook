@@ -6,7 +6,7 @@ import { BtnLink, ThemeButton } from "@/core/shell";
 /** Frame for admin pages: a flat top bar and a wide content column. */
 export function AdminShell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-dvh bg-canvas">
+    <div className="gb-colors min-h-dvh bg-canvas">
       <header className="sticky top-0 z-20 border-b border-hairline bg-paper">
         <div className="mx-auto flex h-14 max-w-[1280px] items-center justify-between gap-3 px-4 sm:px-6">
           <Link href="/admin" className="flex items-center gap-2.5 text-ink">

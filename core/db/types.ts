@@ -218,25 +218,37 @@ export type Database = {
       }
       profiles: {
         Row: {
+          accent_color: string | null
+          avatar_path: string | null
+          background_color: string | null
           created_at: string
           display_name: string | null
           id: string
           role: string
           target_score: number | null
+          test_date: string | null
         }
         Insert: {
+          accent_color?: string | null
+          avatar_path?: string | null
+          background_color?: string | null
           created_at?: string
           display_name?: string | null
           id: string
           role?: string
           target_score?: number | null
+          test_date?: string | null
         }
         Update: {
+          accent_color?: string | null
+          avatar_path?: string | null
+          background_color?: string | null
           created_at?: string
           display_name?: string | null
           id?: string
           role?: string
           target_score?: number | null
+          test_date?: string | null
         }
         Relationships: []
       }

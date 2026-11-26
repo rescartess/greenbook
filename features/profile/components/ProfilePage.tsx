@@ -4,7 +4,9 @@ import { cn } from "@/core/design/ui";
 import { signOut } from "@/features/auth";
 import { getProfile, type Profile } from "../queries";
 import { AppearanceSwitch } from "./AppearanceSwitch";
-import { NameForm, TargetForm } from "./ProfileForms";
+import { AvatarPicker } from "./AvatarPicker";
+import { ColorSettings } from "./ColorSettings";
+import { NameForm, TargetForm, TestDateForm } from "./ProfileForms";
 
 /** Profile: the student's name, goal, look of the site and account details. */
 export function ProfilePage() {
@@ -34,11 +36,9 @@ export function ProfileView({ profile, signOutAction }: { profile: Profile; sign
     <div className="grid items-start gap-4 lg:grid-cols-[1.6fr_1fr]">
       <div className="grid gap-4">
         <Card>
-          <div className="mb-2 flex items-center gap-3.5">
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-mist text-[18px] font-bold text-ink-soft ring-1 ring-hairline">
-              {profile.initials}
-            </span>
-            <div className="min-w-0">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
+            <AvatarPicker initials={profile.initials} url={profile.avatarUrl} />
+            <div className="min-w-0 text-right">
               <p className="truncate text-[17px] font-bold">{profile.name}</p>
               <p className="truncate text-[14px] text-ink-soft">{profile.email}</p>
             </div>
@@ -54,6 +54,7 @@ export function ProfileView({ profile, signOutAction }: { profile: Profile; sign
             </p>
           </div>
           <TargetForm target={profile.target} />
+          <TestDateForm date={profile.testDate} today={profile.today} />
         </Card>
 
         <Card>
@@ -91,6 +92,7 @@ export function ProfileView({ profile, signOutAction }: { profile: Profile; sign
         <Card>
           <h2 className="text-[17px] font-bold">Appearance</h2>
           <AppearanceSwitch />
+          <ColorSettings initial={profile.colors} />
         </Card>
         <Card>
           <h2 className="text-[17px] font-bold">Account</h2>
