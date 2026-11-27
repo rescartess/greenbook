@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState, type MouseEvent } from "react";
 import { cn } from "@/core/design/ui";
 import { SIGN_IN_LABEL, percent, timeLabel } from "../student-format";
 import type { StudentRow } from "../students";
@@ -23,6 +24,17 @@ type Sort = keyof typeof SORTS;
 export function StudentsTable({ rows }: { rows: TableRow[] }) {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<Sort>("active");
+  const router = useRouter();
+
+  // The whole row opens the student. Not with a link stretched over the row (::after on a
+  // `relative` <tr>): Safari ignores `relative` on table rows, so the last row's invisible
+  // link covered the page and every click opened that student (bug found 28 Nov 2026).
+  const openRow = (e: MouseEvent<HTMLTableRowElement>, href: string) => {
+    if ((e.target as HTMLElement).closest("a, button, input")) return; // the name link handles itself
+    if (window.getSelection()?.toString()) return; // selecting text (e.g. copying an email) isn't a click
+    if (e.metaKey || e.ctrlKey || e.button === 1) window.open(href, "_blank", "noopener");
+    else router.push(href);
+  };
 
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -92,9 +104,14 @@ export function StudentsTable({ rows }: { rows: TableRow[] }) {
               </thead>
               <tbody>
                 {shown.map((r) => (
-                  <tr key={r.id} className="group relative border-b border-hairline last:border-0 hover:bg-mist/70">
+                  <tr
+                    key={r.id}
+                    onClick={(e) => openRow(e, `/admin/students/${r.id}`)}
+                    onAuxClick={(e) => openRow(e, `/admin/students/${r.id}`)}
+                    className="cursor-pointer border-b border-hairline last:border-0 hover:bg-mist/70"
+                  >
                     <td className="px-4 py-2.5">
-                      <Link href={`/admin/students/${r.id}`} className="flex items-center gap-3 after:absolute after:inset-0" aria-label={`Open ${r.name}`}>
+                      <Link href={`/admin/students/${r.id}`} className="flex items-center gap-3" aria-label={`Open ${r.name}`}>
                         <StudentAvatar url={r.avatarUrl} name={r.name} />
                         <span className="min-w-0">
                           <span className="flex items-center gap-2 font-semibold text-ink">
