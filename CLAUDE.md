@@ -2,7 +2,7 @@
 
 # QuantumTest (repo: greenbook): rules for every session
 
-QuantumTest (renamed from GreenBook → RainbowPrep → QuantumTest → QuantumTest, owner request 27 Nov 2026, to match the domain quantumtest.xyz) is a free SAT practice website with a Bluebook-style test screen. Students pick the look of the site.
+QuantumTest (renamed from GreenBook → RainbowPrep → FreedomPrep → QuantumTest, owner request 27 Nov 2026, to match the domain quantumtest.xyz) is a free SAT practice website with a Bluebook-style test screen. Students pick the look of the site.
 The repo, Supabase project, Vercel project and import format (`greenbook-import-1`) keep the old name; only what students see is QuantumTest. CSS hooks keep their `fp-`/`rp-` prefixes. The Google OAuth app is named "QuantumTest".
 Full plan: https://claude.ai/artifact/6TWEQqRdWkE3qukgray8iu
 Approved designs: https://claude.ai/artifact/MvRPeE2en1vsw3D27BmdAf
