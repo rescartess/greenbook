@@ -731,11 +731,28 @@ html[data-design="strawberry"] .rp-band-4 { background: var(--rp-berry); }
 html[data-design="strawberry"] .rp-band-5 { background: var(--rp-green); }
 
 /* Page backgrounds with character. */
+/* Premium's soft glow stays still while the page scrolls. It is drawn on its own fixed layer
+   (::before) instead of with `background-attachment: fixed`: that made the browser repaint the
+   whole screen, and re-blur the glass menu, on every scroll frame, so Premium pages lagged
+   (27 Nov 2026). Small boxes that use bg-canvas (the color preview) just get the glow, scrolling. */
 html[data-design="premium"] .gb-colors.bg-canvas {
   background-image:
     radial-gradient(80% 60% at 50% 0%, color-mix(in srgb, var(--gb-paper) 70%, transparent), transparent 70%),
     linear-gradient(180deg, color-mix(in srgb, var(--gb-canvas) 70%, var(--gb-paper)), var(--gb-canvas) 60%);
-  background-attachment: fixed;
+}
+html[data-design="premium"] .gb-colors.bg-canvas.min-h-dvh {
+  background-image: none;
+  isolation: isolate;
+}
+html[data-design="premium"] .gb-colors.bg-canvas.min-h-dvh::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(80% 60% at 50% 0%, color-mix(in srgb, var(--gb-paper) 70%, transparent), transparent 70%),
+    linear-gradient(180deg, color-mix(in srgb, var(--gb-canvas) 70%, var(--gb-paper)), var(--gb-canvas) 60%);
 }
 html[data-design="premium"] .gb-colors .bg-paper:is(aside, header, nav) {
   background-color: color-mix(in srgb, var(--gb-paper) 72%, transparent);
