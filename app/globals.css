@@ -869,9 +869,14 @@ html[data-design="strawberry"] .fp-accent {
   box-shadow: 0 10px 30px -18px rgb(0 0 0 / 0.35);
 }
 
-/* The live question card floats a little. */
-.fp-try {
-  box-shadow: 0 1px 0 var(--gb-hairline), 0 40px 80px -40px rgb(10 20 40 / 0.35);
+/* Hero collage cards float a little. */
+.fp-float {
+  box-shadow: 0 1px 0 var(--gb-hairline), 0 30px 70px -36px rgb(10 20 40 / 0.4);
+}
+/* A sample profile photo: the main color melting into the deep color. */
+.fp-avatar {
+  background: radial-gradient(120% 120% at 20% 10%, var(--gb-pine-soft), var(--gb-pine) 55%, var(--fp-deep));
+  color: var(--gb-pine-ink);
 }
 
 /* Highlighted words keep dark text in both modes, like the exam highlights. */

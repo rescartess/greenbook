@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import { useDesign } from "@/core/design/theme";
 import { cn } from "@/core/design/ui";
 import {
   BACKGROUND_PRESETS,
@@ -44,7 +45,10 @@ export function ColorSettings({ initial, compact = false }: { initial: UserColor
   // Leaving the page without saving puts the saved colors back.
   useEffect(() => () => preview(savedRef.current), []);
 
+  const { design, setDesign } = useDesign();
+  // Strawberry, Premium and Study are fixed; picking your own color moves you to Default.
   const pick = (next: UserColors) => {
+    if (design !== "default" && (next.main || next.background)) setDesign("default");
     setColors(next);
     setMessage(null);
     preview(next);
@@ -58,8 +62,6 @@ export function ColorSettings({ initial, compact = false }: { initial: UserColor
 
   return (
     <div className={compact ? "mt-4 grid gap-5" : "mt-5 grid gap-5 border-t border-hairline pt-5"}>
-      <DesignPicker />
-      <p className="-mb-1 border-t border-hairline pt-4 text-[13px] font-semibold text-graphite">Your own colors, on top of any design</p>
       <div className={compact ? "grid gap-5 md:grid-cols-2 md:gap-8" : "grid gap-5"}>
       <ColorRow
         step="1"
@@ -106,14 +108,19 @@ export function ColorSettings({ initial, compact = false }: { initial: UserColor
           {pending ? "Saving…" : "Save colors"}
         </Btn>
         <Btn tone="quiet" disabled={pending || (!colors.main && !colors.background)} onClick={() => pick({ main: null, background: null })}>
-          Use the design’s colors
+          Reset colors
         </Btn>
+        <span aria-hidden="true" className="mx-1 hidden h-6 w-px bg-hairline sm:block" />
+        <DesignPicker variant="chips" />
         {message ? (
           <span role="status" className="text-[13px] font-semibold text-pine">
             {message}
           </span>
         ) : null}
       </div>
+      {design !== "default" ? (
+        <p className="-mt-2 text-[13px] text-graphite">Fixed design. Pick a color to go back to Default.</p>
+      ) : null}
     </div>
   );
 }

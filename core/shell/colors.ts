@@ -99,16 +99,20 @@ const block = (selector: string, vars: Vars) =>
     .map(([k, v]) => `${k}:${v}`)
     .join(";")}}`;
 
-/** The CSS for the student's colors, scoped to `.gb-colors`. Empty when they use FreedomPrep's colors. */
+/**
+ * The CSS for the student's colors, scoped to `.gb-colors` in the Default design only (owner rule,
+ * 27 Nov 2026: Strawberry, Premium and Study are fixed by us; picking a color switches to Default).
+ * Empty when they use the design's colors.
+ */
 export function userColorsCss({ main, background }: UserColors): string {
   const m = isHex(main) ? main : null;
   const b = isHex(background) ? background : null;
   if (!m && !b) return "";
   const forMode = (mode: "light" | "dark") => ({ ...(m ? mainVars(m, mode) : {}), ...(b ? backgroundVars(b, mode) : {}) });
   return [
-    block(".gb-colors", forMode("light")),
-    block('[data-theme="dark"] .gb-colors', forMode("dark")),
-    `@media (prefers-color-scheme: dark){${block(':root:not([data-theme="light"]) .gb-colors', forMode("dark"))}}`,
+    block("html:not([data-design]) .gb-colors", forMode("light")),
+    block('html[data-theme="dark"]:not([data-design]) .gb-colors', forMode("dark")),
+    `@media (prefers-color-scheme: dark){${block('html:not([data-theme="light"]):not([data-design]) .gb-colors', forMode("dark"))}}`,
   ].join("");
 }
 

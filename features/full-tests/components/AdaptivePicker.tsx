@@ -17,7 +17,7 @@ export function AdaptivePicker({ tests }: { tests: FullTestRow[] }) {
     <section aria-labelledby="adaptive-title" className="rp-card rounded-[var(--fp-r-card)] border border-hairline bg-paper p-5 sm:p-6">
       <h2 id="adaptive-title" className="text-[20px] font-bold">Adaptive full test</h2>
       <p className="mt-1 max-w-[60ch] text-[15px] text-graphite">
-        Choose a month. Your Module 1 score decides whether Module 2 is easier or harder, like on test day.
+        Pick a month. Module 1 decides the rest.
       </p>
       <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-end">
         <label className="flex flex-col gap-1.5 sm:w-72">

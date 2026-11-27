@@ -30,8 +30,8 @@ export function TopicsFrame({ subject, collection, children }: { subject: Subjec
         title="Topics"
         subtitle={
           collection === "sqb"
-            ? `Official SAT questions for ${SUBJECTS[subject].name}, one question type at a time`
-            : `${SUBJECTS[subject].name}, one question type at a time`
+            ? `${SUBJECTS[subject].name}. Official questions. One skill at a time.`
+            : `${SUBJECTS[subject].name}. One skill at a time.`
         }
       />
       <div className="mb-6">
@@ -53,8 +53,8 @@ export function TopicsFrame({ subject, collection, children }: { subject: Subjec
 export function TopicGrid({ subject, topics }: { subject: SubjectSlug; topics: TopicSummary[] }) {
   if (topics.length === 0) {
     return (
-      <Empty title="No topics yet">
-        Topic practice for {SUBJECTS[subject].name} will appear here once its questions are ready.
+      <Empty title="Coming soon.">
+        {SUBJECTS[subject].name} topics are on the way.
       </Empty>
     );
   }

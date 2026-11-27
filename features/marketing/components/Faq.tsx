@@ -1,24 +1,9 @@
 const QUESTIONS = [
-  {
-    q: "Is FreedomPrep really free?",
-    a: "Yes. Full tests, practice by topic, your mistakes and scores are free for every student.",
-  },
-  {
-    q: "How close is the test screen to Bluebook?",
-    a: "As close as we can make it: the same layout, timer, Mark for Review, highlighter, answer eliminator and question map, in the same type. The design you pick never changes it.",
-  },
-  {
-    q: "Where do the questions come from?",
-    a: "From our own books, written for the digital SAT, and from College Board’s SAT Suite Question Bank, shown with credit and with College Board’s explanations.",
-  },
-  {
-    q: "How is my score worked out?",
-    a: "Each question’s level and module count, and Module 2 gets easier or harder from how you did in Module 1, like on test day. Scores are estimates on the 200 to 800 scale for each subject.",
-  },
-  {
-    q: "What happens to questions I miss?",
-    a: "They wait on your Mistakes page until you get each one right twice.",
-  },
+  { q: "Free?", a: "Yes. All of it." },
+  { q: "Like Bluebook?", a: "Same layout. Same tools. Same pressure. Your design never touches it." },
+  { q: "Where are the questions from?", a: "Our own books. And College Board’s question bank, credited." },
+  { q: "How is it scored?", a: "Module 1 sets Module 2. Then 200 to 800 per subject, estimated." },
+  { q: "Missed one?", a: "It waits. Get it right twice and it’s gone." },
 ];
 
 /** Plain questions and answers, opened one at a time. */

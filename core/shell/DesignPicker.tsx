@@ -45,8 +45,35 @@ function Thumb({ d }: { d: Design }) {
  * Pick one of the FreedomPrep designs. It changes every page except the test and practice screens,
  * right away, and is remembered on this device.
  */
-export function DesignPicker({ className }: { className?: string }) {
+export function DesignPicker({ className, variant = "tiles" }: { className?: string; variant?: "tiles" | "chips" }) {
   const { design, setDesign } = useDesign();
+  if (variant === "chips") {
+    // Small buttons that switch at once, for a row of other buttons (owner request 27 Nov 2026).
+    return (
+      <div role="radiogroup" aria-label="Design" className={cn("flex flex-wrap items-center gap-1.5", className)}>
+        {DESIGNS.map((d) => {
+          const on = d === design;
+          const l = LOOK[d];
+          return (
+            <button
+              key={d}
+              type="button"
+              role="radio"
+              aria-checked={on}
+              onClick={() => setDesign(d)}
+              className={cn(
+                "fp-label inline-flex h-10 items-center gap-2 rounded-[var(--fp-r-btn)] border pl-2 pr-3.5 text-[14px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pine",
+                on ? "border-pine bg-pine-tint text-ink" : "border-hairline bg-paper text-ink-soft hover:border-graphite/40 hover:text-ink",
+              )}
+            >
+              <span aria-hidden="true" className="h-5 w-5 rounded-full border" style={{ background: `linear-gradient(135deg, ${l.canvas} 50%, ${l.accent} 50%)`, borderColor: l.line }} />
+              {l.name}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
   return (
     <fieldset className={className}>
       <legend className="text-[15px] font-bold">Design</legend>

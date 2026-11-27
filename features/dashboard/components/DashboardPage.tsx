@@ -91,7 +91,7 @@ export function DashboardView({
 
         {design ? (
           <Card className="lg:col-span-2">
-            <h2 className="text-[17px] font-bold">Make it yours</h2>
+            <h2 className="text-[17px] font-bold">Your look</h2>
             {design}
           </Card>
         ) : null}
@@ -151,7 +151,7 @@ function ScoreCard({ score, className }: { score: NonNullable<DashboardData["sco
 function ContinueCard({ resume, className }: { resume: NonNullable<DashboardData["resume"]>; className?: string }) {
   return (
     <Card className={cn("flex flex-col", className)}>
-      <p className="text-[14px] font-medium text-ink-soft">Continue where you left off</p>
+      <p className="text-[14px] font-medium text-ink-soft">Unfinished business</p>
       <h2 className="mt-1.5 text-[24px] font-bold leading-tight">{resume.title}</h2>
       <p className="mt-1 text-[15px] text-ink-soft tabular-nums">{resume.detail}</p>
       <div className="mb-5 mt-5">

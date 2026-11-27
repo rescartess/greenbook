@@ -45,10 +45,10 @@ async function Sets({ subject, kind }: { subject: SubjectSlug; kind: Kind }) {
 export function SetGroups({ subject, kind, sets }: { subject: SubjectSlug; kind: Kind; sets: PracticeSetRow[] }) {
   if (sets.length === 0) {
     return (
-      <Empty title={kind === "topic" ? "No topic sets yet" : "No monthly sets yet"}>
+      <Empty title="Coming soon.">
         {kind === "topic"
-          ? `Practice sets for single ${SUBJECTS[subject].name} skills will appear here, grouped by area.`
-          : "Each month’s questions will appear here, newest first."}
+          ? `${SUBJECTS[subject].name} sets are on the way.`
+          : "New months drop here."}
       </Empty>
     );
   }

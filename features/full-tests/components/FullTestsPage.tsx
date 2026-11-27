@@ -26,7 +26,7 @@ export function FullTestsFrame({ subject, children }: { subject: SubjectSlug; ch
     <>
       <PageTitle
         title="Full tests"
-        subtitle={`${s.name}: two modules of ${s.minutesPerModule} minutes each`}
+        subtitle={`${s.name}. Two modules. ${s.minutesPerModule} minutes each. No mercy.`}
       />
       {children}
     </>
@@ -35,7 +35,7 @@ export function FullTestsFrame({ subject, children }: { subject: SubjectSlug; ch
 
 export function FullTestList({ subject, tests }: { subject: SubjectSlug; tests: FullTestRow[] }) {
   if (tests.length === 0) {
-    return <Empty title="No full tests yet">New {SUBJECTS[subject].name} tests will appear here as soon as they’re published.</Empty>;
+    return <Empty title="Not yet.">New {SUBJECTS[subject].name} tests drop here.</Empty>;
   }
   // Newest month first; tests without a month keep their order at the end.
   const byMonth = (a: FullTestRow, b: FullTestRow) => (b.month ?? "").localeCompare(a.month ?? "");

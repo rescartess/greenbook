@@ -9,7 +9,7 @@ import { ResultsBoard } from "./ResultsBoard";
 export function ResultsPage({ subject }: { subject: SubjectSlug }) {
   return (
     <>
-      <PageTitle title="Results" subtitle={`Your ${SUBJECTS[subject].name} tests and practices, newest first`} />
+      <PageTitle title="Results" subtitle={`${SUBJECTS[subject].name}. Every attempt, kept.`} />
       <Suspense fallback={<CardSkeleton className="h-72" />}>
         <AttemptList subject={subject} />
       </Suspense>
@@ -24,8 +24,8 @@ async function AttemptList({ subject }: { subject: SubjectSlug }) {
 export function AttemptsView({ subject, attempts }: { subject: SubjectSlug; attempts: AttemptSummary[] }) {
   if (attempts.length === 0) {
     return (
-      <Empty title="No results yet" action={<BtnLink href={`/${subject}/topics`}>Practice a topic</BtnLink>}>
-        Start a topic practice or a full test. Finished ones show your result here, unfinished ones wait here to continue.
+      <Empty title="Nothing here. Yet." action={<BtnLink href={`/${subject}/topics`}>Practice a topic</BtnLink>}>
+        Finish something. It shows up here.
       </Empty>
     );
   }

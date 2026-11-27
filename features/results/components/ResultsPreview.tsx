@@ -18,7 +18,7 @@ const SAMPLE: AttemptSummary[] = [
 export function ResultsPreview() {
   return (
     <DevShell>
-      <PageTitle title="Results" subtitle={`Your ${SUBJECTS.english.name} tests and practices, newest first`} />
+      <PageTitle title="Results" subtitle={`${SUBJECTS.english.name}. Every attempt, kept.`} />
       <AttemptsView subject="english" attempts={SAMPLE} />
     </DevShell>
   );

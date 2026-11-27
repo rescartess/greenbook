@@ -25,10 +25,10 @@ describe("student colors", () => {
     }
   });
 
-  it("writes light, dark and device-dark rules scoped to .gb-colors", () => {
+  it("writes light, dark and device-dark rules for the Default design only", () => {
     const css = userColorsCss({ main: "#1f5fae", background: null });
-    expect(css).toContain(".gb-colors{--gb-pine:#1f5fae");
-    expect(css).toContain('[data-theme="dark"] .gb-colors{');
+    expect(css).toContain("html:not([data-design]) .gb-colors{--gb-pine:#1f5fae");
+    expect(css).toContain('html[data-theme="dark"]:not([data-design]) .gb-colors{');
     expect(css).toContain("@media (prefers-color-scheme: dark)");
     expect(css).not.toContain("--gb-canvas");
   });

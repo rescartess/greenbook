@@ -28,8 +28,8 @@ export function MistakeSetView({ subject, practice }: { subject: SubjectSlug; pr
     return (
       <>
         <PageTitle title="No mistakes left here" back={back} subjectSwitch={false} />
-        <Empty title="All cleared" action={<BtnLink href={`/${subject}/mistakes`}>Back to Mistakes</BtnLink>}>
-          You cleared every question from this practice.
+        <Empty title="Cleared." action={<BtnLink href={`/${subject}/mistakes`}>Back to Mistakes</BtnLink>}>
+          Every one. Not bad.
         </Empty>
       </>
     );
@@ -41,7 +41,7 @@ export function MistakeSetView({ subject, practice }: { subject: SubjectSlug; pr
         title={practice.title}
         back={back}
         subjectSwitch={false}
-        subtitle={`${practice.label}. ${n} question${n === 1 ? "" : "s"} to review. Get one right twice in a row and it leaves the list.`}
+        subtitle={`${practice.label}. ${n} left. Right twice and they’re gone.`}
       />
       <MistakeQuestions list={practice.items} />
       {practice.collection === "sqb" ? <p className="mt-8 max-w-2xl text-[13px] text-graphite">{SQB_CREDIT}</p> : null}

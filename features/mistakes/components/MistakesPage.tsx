@@ -25,7 +25,7 @@ function MistakesFrame({ subject, count, children }: { subject: SubjectSlug; cou
         title="Mistakes"
         subtitle={
           count
-            ? `${count} ${SUBJECTS[subject].name} question${count === 1 ? "" : "s"} to review. Get one right twice in a row and it leaves the list.`
+            ? `${count} waiting. Right twice and they’re gone.`
             : SUBJECTS[subject].name
         }
       />
@@ -38,8 +38,8 @@ export function MistakesView({ subject, list }: { subject: SubjectSlug; list: Mi
   if (list.length === 0) {
     return (
       <MistakesFrame subject={subject} count={0}>
-        <Empty title="Nothing to review" action={<BtnLink href={`/${subject}/topics`}>Practice a topic</BtnLink>}>
-          Questions you miss in tests and practice show up here until you get them right twice in a row.
+        <Empty title="Clean. Suspiciously clean." action={<BtnLink href={`/${subject}/topics`}>Practice a topic</BtnLink>}>
+          Miss one and it lands here.
         </Empty>
       </MistakesFrame>
     );
