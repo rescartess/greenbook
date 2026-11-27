@@ -900,10 +900,18 @@ html[data-design="strawberry"] .fp-accent {
 }
 
 /* Leaderboard ticker on the dashboard: the list (drawn twice) drifts up forever; edges fade. */
-/* Leaderboard scroll box: thin scrollbar that only shows under the pointer. */
+/* Leaderboard scroll box: thin scrollbar that only shows under the pointer; its own GPU layer. */
 .fp-scroll-quiet {
+  scroll-behavior: auto;
+  -webkit-overflow-scrolling: touch;
+  contain: layout paint;
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
+}
+/* The list inside it: the sub-pixel part of the drift is a transform, kept on the GPU. */
+.fp-glide {
+  will-change: transform;
+  backface-visibility: hidden;
 }
 .fp-scroll-quiet:hover {
   scrollbar-color: var(--color-hairline) transparent;
