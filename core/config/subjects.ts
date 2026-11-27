@@ -22,6 +22,8 @@ export type Subject = {
   domains: readonly string[];
   /** One plain line per content area, shown on the results page. */
   domainNotes: Readonly<Record<string, string>>;
+  /** Each area's share of a real test (College Board's test specifications), shown on the results page. */
+  domainShares: Readonly<Record<string, string>>;
   /** Section number on the test screen (Reading and Writing comes first). */
   sectionNumber: number;
   /** Shown under "Directions" on the test screen. */
@@ -54,6 +56,12 @@ export const SUBJECTS: Record<SubjectSlug, Subject> = {
       "Expression of Ideas": "Revising writing so it is clearer and more effective.",
       "Standard English Conventions": "Grammar, punctuation and sentence structure.",
     },
+    domainShares: {
+      "Information and Ideas": "26% of test section, 12–14 questions",
+      "Craft and Structure": "28% of test section, 13–15 questions",
+      "Expression of Ideas": "20% of test section, 8–12 questions",
+      "Standard English Conventions": "26% of test section, 11–15 questions",
+    },
   },
   math: {
     slug: "math",
@@ -80,6 +88,12 @@ export const SUBJECTS: Record<SubjectSlug, Subject> = {
       "Advanced Math": "Quadratics, exponentials and other nonlinear functions.",
       "Problem-Solving and Data Analysis": "Ratios, percentages, probability and data.",
       "Geometry and Trigonometry": "Area, volume, angles, circles and trigonometry.",
+    },
+    domainShares: {
+      Algebra: "35% of test section, 13–15 questions",
+      "Advanced Math": "35% of test section, 13–15 questions",
+      "Problem-Solving and Data Analysis": "15% of test section, 5–7 questions",
+      "Geometry and Trigonometry": "15% of test section, 5–7 questions",
     },
   },
 };

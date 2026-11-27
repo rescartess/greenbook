@@ -4,14 +4,9 @@ import { useState } from "react";
 import { ESTIMATED_SCORES } from "@/core/config/subjects";
 import { Note } from "@/core/shell";
 import type { FullTestRow } from "../queries";
+import { monthName } from "../schema";
 import { StartTestButton } from "./StartTestButton";
 
-const MONTH = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
-
-/** "September 2025" for a month test, otherwise its title. */
-export function monthName(test: Pick<FullTestRow, "month" | "title">): string {
-  return test.month ? MONTH.format(new Date(`${test.month}T00:00:00Z`)) : test.title;
-}
 
 /** Pick a month, then start its adaptive test: Module 1 decides whether Module 2 is easier or harder. */
 export function AdaptivePicker({ tests }: { tests: FullTestRow[] }) {
@@ -41,11 +36,10 @@ export function AdaptivePicker({ tests }: { tests: FullTestRow[] }) {
           </select>
         </label>
         <div className="sm:w-56">
-          <StartTestButton key={test.id} setId={test.id} label={test.inProgressId ? "Continue test" : "Start test"} />
+          <StartTestButton key={test.id} setId={test.id} label={test.inProgressId ? "Continue exam" : "Start exam"} />
         </div>
       </div>
       <p className="mt-3 text-[14px] text-graphite tabular-nums">
-        {test.questions} questions, {test.minutes} minutes.{" "}
         {test.last
           ? `Last score ${test.last.score ?? `${test.last.raw} correct`}${test.last.score && ESTIMATED_SCORES ? " (estimated)" : ""}`
           : "Not taken yet"}

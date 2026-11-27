@@ -223,3 +223,9 @@ export function cardView(a: AttemptSummary, subject: string): CardView {
     canRetake: finished,
   };
 }
+
+/** The practice level to suggest for an area, from the share answered right. */
+export function practiceLevel(correct: number, total: number): "Easy" | "Medium" | "Hard" {
+  const share = total ? correct / total : 0;
+  return share < 0.5 ? "Easy" : share < 0.8 ? "Medium" : "Hard";
+}

@@ -12,6 +12,8 @@ export type FullTestRow = {
   month: string | null;
   questions: number;
   minutes: number;
+  /** "Module 1", "Module 2 Hard"... in order, for the test card. */
+  moduleNames: string[];
   inProgressId: string | null;
   last: { attemptId: string; score: number | null; raw: number | null; finishedAt: string } | null;
 };
@@ -54,6 +56,9 @@ export async function listFullTests(subject: SubjectSlug): Promise<FullTestRow[]
       published: set.published,
       adaptive: set.is_adaptive && tiers.has("easier") && tiers.has("harder"),
       month: set.month,
+      moduleNames: [...set.modules]
+        .sort((a, b) => a.module_number - b.module_number || a.sort_order - b.sort_order)
+        .map((m) => `Module ${m.module_number}${m.module_number === 2 && m.tier !== "standard" ? (m.tier === "harder" ? " Hard" : " Easy") : ""}`),
       questions: taken.reduce((sum, m) => sum + (m?.module_questions[0]?.count ?? 0), 0),
       minutes: Math.round(taken.reduce((sum, m) => sum + (m?.time_limit_sec ?? 0), 0) / 60),
       inProgressId: mine.find((a) => a.status === "in_progress")?.id ?? null,
