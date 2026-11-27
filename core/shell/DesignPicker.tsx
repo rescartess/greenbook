@@ -42,7 +42,7 @@ function Thumb({ d }: { d: Design }) {
 }
 
 /**
- * Pick one of the FreedomPrep designs. It changes every page except the test and practice screens,
+ * Pick one of the QuantumTest designs. It changes every page except the test and practice screens,
  * right away, and is remembered on this device.
  */
 export function DesignPicker({ className, variant = "tiles" }: { className?: string; variant?: "tiles" | "chips" }) {

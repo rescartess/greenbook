@@ -36,7 +36,7 @@ export function BtnLink({ tone = "primary", className, ...rest }: ComponentProps
 }
 
 /**
- * FreedomPrep's signature: answer-sheet bubbles. One per question, filled in rainbow order when it is done.
+ * QuantumTest's signature: answer-sheet bubbles. One per question, filled in rainbow order when it is done.
  * Used only where progress is counted question by question.
  */
 export function Bubbles({ done, total, label }: { done: number; total: number; label?: string }) {

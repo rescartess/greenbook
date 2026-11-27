@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { BACKGROUND_PRESETS, MAIN_PRESETS, backgroundVars, contrast, mainVars, userColorsCss } from "./colors";
 
 describe("student colors", () => {
-  it("is empty with FreedomPrep's colors", () => {
+  it("is empty with QuantumTest's colors", () => {
     expect(userColorsCss({ main: null, background: null })).toBe("");
     expect(userColorsCss({ main: "red", background: "#FFF" })).toBe("");
   });

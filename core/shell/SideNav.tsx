@@ -36,7 +36,7 @@ export function SideNav({
     <aside className="sticky top-0 hidden h-dvh w-16 shrink-0 flex-col border-r border-hairline bg-paper px-2 pb-5 pt-7 sm:flex nav:w-[248px] nav:px-3">
       <Link
         href={`/${subject}/dashboard`}
-        aria-label="FreedomPrep dashboard"
+        aria-label="QuantumTest dashboard"
         className="mb-6 flex items-center justify-center gap-2.5 text-ink nav:justify-start nav:px-2"
       >
         <LogoMark size={28} />

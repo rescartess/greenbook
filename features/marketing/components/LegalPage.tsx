@@ -25,7 +25,7 @@ function Frame({ title, children }: { title: string; children: ReactNode }) {
           {children}
         </div>
         <p className="mt-14 text-[13px] text-graphite">
-          SAT is a registered trademark of the College Board, which is not affiliated with FreedomPrep. SQB topics: {SQB_CREDIT}
+          SAT is a registered trademark of the College Board, which is not affiliated with QuantumTest. SQB topics: {SQB_CREDIT}
         </p>
       </main>
     </div>
@@ -77,7 +77,7 @@ export function TermsPage() {
     <Frame title="Terms">
       <section>
         <h2>Free</h2>
-        <p>FreedomPrep is free SAT practice. Using it means you accept these terms.</p>
+        <p>QuantumTest is free SAT practice. Using it means you accept these terms.</p>
       </section>
       <section>
         <h2>Your account</h2>

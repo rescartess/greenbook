@@ -35,7 +35,7 @@ export async function saveTarget(_prev: ProfileFormState, formData: FormData): P
   return { ok: true, message: parsed.target ? "Saved" : "Goal cleared" };
 }
 
-/** Saves the two site colors (null = FreedomPrep's own). */
+/** Saves the two site colors (null = QuantumTest's own). */
 export async function saveColors(main: string | null, background: string | null): Promise<ProfileFormState> {
   const m = parseColor(main);
   const b = parseColor(background);

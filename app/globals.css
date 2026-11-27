@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 /*
- * FreedomPrep design tokens (the root values are the exam screens' colors; the
- * four FreedomPrep designs for every other page are further down).
+ * QuantumTest design tokens (the root values are the exam screens' colors; the
+ * four QuantumTest designs for every other page are further down).
  * Change a value here and every screen updates. Features must use these
  * names (bg-paper, text-ink, bg-pine...), never raw hex values.
  */
@@ -246,7 +246,7 @@
 }
 
 /*
- * FreedomPrep designs (owner request 27 Nov 2026): students pick one of four looks for every page
+ * QuantumTest designs (owner request 27 Nov 2026): students pick one of four looks for every page
  * around the exam. The choice is `data-design` on <html> (set by THEME_SCRIPT from this device's
  * storage; no attribute = default). Test, practice and review screens never change.
  *
@@ -602,7 +602,7 @@ html[data-design="premium"] .gb-colors :is(h1, h2):not(.exam *) {
   letter-spacing: -0.035em;
 }
 
-/* Logo words: "Freedom" + "Prep". */
+/* Logo words: "Quantum" + "Test". */
 .fp-word-2 {
   color: var(--gb-pine);
 }

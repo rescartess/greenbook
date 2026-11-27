@@ -33,7 +33,7 @@ export function lastSevenDays(now: Date): string[] {
   });
 }
 
-/** A color from the picker: '#rrggbb' (lower case) or null for FreedomPrep's own. */
+/** A color from the picker: '#rrggbb' (lower case) or null for QuantumTest's own. */
 export function parseColor(raw: unknown): { ok: true; color: string | null } | { ok: false } {
   const text = String(raw ?? "").trim().toLowerCase();
   if (!text) return { ok: true, color: null };

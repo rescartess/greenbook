@@ -8,7 +8,7 @@ import type { TopicSummary } from "../schema";
 
 const COLLECTIONS: Collection[] = ["books", "sqb"];
 
-/** Topic practice. Two collections: FreedomPrep's own questions and College Board's SQB. */
+/** Topic practice. Two collections: QuantumTest's own questions and College Board's SQB. */
 export function TopicsPage({ subject, collection = "books" }: { subject: SubjectSlug; collection?: Collection }) {
   return (
     <TopicsFrame subject={subject} collection={collection}>

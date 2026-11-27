@@ -35,11 +35,11 @@ export function SideNav({
     <aside className="glass sticky top-5 hidden h-[calc(100dvh-40px)] w-[76px] shrink-0 flex-col items-center rounded-card px-2.5 pb-4 pt-5 sm:flex nav:w-64 nav:items-stretch nav:px-3.5">
       <Link
         href={`/${subject}/dashboard`}
-        aria-label="FreedomPrep dashboard"
+        aria-label="QuantumTest dashboard"
         className="flex items-center gap-2.5 pb-6 text-ink nav:px-2"
       >
         <LogoMark size={34} />
-        <span className="hidden text-[21px] font-extrabold tracking-tight nav:inline">FreedomPrep</span>
+        <span className="hidden text-[21px] font-extrabold tracking-tight nav:inline">QuantumTest</span>
       </Link>
 
       <nav aria-label="Main" className="flex w-full flex-col gap-1">

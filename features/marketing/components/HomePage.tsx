@@ -235,7 +235,7 @@ export function HomePage() {
         <div className="mx-auto flex max-w-[1200px] flex-wrap items-start justify-between gap-6 py-10 text-[13px] leading-normal text-graphite">
           <div className="max-w-[640px] space-y-1.5">
             <Logo size={24} wordmarkClassName="text-[16px]" />
-            <p className="pt-2">SAT is a registered trademark of the College Board, which is not affiliated with FreedomPrep.</p>
+            <p className="pt-2">SAT is a registered trademark of the College Board, which is not affiliated with QuantumTest.</p>
             <p>SQB topics: {SQB_CREDIT}</p>
           </div>
           <div className="flex flex-col items-start gap-2 sm:items-end">
@@ -244,7 +244,7 @@ export function HomePage() {
               <Link href="/terms" className="hover:text-ink">Terms</Link>
             </p>
             <p>
-              © 2026 FreedomPrep<span className="rp-only"> · made with 🍓</span>
+              © 2026 QuantumTest<span className="rp-only"> · made with 🍓</span>
             </p>
           </div>
         </div>

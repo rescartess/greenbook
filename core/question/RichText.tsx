@@ -112,7 +112,7 @@ function renderBlock(block: Block, i: number): ReactNode {
   );
 }
 
-/** Draws question text in FreedomPrep's text format (see rich-text.ts). */
+/** Draws question text in QuantumTest's text format (see rich-text.ts). */
 export function RichText({
   source,
   className,
