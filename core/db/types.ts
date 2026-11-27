@@ -580,6 +580,8 @@ export type Database = {
       remove_attempt: { Args: { p_attempt_id: string }; Returns: undefined }
       invite_code_password: { Args: { p_code: string; p_email: string }; Returns: string }
       admin_get_invite_code: { Args: never; Returns: string | null }
+      admin_list_students: { Args: never; Returns: Json }
+      admin_get_student: { Args: { p_user: string }; Returns: Json }
       admin_set_invite_code: { Args: { p_code: string }; Returns: undefined }
       admin_import_questions: { Args: { p_items: Json; p_topic_id: string }; Returns: number }
       admin_import_test: { Args: { p_test: Json }; Returns: Json }

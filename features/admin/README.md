@@ -11,3 +11,16 @@ and the database rules block their writes anyway.
 - `/admin/questions/[externalId]` and `/edit`: preview and edit one question.
 
 Writes go through database functions (`supabase/migrations/..._admin_tools.sql`) so each step is all-or-nothing.
+
+## Students (owner request, 27 Nov 2026)
+
+- `/admin/students`: totals (students, new this week, active today and this week, time practicing, questions
+  answered), then everyone with search, sort (last active, most time, most answered, newest, name) and
+  "Download list" (a CSV file for Excel or Google Sheets). Phones get one card per student.
+- `/admin/students/[id]`: photo, email, how they sign in (Google, class code, email link), bio, joined, last
+  active, target score, SAT date; time, answers, accuracy, finished vs not finished; English and Math side by
+  side (best and latest full test); the last 30 days as bars; topics weakest first (3+ answers); recent tests and
+  practices. "Public profile" opens what other students see.
+- Data: `admin_list_students` and `admin_get_student` (migration 0026), admin only, read only, never answers.
+  Labels in `student-format.ts`, times in Tashkent time.
+- The top menu (`AdminNav`): Students, Tests, Import.

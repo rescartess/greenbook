@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Logo } from "@/core/design/ui";
 import { BtnLink, BerryStripe, Sticker, ThemeButton } from "@/core/shell";
+import { Suspense } from "react";
+import { AdminNav, AdminNavLinks } from "./AdminNav";
 
 /** Frame for admin pages: a flat top bar and a wide content column. */
 export function AdminShell({ children }: { children: ReactNode }) {
@@ -22,6 +24,11 @@ export function AdminShell({ children }: { children: ReactNode }) {
               Student view
             </BtnLink>
           </div>
+        </div>
+        <div className="mx-auto max-w-[1280px] px-2.5 sm:px-4">
+          <Suspense fallback={<AdminNavLinks />}>
+            <AdminNav />
+          </Suspense>
         </div>
       </header>
       <main className="mx-auto max-w-[1280px] px-4 pb-20 pt-8 sm:px-6">

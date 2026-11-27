@@ -13,7 +13,8 @@ export async function freshDatabase() {
     create role authenticated; create role anon;
     create schema auth; create schema extensions;
     create table auth.users (id uuid primary key default gen_random_uuid(), email text, raw_user_meta_data jsonb default '{}'::jsonb,
-      encrypted_password text, email_confirmed_at timestamptz);
+      encrypted_password text, email_confirmed_at timestamptz,
+      raw_app_meta_data jsonb default '{}'::jsonb, last_sign_in_at timestamptz);
     create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
     grant usage on schema public, auth to authenticated;
     -- Like Supabase: new tables are open to signed-in users by default; migrations then narrow this down.
