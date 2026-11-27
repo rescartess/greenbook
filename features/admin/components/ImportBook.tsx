@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createBrowserDbClient } from "@/core/db/browser";
+import type { Json } from "@/core/db/types";
 import { Panel, cn } from "@/core/design/ui";
 import { Btn } from "@/core/shell";
 import { QUESTION_IMAGE_BUCKET } from "@/core/question";
@@ -132,14 +133,28 @@ export function ImportBook({ topics }: { topics: TopicOption[] }) {
         );
       }
 
-      // 3. Publish
-      if (publish) {
+      // 3. Whole tests (always drafts: the admin checks and publishes them under Tests)
+      const tests = files.flatMap((f) => f.book.tests.map((test) => ({ ...test, subject: f.book.subject })));
+      for (const [i, test] of tests.entries()) {
+        setStep({ label: `Adding the test ${test.title}`, done: i, total: tests.length });
+        const { data, error } = await db.rpc("admin_import_test", { p_test: test as unknown as Json });
+        if (error) throw new Error(`${test.title}: ${error.message}`);
+        const r = (data ?? {}) as { skipped?: boolean; added?: number; reused?: number };
+        lines.push(
+          r.skipped
+            ? `${test.title}: already there, skipped.`
+            : `${test.title}: added as a hidden draft (${r.added ?? 0} new questions${r.reused ? `, ${r.reused} shared with other tests` : ""}). Publish it under Tests.`,
+        );
+      }
+
+      // 4. Publish topics
+      if (touched.size > 0 && publish) {
         for (const id of touched) {
           setStep({ label: "Publishing topics", done: 0, total: touched.size });
           await setTestPublished(id, true);
         }
         lines.push("The topics are published: students can practise them now.");
-      } else {
+      } else if (touched.size > 0) {
         lines.push(
           "The new questions are drafts. Publish each topic from its page when you’re ready.",
         );
@@ -158,9 +173,13 @@ export function ImportBook({ topics }: { topics: TopicOption[] }) {
   };
 
   const totalQuestions = files.reduce(
-    (n, f) => n + f.book.topics.reduce((m, t) => m + t.items.length, 0),
+    (n, f) =>
+      n +
+      f.book.topics.reduce((m, t) => m + t.items.length, 0) +
+      new Set(f.book.tests.flatMap((t) => t.modules.flatMap((m) => m.items.map((i) => i.source)))).size,
     0,
   );
+  const hasTopics = files.some((f) => f.book.topics.length > 0);
   const totalImages = files.reduce(
     (n, f) => n + Object.keys(f.book.images).length,
     0,
@@ -256,10 +275,30 @@ export function ImportBook({ topics }: { topics: TopicOption[] }) {
                   );
                 }),
               )}
+              {files.flatMap((f) =>
+                f.book.tests.flatMap((test) =>
+                  test.modules.map((m) => {
+                    const n = (d: string) => m.items.filter((i) => i.difficulty === d).length;
+                    return (
+                      <tr key={f.name + test.title + m.number + m.tier}>
+                        <td className="py-2.5 pl-6 font-bold">
+                          {test.title}, Module {m.number}
+                          {m.number === 2 ? (m.tier === "easier" ? " (easy)" : " (hard)") : ""}
+                        </td>
+                        <td className="py-2.5 text-ink-soft">{f.book.book}</td>
+                        <td className="py-2.5 tabular-nums">{n("easy")}</td>
+                        <td className="py-2.5 tabular-nums">{n("medium")}</td>
+                        <td className="py-2.5 tabular-nums">{n("hard")}</td>
+                        <td className="py-2.5 pr-6 text-ink-soft">{test.adaptive ? "Adaptive test" : "Full test"}, hidden</td>
+                      </tr>
+                    );
+                  }),
+                ),
+              )}
             </tbody>
           </table>
           <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-5">
-            <label className="flex items-center gap-2.5 text-[15px] font-semibold">
+            <label className={cn("flex items-center gap-2.5 text-[15px] font-semibold", !hasTopics && "invisible")}>
               <input
                 type="checkbox"
                 checked={publish}

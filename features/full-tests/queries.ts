@@ -6,6 +6,10 @@ export type FullTestRow = {
   id: string;
   title: string;
   published: boolean;
+  /** Module 1 routes to an easier or harder Module 2 (both exist). Otherwise Module 2 is fixed. */
+  adaptive: boolean;
+  /** First day of the month the test is named after, e.g. "2025-09-01". */
+  month: string | null;
   questions: number;
   minutes: number;
   inProgressId: string | null;
@@ -18,7 +22,7 @@ export async function listFullTests(subject: SubjectSlug): Promise<FullTestRow[]
   const [{ data: sets, error }, { data: claims }] = await Promise.all([
     supabase
       .from("question_sets")
-      .select("id, title, published, created_at, modules(module_number, sort_order, time_limit_sec, module_questions(count))")
+      .select("id, title, published, is_adaptive, month, created_at, modules(module_number, tier, sort_order, time_limit_sec, module_questions(count))")
       .eq("kind", "full_test")
       .eq("subject", subject)
       .order("created_at"),
@@ -43,10 +47,13 @@ export async function listFullTests(subject: SubjectSlug): Promise<FullTestRow[]
     const taken = [firstOf(1), firstOf(2)].filter(Boolean);
     const mine = (attempts ?? []).filter((a) => a.set_id === set.id);
     const done = mine.find((a) => a.status === "completed" && a.finished_at);
+    const tiers = new Set(set.modules.filter((m) => m.module_number === 2).map((m) => m.tier));
     return {
       id: set.id,
       title: set.title,
       published: set.published,
+      adaptive: set.is_adaptive && tiers.has("easier") && tiers.has("harder"),
+      month: set.month,
       questions: taken.reduce((sum, m) => sum + (m?.module_questions[0]?.count ?? 0), 0),
       minutes: Math.round(taken.reduce((sum, m) => sum + (m?.time_limit_sec ?? 0), 0) / 60),
       inProgressId: mine.find((a) => a.status === "in_progress")?.id ?? null,

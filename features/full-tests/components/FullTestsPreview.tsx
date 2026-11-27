@@ -5,10 +5,12 @@ import { FullTestList, FullTestsFrame } from "./FullTestsPage";
 /** Local-only preview of Full tests with made-up rows. */
 export function FullTestsPreview() {
   const tests: FullTestRow[] = [
-    { id: "1", title: "Practice test 1", published: true, questions: 54, minutes: 64, inProgressId: null, last: { attemptId: "a", score: 560, raw: 31, finishedAt: "2026-11-26" } },
-    { id: "2", title: "Practice test 2", published: true, questions: 54, minutes: 64, inProgressId: "b", last: null },
-    { id: "3", title: "Practice test 3", published: true, questions: 54, minutes: 64, inProgressId: null, last: null },
-    { id: "4", title: "Practice test 4", published: false, questions: 27, minutes: 32, inProgressId: null, last: null },
+    { id: "s", title: "2025 September adaptive", adaptive: true, month: "2025-09-01", published: true, questions: 54, minutes: 64, inProgressId: null, last: { attemptId: "x", score: 640, raw: 41, finishedAt: "2026-11-26" } },
+    { id: "o", title: "2025 October adaptive", adaptive: true, month: "2025-10-01", published: true, questions: 54, minutes: 64, inProgressId: null, last: null },
+    { id: "1", title: "2025 September A", adaptive: false, month: "2025-09-01", published: true, questions: 54, minutes: 64, inProgressId: null, last: { attemptId: "a", score: 560, raw: 31, finishedAt: "2026-11-26" } },
+    { id: "2", title: "2025 September B", adaptive: false, month: "2025-09-01", published: true, questions: 54, minutes: 64, inProgressId: "b", last: null },
+    { id: "3", title: "2025 October A", adaptive: false, month: "2025-10-01", published: true, questions: 54, minutes: 64, inProgressId: null, last: null },
+    { id: "4", title: "2025 October B", adaptive: false, month: "2025-10-01", published: false, questions: 54, minutes: 64, inProgressId: null, last: null },
   ];
   return (
     <DevShell>

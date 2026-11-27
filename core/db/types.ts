@@ -580,6 +580,7 @@ export type Database = {
       admin_get_invite_code: { Args: never; Returns: string | null }
       admin_set_invite_code: { Args: { p_code: string }; Returns: undefined }
       admin_import_questions: { Args: { p_items: Json; p_topic_id: string }; Returns: number }
+      admin_import_test: { Args: { p_test: Json }; Returns: Json }
       get_topic: { Args: { p_set_id: string }; Returns: Json }
       start_topic_practice:
         | {

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { ESTIMATED_SCORES, SUBJECTS, type SubjectSlug } from "@/core/config/subjects";
 import { CardSkeleton, Empty, Note, PageTitle } from "@/core/shell";
 import { listFullTests, type FullTestRow } from "../queries";
+import { AdaptivePicker } from "./AdaptivePicker";
 import { StartTestButton } from "./StartTestButton";
 
 export function FullTestsPage({ subject }: { subject: SubjectSlug }) {
@@ -24,7 +25,7 @@ export function FullTestsFrame({ subject, children }: { subject: SubjectSlug; ch
     <>
       <PageTitle
         title="Full tests"
-        subtitle={`${s.name}: two modules of ${s.minutesPerModule} minutes each. Module 2 is easier or harder depending on how module 1 went, like the real test.`}
+        subtitle={`${s.name}: two modules of ${s.minutesPerModule} minutes each`}
       />
       {children}
     </>
@@ -35,6 +36,28 @@ export function FullTestList({ subject, tests }: { subject: SubjectSlug; tests: 
   if (tests.length === 0) {
     return <Empty title="No full tests yet">New {SUBJECTS[subject].name} tests will appear here as soon as they’re published.</Empty>;
   }
+  // Newest month first; tests without a month keep their order at the end.
+  const byMonth = (a: FullTestRow, b: FullTestRow) => (b.month ?? "").localeCompare(a.month ?? "");
+  const adaptive = tests.filter((t) => t.adaptive).sort(byMonth);
+  const fixed = tests.filter((t) => !t.adaptive).sort(byMonth);
+  return (
+    <div className="flex flex-col gap-8">
+      {adaptive.length ? <AdaptivePicker tests={adaptive} /> : null}
+      {fixed.length ? (
+        <section aria-labelledby="fixed-title" className="flex flex-col gap-4">
+          {adaptive.length ? (
+            <h2 id="fixed-title" className="text-[20px] font-bold">
+              Tests by month
+            </h2>
+          ) : null}
+          <FixedTests tests={fixed} />
+        </section>
+      ) : null}
+    </div>
+  );
+}
+
+function FixedTests({ tests }: { tests: FullTestRow[] }) {
   return (
     <ul className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
       {tests.map((test) => (

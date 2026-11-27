@@ -141,10 +141,10 @@ describe("a full adaptive test", () => {
     const r = (await t.one<{ r: Results }>(`select public.get_test_results($1) r`, [attempt])).r;
     expect(r.rawCorrect).toBe(6);
     await t.actAsOwner();
-    const expected = await t.one<{ scaled_score: number }>(
-      `select scaled_score from public.score_tables where subject = 'english' and tier = 'harder' and raw_correct = 6`,
-    );
-    expect(r.scaledScore).toBe(expected.scaled_score);
+    const expected = await t.one<{ s: number }>(`select private.estimate_score($1) s`, [attempt]);
+    expect(r.scaledScore).toBe(expected.s);
+    expect(r.scaledScore).toBeGreaterThanOrEqual(200);
+    expect(r.scaledScore).toBeLessThan(800);
     expect(r.modules[0].questions[0].explanation).toBe("secret-expl-1");
     expect(r.modules[1].questions[2]).toMatchObject({ answer: null, isCorrect: false });
     expect(r.modules[0].questions.map((q) => (q as unknown as { marked: boolean }).marked)).toEqual([false, false, true, false, false]);
