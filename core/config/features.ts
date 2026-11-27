@@ -37,7 +37,7 @@ export const FEATURES: readonly FeatureEntry[] = [
   { key: "dashboard", label: "Dashboard", shortLabel: "Home", path: "dashboard", icon: "dashboard", enabled: true },
   { key: "full-tests", label: "Full tests", shortLabel: "Tests", path: "full-tests", icon: "tests", enabled: true },
   { key: "topics", label: "Topics", shortLabel: "Topics", path: "topics", icon: "topics", enabled: true },
-  { key: "monthly", label: "By month", shortLabel: "Months", path: "monthly", icon: "calendar", enabled: true },
+  { key: "monthly", label: "By month", shortLabel: "Months", path: "monthly", icon: "calendar", enabled: false },
   { key: "results", label: "Results", shortLabel: "Results", path: "results", icon: "results", enabled: true },
   { key: "mistakes", label: "Mistakes", shortLabel: "Mistakes", path: "mistakes", icon: "bookmark", enabled: true },
 ];

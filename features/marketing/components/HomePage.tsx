@@ -8,7 +8,6 @@ import { TestScreenPreview } from "./TestScreenPreview";
 const WAYS = [
   { name: "Full tests", text: "Two adaptive modules, timed like test day, scored from 200 to 800." },
   { name: "By topic", text: "Pick one skill, from transitions to circle equations, and drill only that." },
-  { name: "By month", text: "Each month’s question set in one place, newest first." },
   { name: "Your mistakes", text: "Every question you miss waits here until you get it right twice." },
 ];
 

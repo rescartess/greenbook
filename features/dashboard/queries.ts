@@ -1,4 +1,5 @@
 import "server-only";
+import { isFeatureEnabled } from "@/core/config/features";
 import { ESTIMATED_SCORES, SUBJECTS, type SubjectSlug } from "@/core/config/subjects";
 import { createDbClient } from "@/core/db/server";
 
@@ -130,7 +131,7 @@ export async function getDashboard(subject: SubjectSlug): Promise<DashboardData>
   }
   if (mistakeCount) next.push({ title: "Review mistakes", detail: `${mistakeCount} question${mistakeCount === 1 ? "" : "s"} waiting`, href: `/${subject}/mistakes` });
   const monthly = monthlyRes.data?.[0];
-  if (monthly) next.push({ title: monthly.title, detail: "The latest monthly questions", href: `/${subject}/monthly` });
+  if (monthly && isFeatureEnabled("monthly")) next.push({ title: monthly.title, detail: "The latest monthly questions", href: `/${subject}/monthly` });
   if (next.length === 0) next.push({ title: "Practice by topic", detail: "Untimed sets for one skill at a time", href: `/${subject}/topics`, primary: true });
 
   return { resume, score, domains, next, mistakeCount };
