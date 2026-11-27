@@ -1,13 +1,13 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Logo } from "@/core/design/ui";
-import { BtnLink, RainbowStripe, Sticker, ThemeButton } from "@/core/shell";
+import { BtnLink, BerryStripe, Sticker, ThemeButton } from "@/core/shell";
 
 /** Frame for admin pages: a flat top bar and a wide content column. */
 export function AdminShell({ children }: { children: ReactNode }) {
   return (
     <div className="gb-colors min-h-dvh bg-canvas">
-      <RainbowStripe />
+      <BerryStripe />
       <header className="sticky top-0 z-20 border-b border-hairline bg-paper pt-1.5">
         <div className="mx-auto flex h-14 max-w-[1280px] items-center justify-between gap-3 px-4 sm:px-6">
           <Link href="/admin" className="flex items-center gap-2.5 text-ink">

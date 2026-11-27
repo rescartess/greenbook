@@ -36,12 +36,12 @@ export type FeatureEntry = {
 };
 
 export const FEATURES: readonly FeatureEntry[] = [
-  { key: "dashboard", label: "Dashboard", shortLabel: "Home", path: "dashboard", icon: "dashboard", emoji: "🌈", enabled: true },
+  { key: "dashboard", label: "Dashboard", shortLabel: "Home", path: "dashboard", icon: "dashboard", emoji: "🍓", enabled: true },
   { key: "full-tests", label: "Full tests", shortLabel: "Tests", path: "full-tests", icon: "tests", emoji: "📝", enabled: true },
   { key: "topics", label: "Topics", shortLabel: "Topics", path: "topics", icon: "topics", emoji: "📚", enabled: true },
   { key: "monthly", label: "By month", shortLabel: "Months", path: "monthly", icon: "calendar", emoji: "📅", enabled: false },
   { key: "results", label: "Results", shortLabel: "Results", path: "results", icon: "results", emoji: "🏆", enabled: true },
-  { key: "mistakes", label: "Mistakes", shortLabel: "Mistakes", path: "mistakes", icon: "bookmark", emoji: "🍓", enabled: true },
+  { key: "mistakes", label: "Mistakes", shortLabel: "Mistakes", path: "mistakes", icon: "bookmark", emoji: "🧺", enabled: true },
 ];
 
 export function isFeatureEnabled(key: FeatureKey): boolean {

@@ -4,7 +4,7 @@ import { Logo } from "@/core/design/ui";
 import { BottomTabs } from "./SideNav";
 import { ProfileLink } from "./ProfileLink";
 import { ThemeButton } from "./ThemeButton";
-import { RainbowStripe, Sprinkles } from "./stickers";
+import { BerryStripe, Sprinkles } from "./stickers";
 
 /**
  * The logged-in frame around the exam pages: a flush side panel (laptops), an icon rail
@@ -15,7 +15,7 @@ export function Shell({ nav, children }: { nav: ReactNode; children: ReactNode }
   return (
     <div className="gb-colors relative flex min-h-dvh bg-canvas">
       <Sprinkles />
-      <RainbowStripe />
+      <BerryStripe />
       {nav}
       <main className="relative min-w-0 flex-1 px-4 pb-28 pt-4 sm:px-8 sm:pb-12 sm:pt-8 nav:px-10">
         <div className="mx-auto max-w-[1280px]">

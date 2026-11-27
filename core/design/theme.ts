@@ -37,7 +37,7 @@ export function useTheme(): { theme: Theme; toggle: () => void } {
 }
 
 /** The FreedomPrep designs a student can pick for the pages around the exam (see app/globals.css). */
-export const DESIGNS = ["default", "rainbow", "premium", "study"] as const;
+export const DESIGNS = ["default", "strawberry", "premium", "study"] as const;
 export type Design = (typeof DESIGNS)[number];
 
 function currentDesign(): Design {

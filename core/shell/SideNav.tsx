@@ -58,7 +58,7 @@ export function SideNav({
                 active ? "fp-nav-active" : "fp-nav font-semibold text-ink-soft hover:bg-pine-tint hover:text-ink",
               )}
             >
-              {active ? <span aria-hidden="true" className="rp-only absolute inset-y-1.5 left-0 hidden w-1 rounded-r-full nav:block" style={{ backgroundImage: "linear-gradient(180deg, var(--rp-red), var(--rp-orange), var(--rp-yellow), var(--rp-green), var(--rp-blue), var(--rp-violet))" }} /> : null}
+              {active ? <span aria-hidden="true" className="rp-only absolute inset-y-1.5 left-0 hidden w-1 rounded-r-full nav:block" style={{ backgroundImage: "linear-gradient(180deg, var(--rp-red), var(--rp-berry), var(--rp-pink))" }} /> : null}
               <Sticker emoji={f.emoji} size={18} tilt={active ? -10 : 0} />
               <Icon name={f.icon} size={18} className="rp-hide shrink-0" />
               <span className="fp-label sr-only nav:not-sr-only nav:flex-1">{f.label}</span>
@@ -78,7 +78,7 @@ export function SideNav({
       <div aria-hidden="true" className="rp-only mb-4 hidden items-center gap-2 rounded-[14px] border border-dashed border-pine-soft bg-pine-tint px-3 py-2.5 nav:flex">
         <Sticker emoji="🍓" size={22} tilt={-14} bob />
         <span className="text-[13px] font-bold text-ink-soft">Stay sweet, keep going</span>
-        <Sticker emoji="🌈" size={18} tilt={8} className="ml-auto" />
+        <Sticker emoji="🌸" size={18} tilt={8} className="ml-auto" />
       </div>
 
       <div className="flex flex-col items-center gap-2 border-t border-hairline pt-4 nav:flex-row nav:items-center nav:gap-2.5 nav:px-1">

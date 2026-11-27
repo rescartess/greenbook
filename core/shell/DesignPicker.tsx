@@ -4,9 +4,9 @@ import { DESIGNS, useDesign, type Design } from "@/core/design/theme";
 import { cn } from "@/core/design/ui";
 
 /** How each design looks, drawn small. Fixed sample colors (light mode), not theme tokens. */
-const LOOK: Record<Design, { name: string; text: string; canvas: string; card: string; line: string; accent: string; extra?: "rainbow" | "gold" | "grid" }> = {
+const LOOK: Record<Design, { name: string; text: string; canvas: string; card: string; line: string; accent: string; extra?: "berry" | "gold" | "grid" }> = {
   default: { name: "Default", text: "Bluebook white and blue", canvas: "#f4f6fa", card: "#ffffff", line: "#e1e5ec", accent: "#2e46b8" },
-  rainbow: { name: "Rainbow", text: "Stickers and strawberries", canvas: "#fff4f8", card: "#ffffff", line: "#f6dbe6", accent: "#d6246e", extra: "rainbow" },
+  strawberry: { name: "Strawberry", text: "Pink, sweet, full of stickers", canvas: "#fff4f8", card: "#ffffff", line: "#f6dbe6", accent: "#d6246e", extra: "berry" },
   premium: { name: "Premium", text: "Sand, bronze and espresso", canvas: "#e6d6c5", card: "#f8f1e9", line: "#dcc9b5", accent: "#1d1510", extra: "gold" },
   study: { name: "Study", text: "Cream paper and green", canvas: "#f6f3ea", card: "#ffffff", line: "#e6e0d2", accent: "#157a3c", extra: "grid" },
 };
@@ -22,8 +22,8 @@ function Thumb({ d }: { d: Design }) {
         />
       ) : null}
       <span className="absolute inset-x-3 top-3 bottom-0 overflow-hidden rounded-t-[6px] border border-b-0" style={{ background: l.card, borderColor: l.line }}>
-        {l.extra === "rainbow" ? (
-          <span className="absolute inset-x-2 top-0 h-[3px] rounded-b" style={{ background: "linear-gradient(90deg,#ff4d6d,#ff9f1c,#ffd60a,#2ecc71,#3a86ff,#8b5cf6)" }} />
+        {l.extra === "berry" ? (
+          <span className="absolute inset-x-2 top-0 h-[3px] rounded-b" style={{ background: "linear-gradient(90deg,#e11d48,#ff4d6d,#ff8fab,#ff4d6d,#e11d48)" }} />
         ) : null}
         {l.extra === "gold" ? (
           <span className="absolute inset-x-3 top-0 h-px" style={{ background: "linear-gradient(90deg,transparent,#9a6b3a,transparent)" }} />
@@ -35,7 +35,7 @@ function Thumb({ d }: { d: Design }) {
           className="absolute bottom-2 left-2.5 h-3.5 w-10"
           style={{ background: l.accent, borderRadius: d === "default" || d === "premium" ? 999 : 4 }}
         />
-        {d === "rainbow" ? <span className="absolute bottom-1 right-2 text-[14px] leading-none">🍓</span> : null}
+        {d === "strawberry" ? <span className="absolute bottom-1 right-2 text-[14px] leading-none">🍓</span> : null}
       </span>
     </span>
   );

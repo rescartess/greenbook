@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import { cn } from "@/core/design/ui";
 
 /**
- * Rainbow-design stickers (owner request, 27 Nov 2026; shown only in the Rainbow design): emoji with a white die-cut edge,
+ * Strawberry-design stickers (owner request, 27 Nov 2026; shown only in the Strawberry design): emoji with a white die-cut edge,
  * a soft shadow and a small tilt. They wiggle when hovered. Decoration only: hidden from screen readers.
  */
 export function Sticker({
@@ -32,8 +32,8 @@ export function Sticker({
   );
 }
 
-/** The thin rainbow along the very top of every FreedomPrep page. */
-export function RainbowStripe({ className }: { className?: string }) {
+/** The thin strawberry-pink stripe along the very top of the page (Strawberry design). */
+export function BerryStripe({ className }: { className?: string }) {
   return <div aria-hidden="true" className={cn("rp-rainbow-bar rp-only pointer-events-none fixed inset-x-0 top-0 z-40 h-1.5", className)} />;
 }
 
@@ -42,15 +42,15 @@ type Spot = { emoji: string; size: number; tilt: number; pos: CSSProperties; wid
 /** Where the strawberries and friends sit around the page edges (percent of the window). */
 const SPOTS: Spot[] = [
   { emoji: "🍓", size: 30, tilt: -14, pos: { top: "9%", right: "2.5%" } },
-  { emoji: "🌈", size: 34, tilt: 8, pos: { top: "42%", right: "1.2%" }, wide: true, delay: "-1.5s" },
+  { emoji: "🌸", size: 30, tilt: 8, pos: { top: "42%", right: "1.4%" }, wide: true, delay: "-1.5s" },
   { emoji: "🍓", size: 24, tilt: 18, pos: { bottom: "12%", right: "3%" }, delay: "-3s" },
   { emoji: "✨", size: 22, tilt: 0, pos: { top: "26%", right: "4.5%" }, wide: true, delay: "-2s" },
   { emoji: "🍓", size: 26, tilt: 10, pos: { bottom: "6%", left: "46%" }, wide: true, delay: "-0.8s" },
-  { emoji: "☁️", size: 30, tilt: 0, pos: { top: "70%", right: "4%" }, wide: true, delay: "-2.6s" },
+  { emoji: "🍰", size: 28, tilt: -6, pos: { top: "70%", right: "4%" }, wide: true, delay: "-2.6s" },
 ];
 
 /**
- * Strawberries, rainbows and sparkles floating in the page margins, behind the cards.
+ * Strawberries, blossoms and sparkles floating in the page margins, behind the cards.
  * Put it first inside a positioned page wrapper; content after it paints on top.
  */
 export function Sprinkles({ roomy = false }: { roomy?: boolean }) {
@@ -71,11 +71,11 @@ export function Sprinkles({ roomy = false }: { roomy?: boolean }) {
 /** Pick a sticker for a page title from its words. */
 export function titleEmoji(title: string): string {
   const t = title.toLowerCase();
-  if (t.includes("dashboard")) return "🌈";
+  if (t.includes("dashboard")) return "🍓";
   if (t.includes("full test") || t.includes("test")) return "📝";
   if (t.includes("topic")) return "📚";
   if (t.includes("result") || t.includes("score")) return "🏆";
-  if (t.includes("mistake")) return "🍓";
+  if (t.includes("mistake")) return "🧺";
   if (t.includes("profile")) return "🦄";
   if (t.includes("month")) return "📅";
   if (t.includes("admin") || t.includes("question") || t.includes("import")) return "🛠️";

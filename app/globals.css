@@ -251,7 +251,7 @@
  * storage; no attribute = default). Test, practice and review screens never change.
  *
  *   default  Bluebook white, blue and navy, minimal
- *   rainbow  strawberry pink, rainbow stripes, emoji stickers and strawberries
+ *   strawberry  strawberry pink, berry stripes and titles, emoji stickers and strawberries
  *   premium  warm sand and bronze, espresso buttons, mono labels, gold hairlines
  *   study    cream paper, green, graph-paper corners and pastel circles on cards
  *
@@ -259,14 +259,14 @@
  * (UserColorsStyle, later in the page) still win. Order matters: light, dark, device-dark.
  */
 :root {
-  --rp-red: #ff4d6d;
-  --rp-orange: #ff9f1c;
-  --rp-yellow: #ffd60a;
+  /* Strawberry design: berry reds and pinks, a leaf green, cream seeds. */
+  --rp-red: #e11d48;
+  --rp-berry: #ff4d6d;
+  --rp-pink: #ff8fab;
+  --rp-blush: #ffc2d1;
   --rp-green: #2ecc71;
-  --rp-blue: #3a86ff;
-  --rp-violet: #8b5cf6;
-  --rp-rainbow: linear-gradient(90deg, var(--rp-red), var(--rp-orange), var(--rp-yellow), var(--rp-green), var(--rp-blue), var(--rp-violet));
-  --rp-rainbow-ink: linear-gradient(90deg, #e11d48, #ea580c, #ca8a04, #16a34a, #2563eb, #7c3aed);
+  --rp-rainbow: linear-gradient(90deg, var(--rp-red), var(--rp-berry), var(--rp-pink), var(--rp-berry), var(--rp-red));
+  --rp-rainbow-ink: linear-gradient(90deg, #be123c, #e11d48, #db2777);
   --rp-sticker-edge: #ffffff;
   --fp-r-btn: 999px;
   --fp-r-card: 12px;
@@ -276,12 +276,12 @@
   --fp-mark-dot: #f5c542;
 }
 :where([data-theme="dark"]) {
-  --rp-rainbow-ink: linear-gradient(90deg, #ff6b8b, #ffae42, #ffe14d, #4ee28d, #5c9dff, #a98bff);
+  --rp-rainbow-ink: linear-gradient(90deg, #ff6b8b, #ff8fab, #ffb3c6);
   --rp-sticker-edge: #fff4f8;
 }
 @media (prefers-color-scheme: dark) {
   :where(:root:not([data-theme="light"])) {
-    --rp-rainbow-ink: linear-gradient(90deg, #ff6b8b, #ffae42, #ffe14d, #4ee28d, #5c9dff, #a98bff);
+    --rp-rainbow-ink: linear-gradient(90deg, #ff6b8b, #ff8fab, #ffb3c6);
   }
 }
 
@@ -343,8 +343,8 @@
   }
 }
 
-/* ---------- Rainbow ---------- */
-:where([data-design="rainbow"]) .gb-colors {
+/* ---------- Strawberry ---------- */
+:where([data-design="strawberry"]) .gb-colors {
   --gb-paper: #ffffff;
   --gb-canvas: #fff4f8;
   --gb-mist: #fff0f6;
@@ -361,7 +361,7 @@
   --fp-r-btn: 12px;
   --fp-r-card: 18px;
 }
-:where([data-design="rainbow"][data-theme="dark"]) .gb-colors {
+:where([data-design="strawberry"][data-theme="dark"]) .gb-colors {
   --gb-paper: #1c1328;
   --gb-mist: #251a35;
   --gb-canvas: #110b1a;
@@ -377,7 +377,7 @@
   --fp-title: #fbeaff;
 }
 @media (prefers-color-scheme: dark) {
-  :where([data-design="rainbow"]:not([data-theme="light"])) .gb-colors {
+  :where([data-design="strawberry"]:not([data-theme="light"])) .gb-colors {
     --gb-paper: #1c1328;
     --gb-mist: #251a35;
     --gb-canvas: #110b1a;
@@ -529,11 +529,12 @@
 
 /* ---------- Shared pieces ---------- */
 
-/* Rainbow-only decorations (stickers, strawberries, stripes) and their plain stand-ins. */
-html:not([data-design="rainbow"]) .rp-only {
+/* Strawberry-only decorations (stickers, strawberries, stripes) and their plain stand-ins.
+   (Class names still say rp-: the design was called Rainbow before 27 Nov 2026.) */
+html:not([data-design="strawberry"]) .rp-only {
   display: none !important;
 }
-html[data-design="rainbow"] .rp-hide {
+html[data-design="strawberry"] .rp-hide {
   display: none !important;
 }
 
@@ -545,11 +546,11 @@ html[data-design="rainbow"] .rp-hide {
   -webkit-text-fill-color: transparent;
 }
 
-/* A band of the main color; a rainbow in the rainbow design (progress fills, score bars, stripes). */
+/* A band of the main color; berry reds in the Strawberry design (progress fills, score bars, stripes). */
 @utility rp-rainbow-bar {
   background-color: var(--gb-pine);
 }
-html[data-design="rainbow"] .rp-rainbow-bar {
+html[data-design="strawberry"] .rp-rainbow-bar {
   background-image: var(--rp-rainbow);
 }
 
@@ -586,7 +587,7 @@ button:hover > .rp-sticker {
   color: var(--fp-title);
   font-weight: 800;
 }
-html[data-design="rainbow"] .gb-colors h1:not(.exam *) {
+html[data-design="strawberry"] .gb-colors h1:not(.exam *) {
   background-image: var(--rp-rainbow-ink);
   -webkit-background-clip: text;
   background-clip: text;
@@ -605,14 +606,14 @@ html[data-design="premium"] .gb-colors :is(h1, h2):not(.exam *) {
 .fp-word-2 {
   color: var(--gb-pine);
 }
-html[data-design="rainbow"] .fp-word-1 {
+html[data-design="strawberry"] .fp-word-1 {
   background-image: var(--rp-rainbow-ink);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
 }
-html[data-design="rainbow"] .fp-word-2 {
+html[data-design="strawberry"] .fp-word-2 {
   color: inherit;
 }
 html[data-design="premium"] .fp-word-2 {
@@ -629,7 +630,7 @@ html[data-design="premium"] .fp-wordmark {
   position: relative;
   isolation: isolate;
 }
-html[data-design="rainbow"] .rp-card::before {
+html[data-design="strawberry"] .rp-card::before {
   content: "";
   position: absolute;
   top: -1px;
@@ -681,18 +682,18 @@ html[data-design="study"] .rp-card::before {
   pointer-events: none;
 }
 
-/* Main buttons. */
+/* Main buttons (Strawberry: berry pink to strawberry red candy). */
 .rp-btn-primary {
   transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s ease, background-color 0.15s ease;
 }
 .rp-btn-primary:hover {
   filter: brightness(1.1);
 }
-html[data-design="rainbow"] .rp-btn-primary {
-  background-image: linear-gradient(135deg, var(--gb-pine), color-mix(in srgb, var(--gb-pine) 55%, #7c3aed));
+html[data-design="strawberry"] .rp-btn-primary {
+  background-image: linear-gradient(135deg, color-mix(in srgb, var(--gb-pine) 70%, #ff4d6d), color-mix(in srgb, var(--gb-pine) 60%, #be123c));
   box-shadow: 0 3px 0 color-mix(in srgb, var(--gb-pine) 70%, #2a1030), 0 6px 14px color-mix(in srgb, var(--gb-pine) 30%, transparent);
 }
-html[data-design="rainbow"] .rp-btn-primary:active {
+html[data-design="strawberry"] .rp-btn-primary:active {
   transform: translateY(2px);
   box-shadow: 0 1px 0 color-mix(in srgb, var(--gb-pine) 70%, #2a1030);
 }
@@ -720,14 +721,14 @@ html[data-design="premium"] .gb-colors .fp-icon {
   stroke-width: 1.3;
 }
 
-/* Answer-sheet bubbles: the main color; rainbow order in the rainbow design. */
+/* Answer-sheet bubbles: the main color; berry colors in the Strawberry design. */
 .rp-band-0, .rp-band-1, .rp-band-2, .rp-band-3, .rp-band-4, .rp-band-5 { background: var(--gb-pine); }
-html[data-design="rainbow"] .rp-band-0 { background: var(--rp-red); }
-html[data-design="rainbow"] .rp-band-1 { background: var(--rp-orange); }
-html[data-design="rainbow"] .rp-band-2 { background: var(--rp-yellow); }
-html[data-design="rainbow"] .rp-band-3 { background: var(--rp-green); }
-html[data-design="rainbow"] .rp-band-4 { background: var(--rp-blue); }
-html[data-design="rainbow"] .rp-band-5 { background: var(--rp-violet); }
+html[data-design="strawberry"] .rp-band-0 { background: var(--rp-red); }
+html[data-design="strawberry"] .rp-band-1 { background: var(--rp-berry); }
+html[data-design="strawberry"] .rp-band-2 { background: var(--rp-pink); }
+html[data-design="strawberry"] .rp-band-3 { background: var(--rp-red); }
+html[data-design="strawberry"] .rp-band-4 { background: var(--rp-berry); }
+html[data-design="strawberry"] .rp-band-5 { background: var(--rp-green); }
 
 /* Page backgrounds with character. */
 html[data-design="premium"] .gb-colors.bg-canvas {
@@ -754,7 +755,7 @@ html[data-design="study"] .gb-colors.bg-canvas {
   color: var(--gb-pine);
   font-weight: 700;
 }
-html[data-design="rainbow"] .fp-nav-active {
+html[data-design="strawberry"] .fp-nav-active {
   color: var(--gb-ink);
   font-weight: 800;
   box-shadow: inset 0 0 0 1px var(--gb-pine-soft);
@@ -772,11 +773,11 @@ html[data-design="study"] .fp-nav-active {
 .rp-hero {
   background: var(--gb-paper);
 }
-html[data-design="rainbow"] .rp-hero {
+html[data-design="strawberry"] .rp-hero {
   background:
-    radial-gradient(60% 70% at 0% 0%, color-mix(in srgb, var(--rp-red) 16%, transparent), transparent 70%),
-    radial-gradient(50% 60% at 100% 0%, color-mix(in srgb, var(--rp-blue) 14%, transparent), transparent 70%),
-    radial-gradient(60% 60% at 50% 100%, color-mix(in srgb, var(--rp-yellow) 16%, transparent), transparent 70%),
+    radial-gradient(60% 70% at 0% 0%, color-mix(in srgb, var(--rp-berry) 14%, transparent), transparent 70%),
+    radial-gradient(50% 60% at 100% 0%, color-mix(in srgb, var(--rp-pink) 18%, transparent), transparent 70%),
+    radial-gradient(60% 60% at 50% 100%, color-mix(in srgb, var(--rp-green) 8%, transparent), transparent 70%),
     var(--gb-paper);
 }
 html[data-design="premium"] .rp-hero {

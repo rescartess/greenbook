@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { Logo } from "@/core/design/ui";
-import { BtnLink, RainbowStripe, Sticker } from "@/core/shell";
+import { BtnLink, BerryStripe, Sticker } from "@/core/shell";
 
 export default function NotFound() {
   return (
     <main className="gb-colors flex min-h-dvh flex-col items-center justify-center gap-6 bg-canvas px-6 text-center">
-      <RainbowStripe />
+      <BerryStripe />
       <Link href="/" className="text-ink">
         <Logo size={34} />
       </Link>
