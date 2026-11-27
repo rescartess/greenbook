@@ -1,21 +1,21 @@
 import Link from "next/link";
 import { SQB_CREDIT } from "@/core/config/practice";
-import { Logo } from "@/core/design/ui";
-import { BtnLink, RainbowStripe, Sprinkles, Sticker, ThemeButton } from "@/core/shell";
+import { Icon, Logo } from "@/core/design/ui";
+import { BtnLink, DesignPicker, RainbowStripe, Sprinkles, Sticker, ThemeButton } from "@/core/shell";
 import { SubjectShowcase } from "./SubjectShowcase";
 import { TestScreenPreview } from "./TestScreenPreview";
 
 const WAYS = [
-  { emoji: "📝", name: "Full tests", text: "Two adaptive modules, timed like test day, scored from 200 to 800." },
-  { emoji: "📚", name: "By topic", text: "Pick one skill, from transitions to circle equations, and drill only that." },
-  { emoji: "🍓", name: "Your mistakes", text: "Every question you miss waits here until you get it right twice." },
+  { emoji: "📝", icon: "tests" as const, name: "Full tests", text: "Two adaptive modules, timed like test day, scored from 200 to 800." },
+  { emoji: "📚", icon: "topics" as const, name: "By topic", text: "Pick one skill, from transitions to circle equations, and drill only that." },
+  { emoji: "🍓", icon: "bookmark" as const, name: "Your mistakes", text: "Every question you miss waits here until you get it right twice." },
 ];
 
 /** A big rainbow arc drawn behind the hero headline. */
 function HeroRainbow() {
   const bands = ["var(--rp-red)", "var(--rp-orange)", "var(--rp-yellow)", "var(--rp-green)", "var(--rp-blue)", "var(--rp-violet)"];
   return (
-    <svg aria-hidden="true" viewBox="0 0 600 320" className="pointer-events-none absolute -top-10 left-1/2 w-[760px] max-w-none -translate-x-1/2 opacity-25 lg:left-[22%]">
+    <svg aria-hidden="true" viewBox="0 0 600 320" className="rp-only pointer-events-none absolute -top-10 left-1/2 w-[760px] max-w-none -translate-x-1/2 opacity-25 lg:left-[22%]">
       {bands.map((c, i) => {
         const r = 280 - i * 26;
         return <path key={c} d={`M${300 - r} 320 A ${r} ${r} 0 0 1 ${300 + r} 320`} fill="none" stroke={c} strokeWidth="24" />;
@@ -48,18 +48,18 @@ export function HomePage() {
         <HeroRainbow />
         <div className="relative mx-auto grid max-w-[1200px] items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
           <div className="max-w-[520px]">
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-pine-soft bg-paper px-3.5 py-1.5 text-[14px] font-extrabold text-pine">
+            <p className="fp-label mb-4 inline-flex items-center gap-2 rounded-full border border-pine-soft bg-paper px-3.5 py-1.5 text-[14px] font-extrabold text-pine">
               <Sticker emoji="🌈" size={16} tilt={0} /> Free SAT practice for everyone
             </p>
             <h1 className="text-[42px] leading-[1.06] tracking-[-0.02em] sm:text-[56px]">
               Practice the SAT the way you’ll take it
             </h1>
             <p className="mt-5 text-[18px] leading-relaxed text-ink-soft">
-              Adaptive full tests, practice by topic and every mistake saved. Sweet as strawberries, bright as a rainbow.
+              Adaptive full tests, practice by topic and every mistake saved. In the design you like best.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <BtnLink href="/login" className="h-12 px-6 text-[16px]">
-                Create free account <span aria-hidden="true">🍓</span>
+                Create free account <span aria-hidden="true" className="rp-only">🍓</span>
               </BtnLink>
               <BtnLink href="/login" tone="quiet" className="h-12 px-6 text-[16px]">
                 Log in
@@ -79,8 +79,7 @@ export function HomePage() {
       <section className="relative border-y border-hairline px-5 py-20 sm:px-8">
         <div className="mx-auto grid max-w-[1200px] gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
           <div>
-            <Sticker emoji="🔀" size={34} tilt={-8} className="mb-3" />
-            <h2 className="text-[30px] font-black leading-tight tracking-[-0.01em] sm:text-[36px]">One switch between English and Math</h2>
+                        <h2 className="text-[30px] font-black leading-tight tracking-[-0.01em] sm:text-[36px]">One switch between English and Math</h2>
             <p className="mt-3 max-w-[440px] text-[17px] leading-relaxed text-ink-soft">
               Your page stays where it is. Only the questions change.
             </p>
@@ -92,12 +91,15 @@ export function HomePage() {
       <section className="relative bg-paper px-5 py-20 sm:px-8">
         <div className="mx-auto max-w-[1200px]">
           <h2 className="text-[30px] font-black leading-tight tracking-[-0.01em] sm:text-[36px]">
-            Three <span className="rp-rainbow-text">colorful</span> ways to practice
+            Three ways to practice
           </h2>
           <ul className="mt-8 grid gap-4 md:grid-cols-3">
             {WAYS.map((w, i) => (
-              <li key={w.name} className="rp-card rounded-[18px] border border-hairline bg-canvas p-6">
+              <li key={w.name} className="rp-card rounded-[var(--fp-r-card)] border border-hairline bg-paper p-6">
                 <Sticker emoji={w.emoji} size={40} tilt={i % 2 ? 10 : -10} />
+                <span className="rp-hide flex h-11 w-11 items-center justify-center rounded-[10px] bg-pine-tint text-pine">
+                  <Icon name={w.icon} size={22} />
+                </span>
                 <h3 className="mt-4 text-[20px] font-black">{w.name}</h3>
                 <p className="mt-1.5 text-[16px] leading-relaxed text-ink-soft">{w.text}</p>
               </li>
@@ -106,8 +108,18 @@ export function HomePage() {
         </div>
       </section>
 
+      <section className="relative border-t border-hairline px-5 py-20 sm:px-8">
+        <div className="mx-auto max-w-[1200px]">
+          <h2 className="text-[30px] font-black leading-tight tracking-[-0.01em] sm:text-[36px]">Your site, your design</h2>
+          <p className="mt-3 max-w-[560px] text-[17px] leading-relaxed text-ink-soft">
+            Pick a look for every page around the test. Try one now. The test screen always stays like test day.
+          </p>
+          <DesignPicker className="mt-8 [&>legend]:sr-only [&>p]:sr-only" />
+        </div>
+      </section>
+
       <section className="relative px-5 py-20 sm:px-8">
-        <div className="rp-card mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-6 rounded-[22px] border border-hairline bg-paper px-6 py-10 sm:px-10">
+        <div className="rp-card mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-6 rounded-[var(--fp-r-card)] border border-hairline bg-paper px-6 py-10 sm:px-10">
           <div className="flex items-center gap-5">
             <Sticker emoji="🍓" size={56} tilt={-12} bob />
             <div>
@@ -116,7 +128,7 @@ export function HomePage() {
             </div>
           </div>
           <BtnLink href="/login" className="h-12 px-6 text-[16px]">
-            Create free account <span aria-hidden="true">🌈</span>
+            Create free account <span aria-hidden="true" className="rp-only">🌈</span>
           </BtnLink>
         </div>
       </section>
@@ -124,10 +136,10 @@ export function HomePage() {
       <footer className="relative border-t border-hairline bg-paper px-5 sm:px-8">
         <div className="mx-auto flex max-w-[1200px] flex-wrap justify-between gap-3 py-7 text-[13px] leading-normal text-graphite">
           <div className="max-w-[640px] space-y-1">
-            <p>SAT is a registered trademark of the College Board, which is not affiliated with RainbowPrep.</p>
+            <p>SAT is a registered trademark of the College Board, which is not affiliated with FreedomPrep.</p>
             <p>SQB topics: {SQB_CREDIT}</p>
           </div>
-          <p>© 2026 RainbowPrep · made with 🍓 and 🌈</p>
+          <p>© 2026 FreedomPrep<span className="rp-only"> · made with 🍓 and 🌈</span></p>
         </div>
       </footer>
     </div>

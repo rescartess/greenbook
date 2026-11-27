@@ -5,13 +5,16 @@ import { usePathname } from "next/navigation";
 import { SUBJECT_SLUGS, SUBJECTS, isSubjectSlug, switchSubjectPath } from "@/core/config/subjects";
 import { cn } from "@/core/design/ui";
 
-/** English / Math as a small segmented control. Keeps the page, swaps the subject. */
+/**
+ * English / Math switch (owner request 27 Nov 2026: bigger and easier to see). A tinted track in the
+ * design's main color; the chosen subject is a solid button. Keeps the page, swaps the subject.
+ */
 export function SubjectSegment() {
   const pathname = usePathname();
   const current = pathname.split("/")[1];
   const active = isSubjectSlug(current) ? current : "english";
   return (
-    <nav aria-label="Subject" className="flex rounded-[10px] border border-hairline bg-mist p-[3px]">
+    <nav aria-label="Subject" className="flex rounded-[var(--fp-r-btn)] border border-pine-soft bg-pine-tint p-1">
       {SUBJECT_SLUGS.map((slug) => {
         const on = slug === active;
         return (
@@ -20,8 +23,8 @@ export function SubjectSegment() {
             href={switchSubjectPath(pathname, slug)}
             aria-current={on ? "page" : undefined}
             className={cn(
-              "rounded-[7px] px-4 py-1.5 text-[14px] font-semibold transition-colors",
-              on ? "bg-paper text-ink shadow-[0_1px_2px_rgb(0_0_0/0.06)] ring-1 ring-hairline" : "text-ink-soft hover:text-ink",
+              "fp-label flex h-10 min-w-[92px] items-center justify-center rounded-[var(--fp-r-btn)] px-5 text-[16px] font-extrabold transition-colors",
+              on ? "rp-btn-primary bg-pine text-pine-ink" : "text-pine hover:bg-paper/70",
             )}
           >
             {SUBJECTS[slug].label}

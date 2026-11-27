@@ -21,14 +21,14 @@ export function LoginPage() {
         <div className="relative w-full max-w-[400px]">
           <Sticker emoji="🍓" size={44} tilt={-16} bob className="absolute -left-5 -top-6 z-10" />
           <Sticker emoji="🌈" size={40} tilt={12} bob className="absolute -right-4 -top-5 z-10" style={{ animationDelay: "-1.8s" }} />
-          <section className="rp-card rounded-[22px] border border-hairline bg-paper px-6 py-9 shadow-[0_3px_0_var(--gb-hairline)] sm:px-8">
-            <h1 className="text-[28px] leading-tight tracking-[-0.01em]">Log in to RainbowPrep</h1>
+          <section className="rp-card rounded-[var(--fp-r-card)] border border-hairline bg-paper px-6 py-9 sm:px-8">
+            <h1 className="text-[28px] leading-tight tracking-[-0.01em]">Log in to FreedomPrep</h1>
             <p className="mt-1.5 text-[15px] text-graphite">Your tests, results and mistakes, saved in one place</p>
             <Suspense fallback={<div className="mt-7 h-[214px]" />}>
               <LoginForm />
             </Suspense>
           </section>
-          <p className="mt-5 text-[13px] text-graphite">New here? Logging in the first time creates your free account 🍓</p>
+          <p className="mt-5 text-[13px] text-graphite">New here? Logging in the first time creates your free account<span aria-hidden="true" className="rp-only"> 🍓</span></p>
         </div>
       </div>
     </main>

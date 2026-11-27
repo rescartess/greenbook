@@ -11,7 +11,7 @@ const CHOICES = [
 export function TestScreenPreview() {
   return (
     <div
-      aria-label="Preview of the RainbowPrep test screen"
+      aria-label="Preview of the FreedomPrep test screen"
       role="img"
       className="overflow-hidden rounded-[14px] border border-hairline bg-paper shadow-[0_8px_24px_rgb(0_0_0/0.06)]"
     >

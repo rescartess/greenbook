@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ENABLED_FEATURES } from "@/core/config/features";
 import { isSubjectSlug } from "@/core/config/subjects";
-import { LogoMark, cn } from "@/core/design/ui";
+import { Icon, LogoMark, Wordmark, cn } from "@/core/design/ui";
 import type { ShellBadges, ShellUser } from "@/core/layout/types";
 import { ThemeButton } from "./ThemeButton";
 import { Sticker } from "./stickers";
@@ -36,13 +36,11 @@ export function SideNav({
     <aside className="sticky top-0 hidden h-dvh w-16 shrink-0 flex-col border-r border-hairline bg-paper px-2 pb-5 pt-7 sm:flex nav:w-[248px] nav:px-3">
       <Link
         href={`/${subject}/dashboard`}
-        aria-label="RainbowPrep dashboard"
+        aria-label="FreedomPrep dashboard"
         className="mb-6 flex items-center justify-center gap-2.5 text-ink nav:justify-start nav:px-2"
       >
         <LogoMark size={28} />
-        <span className="hidden text-[19px] font-black tracking-tight nav:inline">
-          <span className="rp-rainbow-text">Rainbow</span>Prep
-        </span>
+        <Wordmark className="hidden text-[19px] nav:inline" />
       </Link>
 
       <nav aria-label="Main" className="flex flex-col gap-0.5">
@@ -56,15 +54,14 @@ export function SideNav({
               aria-current={active ? "page" : undefined}
               title={f.label}
               className={cn(
-                "relative flex h-10 items-center justify-center gap-2.5 rounded-[12px] text-[15px] transition-colors nav:justify-start nav:px-2.5",
-                active
-                  ? "bg-pine-tint font-extrabold text-ink ring-1 ring-pine-soft ring-inset"
-                  : "font-semibold text-ink-soft hover:bg-pine-tint hover:text-ink",
+                "relative flex h-10 items-center justify-center gap-2.5 rounded-[min(var(--fp-r-btn),12px)] text-[15px] transition-colors nav:justify-start nav:px-2.5",
+                active ? "fp-nav-active" : "fp-nav font-semibold text-ink-soft hover:bg-pine-tint hover:text-ink",
               )}
             >
-              {active ? <span aria-hidden="true" className="rp-rainbow-bar absolute inset-y-1.5 left-0 hidden w-1 rounded-r-full nav:block" style={{ backgroundImage: "linear-gradient(180deg, var(--rp-red), var(--rp-orange), var(--rp-yellow), var(--rp-green), var(--rp-blue), var(--rp-violet))" }} /> : null}
+              {active ? <span aria-hidden="true" className="rp-only absolute inset-y-1.5 left-0 hidden w-1 rounded-r-full nav:block" style={{ backgroundImage: "linear-gradient(180deg, var(--rp-red), var(--rp-orange), var(--rp-yellow), var(--rp-green), var(--rp-blue), var(--rp-violet))" }} /> : null}
               <Sticker emoji={f.emoji} size={18} tilt={active ? -10 : 0} />
-              <span className="sr-only nav:not-sr-only nav:flex-1">{f.label}</span>
+              <Icon name={f.icon} size={18} className="rp-hide shrink-0" />
+              <span className="fp-label sr-only nav:not-sr-only nav:flex-1">{f.label}</span>
               {badge ? (
                 <>
                   <span className="hidden text-[13px] font-medium text-graphite tabular-nums nav:inline">{badge}</span>
@@ -78,7 +75,7 @@ export function SideNav({
 
       <div className="flex-1" />
 
-      <div aria-hidden="true" className="mb-4 hidden items-center gap-2 rounded-[14px] border border-dashed border-pine-soft bg-pine-tint px-3 py-2.5 nav:flex">
+      <div aria-hidden="true" className="rp-only mb-4 hidden items-center gap-2 rounded-[14px] border border-dashed border-pine-soft bg-pine-tint px-3 py-2.5 nav:flex">
         <Sticker emoji="🍓" size={22} tilt={-14} bob />
         <span className="text-[13px] font-bold text-ink-soft">Stay sweet, keep going</span>
         <Sticker emoji="🌈" size={18} tilt={8} className="ml-auto" />
@@ -151,6 +148,7 @@ export function BottomTabs() {
             )}
           >
             <Sticker emoji={f.emoji} size={20} tilt={active ? -10 : 0} />
+            <Icon name={f.icon} size={20} className="rp-hide" />
             <span className="truncate">{f.shortLabel}</span>
           </Link>
         );

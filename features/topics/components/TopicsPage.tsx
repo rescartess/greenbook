@@ -8,7 +8,7 @@ import type { TopicSummary } from "../schema";
 
 const COLLECTIONS: Collection[] = ["books", "sqb"];
 
-/** Topic practice. Two collections: RainbowPrep's own questions and College Board's SQB. */
+/** Topic practice. Two collections: FreedomPrep's own questions and College Board's SQB. */
 export function TopicsPage({ subject, collection = "books" }: { subject: SubjectSlug; collection?: Collection }) {
   return (
     <TopicsFrame subject={subject} collection={collection}>
@@ -111,7 +111,7 @@ function TopicCard({ subject, topic }: { subject: SubjectSlug; topic: TopicSumma
             {topic.counts.easy} easy, {topic.counts.medium} medium, {topic.counts.hard} hard
           </p>
           <div className="mt-auto pt-5">
-            <span className="flex h-10 items-center justify-center rp-btn-primary rounded-[12px] bg-pine text-[15px] font-extrabold text-pine-ink">
+            <span className="flex h-10 items-center justify-center rp-btn-primary fp-label rounded-[var(--fp-r-btn)] bg-pine text-[15px] font-bold text-pine-ink">
               Start practice
             </span>
           </div>
@@ -120,7 +120,7 @@ function TopicCard({ subject, topic }: { subject: SubjectSlug; topic: TopicSumma
     </>
   );
 
-  const box = "flex h-full flex-col rp-card rounded-[18px] border border-hairline bg-paper p-5";
+  const box = "flex h-full flex-col rp-card rounded-[var(--fp-r-card)] border border-hairline bg-paper p-5";
   return ready ? (
     <Link
       href={`/${subject}/topics/${topic.id}`}

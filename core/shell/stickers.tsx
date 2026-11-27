@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import { cn } from "@/core/design/ui";
 
 /**
- * RainbowPrep stickers (owner request, 27 Nov 2026): emoji with a white die-cut edge,
+ * Rainbow-design stickers (owner request, 27 Nov 2026; shown only in the Rainbow design): emoji with a white die-cut edge,
  * a soft shadow and a small tilt. They wiggle when hovered. Decoration only: hidden from screen readers.
  */
 export function Sticker({
@@ -24,7 +24,7 @@ export function Sticker({
   return (
     <span
       aria-hidden="true"
-      className={cn("rp-sticker select-none", bob && "rp-bob", className)}
+      className={cn("rp-sticker rp-only select-none", bob && "rp-bob", className)}
       style={{ fontSize: size, ["--rp-tilt" as string]: `${tilt}deg`, ...style }}
     >
       {emoji}
@@ -32,9 +32,9 @@ export function Sticker({
   );
 }
 
-/** The thin rainbow along the very top of every RainbowPrep page. */
+/** The thin rainbow along the very top of every FreedomPrep page. */
 export function RainbowStripe({ className }: { className?: string }) {
-  return <div aria-hidden="true" className={cn("rp-rainbow-bar pointer-events-none fixed inset-x-0 top-0 z-40 h-1.5", className)} />;
+  return <div aria-hidden="true" className={cn("rp-rainbow-bar rp-only pointer-events-none fixed inset-x-0 top-0 z-40 h-1.5", className)} />;
 }
 
 type Spot = { emoji: string; size: number; tilt: number; pos: CSSProperties; wide?: boolean; delay?: string };
@@ -58,7 +58,7 @@ export function Sprinkles({ roomy = false }: { roomy?: boolean }) {
   // so the sprinkles only show on very wide screens there.
   const show = (wide?: boolean) => (roomy ? (wide ? "hidden nav:block" : "hidden sm:block") : "hidden min-[1560px]:block");
   return (
-    <div aria-hidden="true" className="pointer-events-none fixed inset-0 overflow-hidden">
+    <div aria-hidden="true" className="rp-only pointer-events-none fixed inset-0 overflow-hidden">
       {SPOTS.map((s, i) => (
         <span key={i} className={cn("absolute", show(s.wide))} style={s.pos}>
           <Sticker emoji={s.emoji} size={s.size} tilt={s.tilt} bob style={{ animationDelay: s.delay }} />

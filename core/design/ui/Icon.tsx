@@ -14,7 +14,7 @@ export function Icon({ name, size = 20, className }: Props) {
     strokeLinecap: "round" as const,
     strokeLinejoin: "round" as const,
     "aria-hidden": true,
-    className,
+    className: className ? `fp-icon ${className}` : "fp-icon",
   };
   switch (name) {
     case "dashboard":

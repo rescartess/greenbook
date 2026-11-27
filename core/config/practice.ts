@@ -50,7 +50,7 @@ export function satPaceSeconds(subject: SubjectSlug): number {
 
 /** Topic collections on the Topics page: the owner's own questions, and College Board's SAT Suite Question Bank. */
 export type Collection = "books" | "sqb";
-export const COLLECTION_LABEL: Record<Collection, string> = { books: "RainbowPrep", sqb: "SQB" };
+export const COLLECTION_LABEL: Record<Collection, string> = { books: "FreedomPrep", sqb: "SQB" };
 /** Credit shown wherever SQB questions appear (the owner has College Board's permission, 26 Nov 2026). */
 export const SQB_CREDIT =
   "Questions, answers and explanations © College Board, from the SAT Suite Question Bank.";

@@ -16,7 +16,7 @@ export function ProfilePage() {
         <h1 className="text-[28px] font-bold leading-tight tracking-[-0.01em] sm:text-[32px]">Profile</h1>
         <p className="mt-1 text-[15px] text-graphite">Your name, goal and settings</p>
       </header>
-      <Suspense fallback={<div className="h-96 rp-card rounded-[18px] border border-hairline bg-paper" />}>
+      <Suspense fallback={<div className="h-96 rp-card rounded-[var(--fp-r-card)] border border-hairline bg-paper" />}>
         <ProfileContent />
       </Suspense>
     </>

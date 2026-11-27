@@ -10,7 +10,7 @@ export type UserColors = { main: string | null; background: string | null };
 
 /** Choices offered first; anything else comes from the color picker. Light-mode values. */
 export const MAIN_PRESETS = [
-  { name: "RainbowPrep", hex: null },
+  { name: "Design", hex: null },
   { name: "Ocean", hex: "#1f5fae" },
   { name: "Indigo", hex: "#4338ca" },
   { name: "Violet", hex: "#7c3aed" },
@@ -22,7 +22,7 @@ export const MAIN_PRESETS = [
 ] as const;
 
 export const BACKGROUND_PRESETS = [
-  { name: "RainbowPrep", hex: null },
+  { name: "Design", hex: null },
   { name: "Sand", hex: "#efe4cf" },
   { name: "Sky", hex: "#dbe8f7" },
   { name: "Mint", hex: "#d8efe3" },
@@ -32,12 +32,12 @@ export const BACKGROUND_PRESETS = [
   { name: "Butter", hex: "#f6efc9" },
 ] as const;
 
-/** RainbowPrep's own values for the default swatches (same as the .gb-colors block in app/globals.css). */
-export const DEFAULT_MAIN = "#d6246e";
-export const DEFAULT_BACKGROUND = "#fff4f8";
+/** The Default design's values for the swatches (same as the .gb-colors block in app/globals.css). */
+export const DEFAULT_MAIN = "#2e46b8";
+export const DEFAULT_BACKGROUND = "#f4f6fa";
 
-const LIGHT = { paper: "#ffffff", canvas: "#fff4f8", text: "#2a1030" };
-const DARK = { paper: "#1c1328", canvas: "#110b1a", text: "#fbeaff" };
+const LIGHT = { paper: "#ffffff", canvas: "#f4f6fa", text: "#1b1d22" };
+const DARK = { paper: "#131a2a", canvas: "#0b101c", text: "#e9edf6" };
 
 export const isHex = (v: unknown): v is string => typeof v === "string" && /^#[0-9a-f]{6}$/.test(v);
 
@@ -99,7 +99,7 @@ const block = (selector: string, vars: Vars) =>
     .map(([k, v]) => `${k}:${v}`)
     .join(";")}}`;
 
-/** The CSS for the student's colors, scoped to `.gb-colors`. Empty when they use RainbowPrep's colors. */
+/** The CSS for the student's colors, scoped to `.gb-colors`. Empty when they use FreedomPrep's colors. */
 export function userColorsCss({ main, background }: UserColors): string {
   const m = isHex(main) ? main : null;
   const b = isHex(background) ? background : null;

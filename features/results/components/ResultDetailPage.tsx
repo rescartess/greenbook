@@ -42,7 +42,7 @@ export function ResultsView({ r, subject, studentName }: { r: TestResults; subje
       />
 
       <div className="grid items-start gap-4 lg:grid-cols-[1.3fr_1fr]">
-        <section aria-labelledby="score-title" className="overflow-hidden rp-card rounded-[18px] border border-hairline bg-paper">
+        <section aria-labelledby="score-title" className="overflow-hidden rp-card rounded-[var(--fp-r-card)] border border-hairline bg-paper">
           <div className="bg-pine-soft px-6 py-5">
             <h2 id="score-title" className="text-[22px] font-bold leading-tight">{r.title}</h2>
             <p className="mt-1 text-[15px] text-ink-soft">{formatDate(r.finishedAt)}</p>

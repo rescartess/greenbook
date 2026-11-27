@@ -9,6 +9,7 @@ export { Card, Btn, BtnLink, Bubbles, Meta, SegmentLinks, Empty, Note, CardSkele
 export { DevShell } from "./DevShell";
 export { ScoreScale } from "./ScoreScale";
 export { Sticker, Sprinkles, RainbowStripe, titleEmoji } from "./stickers";
+export { DesignPicker } from "./DesignPicker";
 export { UserColorsStyle } from "./UserColorsStyle";
 export { MAIN_PRESETS, BACKGROUND_PRESETS, DEFAULT_MAIN, DEFAULT_BACKGROUND, USER_COLORS_STYLE_ID, userColorsCss, isHex, type UserColors } from "./colors";
 export { avatarUrl } from "./avatar";

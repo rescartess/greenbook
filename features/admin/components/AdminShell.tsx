@@ -62,6 +62,6 @@ export function AdminTitle({
 
 export function LoadingBlock({ height = 240 }: { height?: number }) {
   return (
-    <div className="rounded-[18px] border border-hairline bg-paper" style={{ height }} />
+    <div className="rounded-[var(--fp-r-card)] border border-hairline bg-paper" style={{ height }} />
   );
 }

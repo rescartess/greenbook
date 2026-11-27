@@ -160,7 +160,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
         <input type="hidden" name="minutes" value={timed ? minutes : ""} />
         <input type="hidden" name="name" value={name} />
 
-        <section className="rp-card rounded-[18px] border border-hairline bg-paper p-5 sm:p-6">
+        <section className="rp-card rounded-[var(--fp-r-card)] border border-hairline bg-paper p-5 sm:p-6">
           <div className="rounded-[10px] bg-mist px-5 py-5 text-center">
             <p className="text-[34px] font-bold leading-tight tracking-[-0.01em] tabular-nums">
               {count === 0 ? "Nothing yet" : numbersText(safeFrom, to).replace(/^q/, "Q")}
@@ -254,7 +254,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
 
 function Section({ title, aside, children }: { title: string; aside?: ReactNode; children: ReactNode }) {
   return (
-    <section className="rp-card rounded-[18px] border border-hairline bg-paper p-5 sm:p-6">
+    <section className="rp-card rounded-[var(--fp-r-card)] border border-hairline bg-paper p-5 sm:p-6">
       <div className="mb-4 flex items-baseline justify-between gap-3">
         <h2 className="text-[17px] font-bold">{title}</h2>
         {aside}

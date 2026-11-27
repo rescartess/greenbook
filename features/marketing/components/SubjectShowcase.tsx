@@ -18,7 +18,7 @@ export function SubjectShowcase() {
   const [subject, setSubject] = useState<SubjectSlug>("english");
   const s = SUBJECTS[subject];
   return (
-    <div className="rp-card rounded-[18px] border border-hairline bg-paper p-5 sm:p-6">
+    <div className="rp-card rounded-[var(--fp-r-card)] border border-hairline bg-paper p-5 sm:p-6">
       <div role="radiogroup" aria-label="Subject" className="flex w-fit rounded-[10px] border border-hairline bg-mist p-[3px]">
         {SUBJECT_SLUGS.map((slug) => (
           <button

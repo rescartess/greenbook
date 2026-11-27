@@ -5,6 +5,7 @@ import { cn } from "@/core/design/ui";
 import {
   BACKGROUND_PRESETS,
   Btn,
+  DesignPicker,
   DEFAULT_BACKGROUND,
   DEFAULT_MAIN,
   MAIN_PRESETS,
@@ -57,6 +58,8 @@ export function ColorSettings({ initial, compact = false }: { initial: UserColor
 
   return (
     <div className={compact ? "mt-4 grid gap-5" : "mt-5 grid gap-5 border-t border-hairline pt-5"}>
+      <DesignPicker />
+      <p className="-mb-1 border-t border-hairline pt-4 text-[13px] font-semibold text-graphite">Your own colors, on top of any design</p>
       <div className={compact ? "grid gap-5 md:grid-cols-2 md:gap-8" : "grid gap-5"}>
       <ColorRow
         step="1"
@@ -103,7 +106,7 @@ export function ColorSettings({ initial, compact = false }: { initial: UserColor
           {pending ? "Saving…" : "Save colors"}
         </Btn>
         <Btn tone="quiet" disabled={pending || (!colors.main && !colors.background)} onClick={() => pick({ main: null, background: null })}>
-          Use RainbowPrep colors
+          Use the design’s colors
         </Btn>
         {message ? (
           <span role="status" className="text-[13px] font-semibold text-pine">

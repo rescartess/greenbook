@@ -10,7 +10,7 @@ const joinedText = (iso: string) => new Intl.DateTimeFormat("en-GB", { day: "num
 /**
  * The top of the dashboard, in the spirit of a typing-site profile (owner reference, 27 Nov 2026):
  * photo, name and latest score bar; time practicing, questions answered, best full test;
- * the bio; and a strip with the student's place among all RainbowPrep students by time practicing.
+ * the bio; and a strip with the student's place among all FreedomPrep students by time practicing.
  */
 export function ProfileBanner({
   name,
@@ -74,7 +74,7 @@ export function ProfileBanner({
       </section>
 
       <section className="flex flex-wrap items-center justify-between gap-x-10 gap-y-3 rounded-[14px] bg-paper px-5 py-5 font-mono sm:px-9">
-        <p className="text-[18px] text-graphite sm:text-[20px]">All-time RainbowPrep ranking</p>
+        <p className="text-[18px] text-graphite sm:text-[20px]">All-time FreedomPrep ranking</p>
         <div className="flex items-center gap-4">
           <div className="text-right text-[13px] leading-tight text-graphite">
             <p>time practicing</p>

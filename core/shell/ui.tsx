@@ -14,14 +14,14 @@ import { Sticker } from "./stickers";
  */
 export function Card({ className, children, flush, ...rest }: ComponentProps<"section"> & { flush?: boolean }) {
   return (
-    <section className={cn("rp-card rounded-[18px] border border-hairline bg-paper shadow-[0_2px_0_var(--gb-hairline)]", !flush && "p-5 sm:p-6", className)} {...rest}>
+    <section className={cn("rp-card rounded-[var(--fp-r-card)] border border-hairline bg-paper", !flush && "p-5 sm:p-6", className)} {...rest}>
       {children}
     </section>
   );
 }
 
 type Tone = "primary" | "quiet";
-const BTN = "inline-flex h-10 gap-1.5 disabled:opacity-50 items-center justify-center rounded-[12px] px-[18px] text-[15px] font-extrabold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pine";
+const BTN = "inline-flex h-10 gap-1.5 disabled:opacity-50 items-center justify-center rounded-[var(--fp-r-btn)] px-[18px] text-[15px] font-bold transition-colors fp-label focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pine";
 const TONE: Record<Tone, string> = {
   primary: "rp-btn-primary bg-pine text-pine-ink",
   quiet: "border border-hairline bg-paper text-ink hover:border-pine-soft hover:bg-pine-tint",
@@ -36,7 +36,7 @@ export function BtnLink({ tone = "primary", className, ...rest }: ComponentProps
 }
 
 /**
- * RainbowPrep's signature: answer-sheet bubbles. One per question, filled in rainbow order when it is done.
+ * FreedomPrep's signature: answer-sheet bubbles. One per question, filled in rainbow order when it is done.
  * Used only where progress is counted question by question.
  */
 export function Bubbles({ done, total, label }: { done: number; total: number; label?: string }) {
@@ -60,14 +60,14 @@ export function Meta({ children, className }: { children: ReactNode; className?:
 /** A segmented switch made of links, like English / Math. */
 export function SegmentLinks({ label, options }: { label: string; options: { label: string; href: string; active: boolean }[] }) {
   return (
-    <nav aria-label={label} className="flex w-fit rounded-[12px] border border-hairline bg-paper p-[3px]">
+    <nav aria-label={label} className="flex w-fit rounded-[var(--fp-r-btn)] border border-hairline bg-paper p-[3px]">
       {options.map((o) => (
         <Link
           key={o.href}
           href={o.href}
           aria-current={o.active ? "page" : undefined}
           className={cn(
-            "rounded-[9px] px-4 py-1.5 text-[14px] font-semibold transition-colors",
+            "fp-label rounded-[var(--fp-r-btn)] px-4 py-1.5 text-[14px] font-semibold transition-colors",
             o.active ? "rp-btn-primary bg-pine text-pine-ink" : "text-ink-soft hover:text-ink",
           )}
         >
@@ -97,5 +97,5 @@ export function Note({ children }: { children: ReactNode }) {
 
 /** Loading placeholder with the card's shape. */
 export function CardSkeleton({ className }: { className?: string }) {
-  return <div className={cn("rounded-[18px] border border-hairline bg-paper", className ?? "h-48")} />;
+  return <div className={cn("rounded-[var(--fp-r-card)] border border-hairline bg-paper", className ?? "h-48")} />;
 }

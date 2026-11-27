@@ -30,7 +30,7 @@ export type FeatureEntry = {
   /** Path after /{subject}/ */
   path: string;
   icon: IconName;
-  /** RainbowPrep sticker shown next to the tab name and on the page title. */
+  /** FreedomPrep sticker shown next to the tab name and on the page title. */
   emoji: string;
   enabled: boolean;
 };
