@@ -71,7 +71,7 @@ When the owner asks for "what you learned from those websites", or for a page to
 - Check every screen at 390 px and 1440 px wide, in light and dark mode.
 
 ## Publishing
-- Push to `main` on GitHub (rescartess/greenbook). GitHub Actions runs `npm run check`; only if it passes, the `publish` job calls the Vercel deploy hook (secret `VERCEL_DEPLOY_HOOK`). Live site: https://greenbook-alpha.vercel.app
+- Push to `main` on GitHub (rescartess/greenbook). GitHub Actions runs `npm run check`; only if it passes, the `publish` job calls the Vercel deploy hook (secret `VERCEL_DEPLOY_HOOK`). Live site: https://www.quantumtest.xyz (domain bought 27 Nov 2026 at GoDaddy, renews 27 Nov 2027; DNS at GoDaddy: A @ 216.198.79.1, CNAME www 73134ed5743eda95.vercel-dns-017.com; the bare domain redirects to www in Vercel). Old address https://greenbook-alpha.vercel.app still works
 - The GitHub repo is public (since 25 Nov 2026): Vercel's free plan only publishes a private repo's commits when the owner wrote them. Keep secrets out of the repo; only the Supabase URL and publishable key are committed. Never sign commits as the owner.
 
 ## Database
