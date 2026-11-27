@@ -21,7 +21,7 @@ export const AUTH_ENABLED = SUPABASE_URL !== "" && SUPABASE_PUBLISHABLE_KEY !== 
  * "Continue with Google" on the login page. Turn on only after Supabase Auth › Providers › Google
  * is enabled and saved with the client secret; otherwise the button opens an error page.
  */
-export const GOOGLE_LOGIN = false;
+export const GOOGLE_LOGIN = true;
 
 /** Where a signed-in student lands by default. */
 export const HOME_AFTER_LOGIN = "/english/dashboard";
