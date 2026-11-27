@@ -91,8 +91,8 @@ export function HomePage() {
             />
           </figure>
 
-          <div className="relative z-10 -mt-24 px-5 pb-20 sm:-mt-32 sm:px-8 lg:col-span-7 lg:mt-0 lg:flex lg:flex-col lg:justify-center lg:px-[120px] lg:pb-16 lg:pt-6">
-            <p className="text-[64px] font-extrabold leading-[0.9] tracking-[-0.055em] sm:text-[104px] lg:text-[116px]">
+          <div className="relative z-10 -mt-24 px-5 pb-20 sm:-mt-32 sm:px-8 lg:col-span-7 lg:mt-0 lg:flex lg:flex-col lg:justify-center lg:px-12 lg:pb-16 lg:pt-6 xl:px-[120px]">
+            <p className="text-[64px] font-extrabold leading-[0.9] tracking-[-0.055em] sm:text-[104px] lg:text-[clamp(88px,8vw,116px)]">
               They not
               <br />
               <span className="fp-accent">like us.</span>
@@ -116,7 +116,7 @@ export function HomePage() {
 
         {/* The name, huge, sitting on the photo's faded edge: one piece with the picture. */}
         <h1
-          className="fp-masthead pointer-events-none relative z-10 mx-auto -mt-6 max-w-[1440px] select-none whitespace-nowrap px-5 text-center text-[15vw] font-extrabold leading-[0.78] tracking-[-0.065em] sm:px-8 lg:-mt-[150px] lg:text-[min(16.5vw,232px)]"
+          className="fp-masthead pointer-events-none relative z-10 mx-auto -mt-6 max-w-[1440px] select-none whitespace-nowrap px-5 text-center text-[15vw] font-extrabold leading-[0.78] tracking-[-0.065em] sm:px-8 lg:-mt-[150px] lg:text-[min(15vw,216px)]"
         >
           <span className="fp-word-1">Quantum</span>
           <span className="fp-word-2">Test</span>
@@ -138,7 +138,7 @@ export function HomePage() {
               className="h-auto w-full"
             />
           </figure>
-          <div className="relative z-10 -mt-16 px-5 pb-24 text-[52px] font-extrabold leading-[0.96] tracking-[-0.05em] sm:px-8 sm:text-[80px] lg:col-span-5 lg:mt-0 lg:pb-0 lg:pl-0 lg:pr-[120px] lg:text-[84px]">
+          <div className="relative z-10 -mt-16 px-5 pb-24 text-[52px] font-extrabold leading-[0.96] tracking-[-0.05em] sm:px-8 sm:text-[80px] lg:col-span-5 lg:mt-0 lg:pb-0 lg:pl-0 lg:pr-12 lg:text-[clamp(60px,5.8vw,84px)] xl:pr-[120px]">
             <p className="text-graphite">Why us?</p>
             <p>
               <Link href="/login" className="fp-accent underline decoration-[0.06em] underline-offset-[0.12em] transition-opacity hover:opacity-80">
