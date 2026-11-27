@@ -795,3 +795,101 @@ html[data-design="study"] .rp-hero {
 .gb-math .katex-display {
   margin: 0;
 }
+
+/* ---------- Home page (owner request 27 Nov 2026: premium, unique, nothing AI-looking) ---------- */
+/* Inter for the whole home page, like the reference sites: one typeface, heavy and tight headlines. */
+.fp-display {
+  font-family: "Inter Variable", Inter, system-ui, -apple-system, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+}
+.fp-display h1,
+.fp-display h2,
+.fp-display h3 {
+  font-family: inherit;
+}
+html[data-design="premium"] .fp-display :is(h1, h2) {
+  font-family: "Roboto Variable", Roboto, system-ui, sans-serif;
+}
+
+/* A deep color per design for the two dark bands (same in light and dark mode). */
+.gb-colors {
+  --fp-deep: #101a44;
+  --fp-deep-ink: #ffffff;
+}
+:where([data-design="strawberry"]) .gb-colors {
+  --fp-deep: #3b0a1f;
+}
+:where([data-design="premium"]) .gb-colors {
+  --fp-deep: #17110c;
+  --fp-deep-ink: #f3e7d8;
+}
+:where([data-design="study"]) .gb-colors {
+  --fp-deep: #0f2a1b;
+}
+.fp-dial,
+.fp-ink-card {
+  background: var(--fp-deep);
+  color: var(--fp-deep-ink);
+}
+.fp-dial {
+  background-image: radial-gradient(70% 90% at 100% 0%, color-mix(in srgb, var(--gb-pine) 45%, transparent), transparent 70%);
+}
+.fp-dial h2,
+.fp-ink-card h2 {
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+  background: none !important;
+}
+.fp-dial-picker [role="radio"] {
+  padding: 10px;
+}
+.fp-dial-picker [role="radio"] > span:first-child {
+  height: 130px;
+}
+html[data-design="premium"] .fp-dial {
+  background-image: radial-gradient(70% 90% at 100% 0%, rgb(217 178 122 / 0.28), transparent 70%);
+}
+
+/* The accent words in the headline. */
+.fp-accent {
+  color: var(--gb-pine);
+}
+html[data-design="premium"] .fp-accent {
+  color: var(--fp-gold);
+}
+html[data-design="strawberry"] .fp-accent {
+  color: inherit;
+}
+
+/* Floating pill navigation. */
+.fp-glass {
+  background: color-mix(in srgb, var(--gb-paper) 78%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  box-shadow: 0 10px 30px -18px rgb(0 0 0 / 0.35);
+}
+
+/* The live question card floats a little. */
+.fp-try {
+  box-shadow: 0 1px 0 var(--gb-hairline), 0 40px 80px -40px rgb(10 20 40 / 0.35);
+}
+
+/* Highlighted words keep dark text in both modes, like the exam highlights. */
+.fp-hl {
+  color: #1a1a1a;
+}
+
+/* Answer-sheet bubbles fill in one after another, and fade toward the edges. */
+@keyframes fp-fill {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+.fp-bubble-fill {
+  animation: fp-fill 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.4) backwards;
+}
+.fp-bubble-mask {
+  -webkit-mask-image: radial-gradient(50% 55% at 52% 18%, #000 0%, transparent 80%);
+  mask-image: radial-gradient(50% 55% at 52% 18%, #000 0%, transparent 80%);
+}

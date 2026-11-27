@@ -40,6 +40,7 @@ steps, and run `npm run check` before saying something is done.
 - Logo: an "F" whose top stroke lifts like a wing, with a small sun (`core/design/ui/Logo.tsx`, `app/icon.svg`), colored by the design; Strawberry shows a strawberry. `Wordmark` is "Freedom" + "Prep".
 - English/Math switch (`SubjectSegment`): bigger, tinted track in the main color, chosen subject solid.
 - The exam screens (test, practice while running, review; class `exam`) never change with the design: they keep the Bluebook look below.
+- Home page (owner request 27 Nov 2026, premium like inter-nation.uz: one typeface, heavy tight headlines, real product pieces instead of stock art, bento cards, one dark band, floating pill menu): `features/marketing`. Inter (`fp-display`) for the whole page; floating glass pill nav; hero "Test day stays test day. The rest is yours." with an answer-sheet bubble backdrop (`BubbleField`) and a live, answerable demo question (`TryQuestion`, our own wording, checked in the browser: it is a demo, not the test engine); a facts strip computed from `core/config/subjects.ts` (never invented numbers); a dark "design dial" band where `DesignPicker` re-skins the page live; a bento of real pieces (adaptive diagram, `ScoreScale`, `Bubbles`, highlights, mistakes, `SubjectShowcase`); `Faq`; a dark closing band. Dark bands use `--fp-deep` per design.
 
 ## Design system (approved 24 Nov 2026; for pages around the exam the FreedomPrep designs above win where they differ)
 - Apple-like, minimal, Bluebook-style, liquid glass. Must not look AI-generated.

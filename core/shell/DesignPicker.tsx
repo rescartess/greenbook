@@ -62,7 +62,7 @@ export function DesignPicker({ className }: { className?: string }) {
               aria-checked={on}
               onClick={() => setDesign(d)}
               className={cn(
-                "rounded-[12px] border bg-paper p-2 text-left transition-shadow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pine",
+                "rounded-[12px] border bg-paper p-2 text-left text-ink transition-shadow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pine",
                 on ? "border-pine ring-2 ring-pine" : "border-hairline hover:border-graphite/40",
               )}
             >
