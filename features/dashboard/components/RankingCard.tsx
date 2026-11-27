@@ -12,18 +12,18 @@ function hours(seconds: number) {
   return h ? `${h}h ${String(m).padStart(2, "0")}m` : `${m}m`;
 }
 
-/** Up to this many rows, the list sits still; more, and it drifts up on its own. */
-const STILL = 4;
+/** Below first place, up to this many rows sit still; more, and the list drifts on its own. */
+const STILL = 3;
 
 /**
  * The leaderboard on the dashboard (owner request 27 Nov 2026): everyone by time practicing,
- * drifting up on its own and scrollable by hand (RankingScroller). Each name opens that
+ * first place pinned on top (owner request 27 Nov 2026: no wrap-around), everyone else below it
+ * in a box that scrolls by hand and drifts down on its own (RankingScroller). Each name opens that
  * student's profile. The student's own row is marked.
  */
 export function RankingCard({ board, subject, className }: { board: Leaderboard; subject: string; className?: string }) {
   const mine = board.rows.find((r) => r.me);
-  const moving = board.rows.length > STILL;
-  const rows = moving ? [...board.rows, ...board.rows] : board.rows;
+  const [first, ...rest] = board.rows;
   return (
     <Card flush className={cn("flex flex-col overflow-hidden", className)}>
       <div className="flex items-baseline justify-between gap-3 px-5 pb-3 pt-5 sm:px-6">
@@ -37,19 +37,26 @@ export function RankingCard({ board, subject, className }: { board: Leaderboard;
       {board.rows.length === 0 ? (
         <p className="px-6 pb-6 text-[15px] text-graphite">Empty. For now.</p>
       ) : (
-        <RankingScroller moving={moving}>
-          <ol className="px-3">
-            {rows.map((r, i) => (
-              <Row key={`${r.id}-${i}`} row={r} subject={subject} copy={i >= board.rows.length} />
-            ))}
-          </ol>
-        </RankingScroller>
+        <ol className="px-3 pb-3">
+          {first ? <Row row={first} subject={subject} /> : null}
+          {rest.length ? (
+            <li className="mt-1 border-t border-hairline pt-1">
+              <RankingScroller moving={rest.length > STILL} className="max-h-[184px]">
+                <ol start={2}>
+                  {rest.map((r) => (
+                    <Row key={r.id} row={r} subject={subject} />
+                  ))}
+                </ol>
+              </RankingScroller>
+            </li>
+          ) : null}
+        </ol>
       )}
     </Card>
   );
 }
 
-function Row({ row, subject, copy }: { row: RankRow; subject: string; copy: boolean }) {
+function Row({ row, subject }: { row: RankRow; subject: string }) {
   const initials = row.name
     .split(/[\s._-]+/)
     .filter(Boolean)
@@ -57,10 +64,9 @@ function Row({ row, subject, copy }: { row: RankRow; subject: string; copy: bool
     .map((w) => w[0]!.toUpperCase())
     .join("");
   return (
-    <li aria-hidden={copy || undefined}>
+    <li>
       <Link
         href={`/${subject}/students/${row.id}`}
-        tabIndex={copy ? -1 : undefined}
         className={cn(
           "flex items-center gap-3 rounded-[12px] px-3 py-2 transition-colors hover:bg-mist",
           row.me && "bg-pine-tint ring-1 ring-inset ring-pine-soft hover:bg-pine-tint",
