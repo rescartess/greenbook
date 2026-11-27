@@ -891,6 +891,15 @@ html[data-design="premium"] .fp-dial {
   background-image: radial-gradient(70% 90% at 100% 0%, rgb(217 178 122 / 0.28), transparent 70%);
 }
 
+/* The founder's photo on the home page: a glow in the design's main color behind it, a deep shadow. */
+.fp-photo-glow {
+  background: radial-gradient(60% 55% at 55% 45%, color-mix(in srgb, var(--gb-pine) 40%, transparent), transparent 72%);
+  pointer-events: none;
+}
+.fp-photo {
+  box-shadow: 0 40px 90px -40px rgb(0 0 0 / 0.55);
+}
+
 /* The accent words in the headline. */
 .fp-accent {
   color: var(--gb-pine);

@@ -13,7 +13,9 @@ const CHOICES: { value: Choice; label: string }[] = [
 function current(): Choice {
   try {
     const saved = localStorage.getItem("theme");
-    if (saved === "light" || saved === "dark") return saved;
+    if (saved === "light" || saved === "dark" || saved === "system") return saved;
+    // Never chosen: dark, the default for new visitors (see THEME_SCRIPT).
+    return "dark";
   } catch {
     // Storage blocked: fall back to the device setting.
   }
@@ -31,8 +33,8 @@ export function AppearanceSwitch() {
   const choice = useSyncExternalStore<Choice>(subscribe, current, () => "system");
   const pick = (value: Choice) => {
     try {
-      if (value === "system") localStorage.removeItem("theme");
-      else localStorage.setItem("theme", value);
+      // "system" is saved too, so it isn't mistaken for a new visitor (who gets dark).
+      localStorage.setItem("theme", value);
     } catch {
       // The look still changes for this visit.
     }
