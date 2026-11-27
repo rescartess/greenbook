@@ -53,7 +53,9 @@ export function RankingScroller({ moving, children }: { moving: boolean; childre
       setShift(Math.round((pos - whole) * 100) / 100);
     };
     const measure = () => {
+      const was = half;
       half = el.scrollHeight / 2;
+      if (!was && half) place(); // the list can arrive hidden (streamed in); set the start once it has size
     };
 
     const tick = (now: number) => {
