@@ -101,7 +101,7 @@ const block = (selector: string, vars: Vars) =>
 
 /**
  * The CSS for the student's colors, scoped to `.gb-colors` in the Default design only (owner rule,
- * 27 Nov 2026: Strawberry, Premium and Study are fixed by us; picking a color switches to Default).
+ * 27 Nov 2026: Strawberry, Premium and Nerd are fixed by us; picking a color switches to Default).
  * Empty when they use the design's colors.
  */
 export function userColorsCss({ main, background }: UserColors): string {

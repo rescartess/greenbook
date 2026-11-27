@@ -21,6 +21,14 @@ function useNavState() {
  * Narrow windows and tablets (640-900px): the same panel as a 64px icon rail.
  * Phones use BottomTabs instead.
  */
+/** The line above the profile in the side menu, per design (owner's words, 28 Nov 2026). */
+const MOTTOS = {
+  default: "They not like us.",
+  strawberry: "Stay sweet, stay slay.",
+  premium: "Breaking the stereotype!",
+  study: "Einstein on steroids.",
+} as const;
+
 export function SideNav({
   user,
   badges = {},
@@ -75,11 +83,19 @@ export function SideNav({
 
       <div className="flex-1" />
 
+      {/* One short line per design above the profile (owner request 28 Nov 2026). Strawberry's comes
+          with its stickers; for the others, CSS (.fp-motto in globals.css) shows the current
+          design's line, so the right one is there before the page is drawn. */}
       <div aria-hidden="true" className="rp-only mb-4 hidden items-center gap-2 rounded-[14px] border border-dashed border-pine-soft bg-pine-tint px-3 py-2.5 nav:flex">
         <Sticker emoji="🍓" size={22} tilt={-14} bob />
-        <span className="text-[13px] font-bold text-ink-soft">Stay sweet, keep going</span>
+        <span className="text-[13px] font-bold text-ink-soft">{MOTTOS.strawberry}</span>
         <Sticker emoji="🌸" size={18} tilt={8} className="ml-auto" />
       </div>
+      <p aria-hidden="true" className="fp-motto rp-hide mb-4 hidden rounded-[14px] border border-dashed border-pine-soft bg-pine-tint px-3.5 py-3 text-[13px] font-bold text-ink-soft nav:block">
+        <span data-motto="default">{MOTTOS.default}</span>
+        <span data-motto="premium">{MOTTOS.premium}</span>
+        <span data-motto="study">{MOTTOS.study}</span>
+      </p>
 
       <div className="flex flex-col items-center gap-2 border-t border-hairline pt-4 nav:flex-row nav:items-center nav:gap-2.5 nav:px-1">
         {user ? (

@@ -46,7 +46,7 @@ export function ColorSettings({ initial, compact = false }: { initial: UserColor
   useEffect(() => () => preview(savedRef.current), []);
 
   const { design, setDesign } = useDesign();
-  // Strawberry, Premium and Study are fixed; picking your own color moves you to Default.
+  // Strawberry, Premium and Nerd are fixed; picking your own color moves you to Default.
   const pick = (next: UserColors) => {
     if (design !== "default" && (next.main || next.background)) setDesign("default");
     setColors(next);

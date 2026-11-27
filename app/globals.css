@@ -552,6 +552,16 @@ html[data-design="strawberry"] .rp-hide {
   display: none !important;
 }
 
+/* The side menu's line for each design (SideNav): only the current design's line shows. */
+.fp-motto [data-motto] {
+  display: none;
+}
+html:not([data-design]) .fp-motto [data-motto="default"],
+html[data-design="premium"] .fp-motto [data-motto="premium"],
+html[data-design="study"] .fp-motto [data-motto="study"] {
+  display: inline;
+}
+
 @utility rp-rainbow-text {
   background-image: var(--rp-rainbow-ink);
   -webkit-background-clip: text;

@@ -8,7 +8,7 @@ const LOOK: Record<Design, { name: string; text: string; canvas: string; card: s
   default: { name: "Default", text: "Bluebook white and blue", canvas: "#f4f6fa", card: "#ffffff", line: "#e1e5ec", accent: "#2e46b8" },
   strawberry: { name: "Strawberry", text: "Pink, sweet, full of stickers", canvas: "#fff4f8", card: "#ffffff", line: "#f6dbe6", accent: "#d6246e", extra: "berry" },
   premium: { name: "Premium", text: "Sand, bronze and espresso", canvas: "#e6d6c5", card: "#f8f1e9", line: "#dcc9b5", accent: "#1d1510", extra: "gold" },
-  study: { name: "Study", text: "Cream paper and green", canvas: "#f6f3ea", card: "#ffffff", line: "#e6e0d2", accent: "#157a3c", extra: "grid" },
+  study: { name: "Nerd", text: "Cream graph paper and green", canvas: "#f6f3ea", card: "#ffffff", line: "#e6e0d2", accent: "#157a3c", extra: "grid" },
 };
 
 function Thumb({ d }: { d: Design }) {
