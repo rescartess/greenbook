@@ -7,7 +7,7 @@ const S2 = "bbbbbbbb-0000-4000-8000-0000000000c3";
 let t: Awaited<ReturnType<typeof freshDatabase>>;
 let topic: string;
 
-type Banner = { bio: string | null; seconds: number; answered: number; bestScore: number | null; rank: number; students: number };
+type Banner = { bio: string | null; correct: number; seconds: number; answered: number; bestScore: number | null; rank: number; students: number };
 
 beforeAll(async () => {
   t = await freshDatabase();
@@ -39,7 +39,7 @@ describe("dashboard banner", () => {
     expect(await banner()).toMatchObject({ bio: null, seconds: 0, answered: 0, bestScore: null, students: 2 });
   });
 
-  it("counts answers and time, and ranks students by time practicing", async () => {
+  it("counts answers and time, and ranks students by correct answers in the subject", async () => {
     await t.actAs(S1);
     const id = (await t.one<{ id: string }>(`select public.start_topic_practice($1, 'easy', 1, 3, 'end', null, 'Mine') id`, [topic])).id;
     const am = await t.one<{ id: string; q: string[] }>(`select id, question_ids q from public.attempt_modules where attempt_id = $1`, [id]);
@@ -51,10 +51,14 @@ describe("dashboard banner", () => {
     await t.actAs(S1);
     const b = await banner();
     expect(b.answered).toBe(2);
+    expect(b.correct).toBe(1);
     expect(b.seconds).toBe(25 * 60);
     expect(b.rank).toBe(1);
     await t.actAs(S2);
-    expect(await banner()).toMatchObject({ rank: 2, students: 2, seconds: 0 });
+    expect(await banner()).toMatchObject({ rank: 2, students: 2, seconds: 0, correct: 0 });
+    // Math has its own ranking: no one has a Math answer right yet, so both are first.
+    const math = (await t.one<{ b: Banner }>(`select public.get_my_banner('math') b`)).b;
+    expect(math).toMatchObject({ rank: 1, correct: 0 });
   });
 
   it("caps a forgotten tab at 4 hours", async () => {

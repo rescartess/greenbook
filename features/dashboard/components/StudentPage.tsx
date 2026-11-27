@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import type { SubjectSlug } from "@/core/config/subjects";
+import { SUBJECTS, type SubjectSlug } from "@/core/config/subjects";
 import { PageTitle } from "@/core/shell";
 import { getStudentProfile } from "../queries";
 import { ProfileBanner } from "./ProfileBanner";
@@ -31,6 +31,7 @@ async function StudentContent({ subject, id }: { subject: SubjectSlug; id: strin
     <>
       <PageTitle title={s.me ? "You, from outside" : s.name} back={{ href: `/${subject}/dashboard`, label: "Dashboard" }} />
       <ProfileBanner
+      subjectLabel={SUBJECTS[subject].label}
         name={s.name}
         initials={initials || "?"}
         avatarUrl={s.avatarUrl}

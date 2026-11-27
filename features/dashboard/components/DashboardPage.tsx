@@ -45,6 +45,7 @@ async function DashboardContent({ subject }: { subject: SubjectSlug }) {
       ranking={<RankingCard board={board} subject={subject} />}
       top={
         <ProfileBanner
+          subjectLabel={SUBJECTS[subject].label}
           name={user.name}
           initials={user.initials}
           avatarUrl={look.avatarUrl}

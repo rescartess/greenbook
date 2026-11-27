@@ -141,6 +141,8 @@ export async function getDashboard(subject: SubjectSlug): Promise<DashboardData>
 export type Banner = {
   joined: string | null;
   bio: string | null;
+  /** Questions answered correctly in this subject, each counted once: the ranking (migration 0027). */
+  correct: number;
   seconds: number;
   answered: number;
   bestScore: number | null;
@@ -150,7 +152,7 @@ export type Banner = {
 
 /** The numbers for the profile banner at the top of the dashboard (migration 0021). */
 export async function getBanner(subject: SubjectSlug): Promise<Banner> {
-  const empty: Banner = { joined: null, bio: null, seconds: 0, answered: 0, bestScore: null, rank: 1, students: 1 };
+  const empty: Banner = { joined: null, bio: null, correct: 0, seconds: 0, answered: 0, bestScore: null, rank: 1, students: 1 };
   const supabase = await createDbClient();
   const { data, error } = await supabase.rpc("get_my_banner", { p_subject: subject });
   if (error || !data || typeof data !== "object" || Array.isArray(data)) return empty;
@@ -159,6 +161,7 @@ export async function getBanner(subject: SubjectSlug): Promise<Banner> {
   return {
     joined: typeof d.joined === "string" ? d.joined : null,
     bio: typeof d.bio === "string" ? d.bio : null,
+    correct: num(d.correct, 0),
     seconds: num(d.seconds, 0),
     answered: num(d.answered, 0),
     bestScore: typeof d.bestScore === "number" ? d.bestScore : null,
@@ -172,6 +175,8 @@ export type RankRow = {
   rank: number;
   name: string;
   avatarUrl: string | null;
+  /** Questions answered correctly in this subject (the ranking). */
+  correct: number;
   seconds: number;
   answered: number;
   bestScore: number | null;
@@ -183,7 +188,7 @@ export type Leaderboard = { students: number; rows: RankRow[] };
 const num = (v: unknown, f = 0) => (typeof v === "number" && Number.isFinite(v) ? v : f);
 const str = (v: unknown, f = "") => (typeof v === "string" ? v : f);
 
-/** Everyone, ranked by time practicing, plus the student's own row (migration 0025). */
+/** Everyone, ranked by questions answered correctly in the subject, plus the student's own row (migration 0027). */
 export async function getLeaderboard(subject: SubjectSlug): Promise<Leaderboard> {
   const supabase = await createDbClient();
   const { data, error } = await supabase.rpc("list_leaderboard", { p_subject: subject, p_limit: 50 });
@@ -199,6 +204,7 @@ export async function getLeaderboard(subject: SubjectSlug): Promise<Leaderboard>
         rank: num(x.rank, 1),
         name: str(x.name, "Student"),
         avatarUrl: avatarUrl(typeof x.avatar === "string" ? x.avatar : null),
+        correct: num(x.correct),
         seconds: num(x.seconds),
         answered: num(x.answered),
         bestScore: typeof x.bestScore === "number" ? x.bestScore : null,
@@ -224,6 +230,7 @@ export async function getStudentProfile(id: string, subject: SubjectSlug): Promi
     me: x.me === true,
     joined: typeof x.joined === "string" ? x.joined : null,
     bio: typeof x.bio === "string" ? x.bio : null,
+    correct: num(x.correct),
     seconds: num(x.seconds),
     answered: num(x.answered),
     bestScore: typeof x.bestScore === "number" ? x.bestScore : null,

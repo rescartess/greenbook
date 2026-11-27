@@ -7,7 +7,7 @@ const S2 = "bbbbbbbb-0000-4000-8000-0000000000d3";
 const S3 = "bbbbbbbb-0000-4000-8000-0000000000d4";
 let t: Awaited<ReturnType<typeof freshDatabase>>;
 
-type Row = { id: string; rank: number; name: string; seconds: number; me: boolean; email?: string };
+type Row = { id: string; rank: number; name: string; correct: number; seconds: number; me: boolean; email?: string };
 type Board = { students: number; rows: Row[] };
 
 beforeAll(async () => {
@@ -32,19 +32,22 @@ beforeAll(async () => {
   await t.db.query(`update public.questions set status = 'published' where prompt like 'L%'`);
   await t.db.query(`update public.question_sets set published = true where id = $1`, [topic]);
 
-  // S2 practices 40 minutes, S1 10 minutes, S3 nothing.
-  for (const [who, minutes] of [
-    [S2, 40],
-    [S1, 10],
-  ] as const) {
+  // S1: 10 minutes, both questions right (2 correct).
+  // S2: 40 minutes, one right and one wrong, then the same practice again, the same one right
+  //     (still 1 correct: a question counts once).
+  // S3: nothing.
+  const practice = async (who: string, minutes: number, answers: string[]) => {
     await t.actAs(who);
     const id = (await t.one<{ id: string }>(`select public.start_topic_practice($1, 'easy', 1, 2, 'end', null, 'P') id`, [topic])).id;
     const am = await t.one<{ id: string; q: string[] }>(`select id, question_ids q from public.attempt_modules where attempt_id = $1`, [id]);
-    await t.db.query(`select public.save_practice_response($1, $2, 'A', false, '{}')`, [am.id, am.q[0]]);
+    for (const [i, a] of answers.entries()) await t.db.query(`select public.save_practice_response($1, $2, $3, false, '{}')`, [am.id, am.q[i], a]);
     await t.db.query(`select public.finish_practice($1)`, [id]);
     await t.actAsOwner();
     await t.db.query(`update public.attempts set started_at = finished_at - make_interval(mins => $2) where id = $1`, [id, minutes]);
-  }
+  };
+  await practice(S1, 10, ["A", "A"]);
+  await practice(S2, 20, ["A", "B"]);
+  await practice(S2, 20, ["A", "B"]);
   await t.actAsOwner();
   await t.db.query(`update public.profiles set display_name = 'Aziza', bio = 'Faster than light.' where id = $1`, [S2]);
 });
@@ -52,12 +55,15 @@ beforeAll(async () => {
 const board = async () => (await t.one<{ b: Board }>(`select public.list_leaderboard('english') b`)).b;
 
 describe("leaderboard", () => {
-  it("ranks students by time practicing, without admins or emails", async () => {
+  it("ranks students by questions answered correctly in the subject, without admins or emails", async () => {
     await t.actAs(S3);
     const b = await board();
     expect(b.students).toBe(3);
-    expect(b.rows.map((r) => r.id)).toEqual([S2, S1, S3]);
-    expect(b.rows[0]).toMatchObject({ rank: 1, name: "Aziza", seconds: 40 * 60, me: false });
+    // S1 is first with 2 correct, even though S2 practiced four times as long.
+    expect(b.rows.map((r) => r.id)).toEqual([S1, S2, S3]);
+    expect(b.rows[0]).toMatchObject({ rank: 1, correct: 2, seconds: 10 * 60, me: false });
+    expect(b.rows[1]).toMatchObject({ rank: 2, name: "Aziza", correct: 1, seconds: 40 * 60 });
+    expect(b.rows[2]).toMatchObject({ rank: 3, correct: 0, me: true });
     expect(b.rows[1].name).not.toContain("@");
     expect(b.rows[2].me).toBe(true);
     expect(JSON.stringify(b)).not.toContain("@");
@@ -67,13 +73,21 @@ describe("leaderboard", () => {
   it("always includes the caller, even below the limit", async () => {
     await t.actAs(S3);
     const b = (await t.one<{ b: Board }>(`select public.list_leaderboard('english', 1) b`)).b;
-    expect(b.rows.map((r) => r.id)).toEqual([S2, S3]);
+    expect(b.rows.map((r) => r.id)).toEqual([S1, S3]);
+  });
+
+  it("ranks Math separately: English answers don't count there, and ties share a rank", async () => {
+    await t.actAs(S3);
+    const b = (await t.one<{ b: Board }>(`select public.list_leaderboard('math') b`)).b;
+    expect(b.rows.every((r) => r.correct === 0 && r.rank === 1)).toBe(true);
+    // Equal on correct answers: more time practicing comes first.
+    expect(b.rows.map((r) => r.id)).toEqual([S2, S1, S3]);
   });
 
   it("opens a student's public profile, but not an admin's", async () => {
     await t.actAs(S1);
     const p = (await t.one<{ p: Record<string, unknown> }>(`select public.get_student_profile($1, 'english') p`, [S2])).p;
-    expect(p).toMatchObject({ name: "Aziza", bio: "Faster than light.", rank: 1, students: 3, answered: 1, me: false });
+    expect(p).toMatchObject({ name: "Aziza", bio: "Faster than light.", rank: 2, correct: 1, students: 3, answered: 4, me: false });
     expect(p).not.toHaveProperty("email");
     expect(p).not.toHaveProperty("role");
     const admin = (await t.one<{ p: unknown }>(`select public.get_student_profile($1, 'english') p`, [ADMIN])).p;

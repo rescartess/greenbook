@@ -49,6 +49,7 @@ const SAMPLE_BOARD = {
     avatarUrl: null,
     seconds: seconds as number,
     answered: Math.round((seconds as number) / 25),
+    correct: Math.round((seconds as number) / 36),
     bestScore: best as number | null,
     me: i === 2,
   })),
@@ -64,11 +65,12 @@ export function DashboardPreview() {
         ranking={<RankingCard subject="english" board={SAMPLE_BOARD} />}
         top={
           <ProfileBanner
+            subjectLabel="English"
             name="rescartess"
             initials="RA"
             avatarUrl={null}
             score={SAMPLE.score}
-            banner={{ joined: "2026-11-24T10:00:00Z", bio: "Faster than the speed of light.", seconds: 232184, answered: 9010, bestScore: 610, rank: 3, students: 41 }}
+            banner={{ joined: "2026-11-24T10:00:00Z", bio: "Faster than the speed of light.", correct: 6450, seconds: 232184, answered: 9010, bestScore: 610, rank: 3, students: 41 }}
             bio={<BioEditor initial="Faster than the speed of light." />}
           />
         }

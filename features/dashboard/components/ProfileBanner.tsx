@@ -10,7 +10,8 @@ const joinedText = (iso: string) => new Intl.DateTimeFormat("en-GB", { day: "num
 /**
  * The top of the dashboard, in the spirit of a typing-site profile (owner reference, 27 Nov 2026):
  * photo, name and latest score bar; time practicing, questions answered, best full test;
- * the bio; and a strip with the student's place among all QuantumTest students by time practicing.
+ * the bio; and a strip with the student's place among all QuantumTest students by questions answered
+ * correctly in this subject (owner request 28 Nov 2026).
  */
 export function ProfileBanner({
   name,
@@ -20,7 +21,10 @@ export function ProfileBanner({
   score,
   scoreLabel = "latest",
   bio,
+  subjectLabel,
 }: {
+  /** "English" or "Math": the ranking counts correct answers in this subject. */
+  subjectLabel: string;
   name: string;
   initials: string;
   avatarUrl: string | null;
@@ -80,7 +84,9 @@ export function ProfileBanner({
         <p className="text-[18px] text-graphite sm:text-[20px]">All-time QuantumTest ranking</p>
         <div className="flex items-center gap-4">
           <div className="text-right text-[13px] leading-tight text-graphite">
-            <p>time practicing</p>
+            <p>
+              {banner.correct.toLocaleString("en-US")} correct in {subjectLabel}
+            </p>
             <p>Top {topPercent(banner.rank, banner.students)}%</p>
           </div>
           <p className="text-[36px] leading-none text-ink tabular-nums sm:text-[44px]">{ordinal(banner.rank)}</p>

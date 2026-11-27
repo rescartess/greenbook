@@ -1,22 +1,17 @@
 import Link from "next/link";
+import { isSubjectSlug, SUBJECTS } from "@/core/config/subjects";
 import { cn } from "@/core/design/ui";
 import { Card } from "@/core/shell";
 import { ordinal } from "../banner";
 import type { Leaderboard, RankRow } from "../queries";
 import { RankingScroller } from "./RankingScroller";
 
-/** "64h 29m", or "12m" under an hour. */
-function hours(seconds: number) {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  return h ? `${h}h ${String(m).padStart(2, "0")}m` : `${m}m`;
-}
-
 /** Below first place, up to this many rows sit still; more, and the list drifts on its own. */
 const STILL = 3;
 
 /**
- * The leaderboard on the dashboard (owner request 27 Nov 2026): everyone by time practicing,
+ * The leaderboard on the dashboard (owner request 27 Nov 2026): everyone by questions answered
+ * correctly in this subject (owner request 28 Nov 2026: English page by English, Math page by Math),
  * first place pinned on top (owner request 27 Nov 2026: no wrap-around), everyone else below it
  * in a box that scrolls by hand and drifts down on its own (RankingScroller). Each name opens that
  * student's profile. The student's own row is marked.
@@ -24,10 +19,14 @@ const STILL = 3;
 export function RankingCard({ board, subject, className }: { board: Leaderboard; subject: string; className?: string }) {
   const mine = board.rows.find((r) => r.me);
   const [first, ...rest] = board.rows;
+  const label = isSubjectSlug(subject) ? SUBJECTS[subject].label : "";
   return (
     <Card flush className={cn("flex flex-col overflow-hidden", className)}>
       <div className="flex items-baseline justify-between gap-3 px-5 pb-3 pt-5 sm:px-6">
-        <h2 className="text-[17px] font-bold">Leaderboard</h2>
+        <div>
+          <h2 className="text-[17px] font-bold">Leaderboard</h2>
+          <p className="text-[13px] text-graphite">Most correct{label ? ` in ${label}` : ""}</p>
+        </div>
         {mine ? (
           <p className="text-[13px] text-graphite tabular-nums">
             You: <span className="font-bold text-ink">{ordinal(mine.rank)}</span> of {board.students}
@@ -85,7 +84,9 @@ function Row({ row, subject }: { row: RankRow; subject: string }) {
           {row.name}
           {row.me ? <span className="ml-1.5 text-[12px] font-semibold text-pine">you</span> : null}
         </span>
-        <span className="shrink-0 font-mono text-[13px] text-graphite tabular-nums">{hours(row.seconds)}</span>
+        <span className="shrink-0 font-mono text-[13px] text-graphite tabular-nums" aria-label={`${row.correct} correct`}>
+          {row.correct.toLocaleString("en-US")}
+        </span>
       </Link>
     </li>
   );
