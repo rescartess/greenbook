@@ -27,7 +27,6 @@ export function RankingScroller({ moving, children }: { moving: boolean; childre
     let restUntil = 0;
     let hover = false;
     let frame = 0;
-    let selfScroll = false;
 
     const half = () => el.scrollHeight / 2;
     const wrap = () => {
@@ -44,17 +43,14 @@ export function RankingScroller({ moving, children }: { moving: boolean; childre
       if (!still && !busy) {
         pos += (SPEED * dt) / 1000;
         if (pos >= half() + 1) pos -= half();
-        selfScroll = true;
         el.scrollTop = pos;
       }
       frame = requestAnimationFrame(tick);
     };
 
     const onScroll = () => {
-      if (selfScroll) {
-        selfScroll = false;
-        return;
-      }
+      // Our own drift lands within a pixel of `pos` (the browser rounds); anything else is the student.
+      if (Math.abs(el.scrollTop - pos) < 1.5) return;
       wrap();
       pos = el.scrollTop;
     };
