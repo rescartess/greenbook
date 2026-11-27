@@ -23,12 +23,15 @@ export function LoginPage() {
           <Sticker emoji="🌸" size={40} tilt={12} bob className="absolute -right-4 -top-5 z-10" style={{ animationDelay: "-1.8s" }} />
           <section className="rp-card rounded-[var(--fp-r-card)] border border-hairline bg-paper px-6 py-9 sm:px-8">
             <h1 className="text-[32px] leading-tight tracking-[-0.03em]">Back for more.</h1>
-            <p className="mt-1.5 text-[15px] text-graphite">Email and class code. That’s it.</p>
+            <p className="mt-1.5 text-[15px] text-graphite">One tap. You’re in.</p>
             <Suspense fallback={<div className="mt-7 h-[214px]" />}>
               <LoginForm />
             </Suspense>
           </section>
-          <p className="mt-5 text-[13px] text-graphite">New? First login makes your account<span aria-hidden="true" className="rp-only"> 🍓</span></p>
+          <p className="mt-5 text-[13px] text-graphite">New? Your first sign-in makes your account<span aria-hidden="true" className="rp-only"> 🍓</span>. By signing in you accept the{" "}
+            <Link href="/terms" className="underline underline-offset-2 hover:text-ink">Terms</Link> and{" "}
+            <Link href="/privacy" className="underline underline-offset-2 hover:text-ink">Privacy</Link>.
+          </p>
         </div>
       </div>
     </main>

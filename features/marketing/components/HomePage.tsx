@@ -238,9 +238,15 @@ export function HomePage() {
             <p className="pt-2">SAT is a registered trademark of the College Board, which is not affiliated with FreedomPrep.</p>
             <p>SQB topics: {SQB_CREDIT}</p>
           </div>
-          <p>
-            © 2026 FreedomPrep<span className="rp-only"> · made with 🍓</span>
-          </p>
+          <div className="flex flex-col items-start gap-2 sm:items-end">
+            <p className="flex gap-4">
+              <Link href="/privacy" className="hover:text-ink">Privacy</Link>
+              <Link href="/terms" className="hover:text-ink">Terms</Link>
+            </p>
+            <p>
+              © 2026 FreedomPrep<span className="rp-only"> · made with 🍓</span>
+            </p>
+          </div>
         </div>
       </footer>
     </div>

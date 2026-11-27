@@ -11,7 +11,8 @@ The owner is a beginner. Explain what you change in plain words, work in small
 steps, and run `npm run check` before saying something is done.
 
 ## Product decisions
-- Login is required for everything except `/` and `/login`.
+- Login is required for everything except `/`, `/login`, `/privacy` and `/terms`.
+- Sign-in (owner request 27 Nov 2026, site opened to the public): "Continue with Google" is the main way in for everyone (`loginWithGoogle` in features/auth/actions.ts → Google → /auth/callback). Google Cloud project `quantumtest-516017` (owner's Gmail), OAuth app "FreedomPrep", External, In production, basic scopes only (no verification, free; no billing account). Redirect URI https://pgpotvnyomwrlmnhzcmy.supabase.co/auth/v1/callback; Supabase Auth › Providers › Google holds the client ID and secret (the secret is pasted by the owner, never by Claude). The first Google sign-in creates the account with the Google name; a student who joined with the class code and the same email lands in the same account. Switch: `GOOGLE_LOGIN` in core/config/supabase.ts (turn on only after the provider is saved with the secret). The class code ("Have a class code?") and the emailed link (admins) stay as small links under the Google button. Privacy and Terms pages: features/marketing/components/LegalPage.tsx (contact: the owner's Gmail).
 - English only. Two subjects in the URL: `/english/...` and `/math/...`; the switch swaps that word.
 - Full tests are per subject: module 1, then an easier or harder module 2, scored 200 to 800.
 - Questions are the owner's own, plus College Board's SAT Suite Question Bank (SQB), which the owner has College Board's permission to publish with credit (owner, 26 Nov 2026). The owner is the only admin.

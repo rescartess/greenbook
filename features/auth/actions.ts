@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { AUTH_ENABLED, HOME_AFTER_LOGIN, safeNextPath } from "@/core/config/supabase";
+import { AUTH_ENABLED, HOME_AFTER_LOGIN, safeNextPath, GOOGLE_LOGIN } from "@/core/config/supabase";
 import { createDbClient } from "@/core/db/server";
 import { codeErrorMessage, parseCodeForm, parseLoginForm, type CodeLoginState, type LoginState } from "./schema";
 
@@ -38,6 +38,27 @@ export async function sendLoginLink(_prev: LoginState, formData: FormData): Prom
     };
   }
   return { status: "sent", email: parsed.email };
+}
+
+/**
+ * "Continue with Google" (owner request 27 Nov 2026: the main way in for everyone). Sends the student to
+ * Google; Google sends them back to /auth/callback, which signs them in. The first time it makes their
+ * account (name from Google). A student who already joined with the same email lands in the same account.
+ */
+export async function loginWithGoogle(formData: FormData): Promise<void> {
+  if (!AUTH_ENABLED) redirect(HOME_AFTER_LOGIN);
+  if (!GOOGLE_LOGIN) redirect("/login");
+  const next = safeNextPath(String(formData.get("next") ?? ""));
+  const supabase = await createDbClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${await siteOrigin()}/auth/callback?next=${encodeURIComponent(next)}`,
+      queryParams: { prompt: "select_account" },
+    },
+  });
+  if (error || !data.url) redirect("/login?google=failed");
+  redirect(data.url);
 }
 
 /** Logs a student in with their email and the shared invite code. Creates the account on first use. */

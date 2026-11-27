@@ -1,9 +1,12 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { useFormStatus } from "react-dom";
 import { useSearchParams } from "next/navigation";
+import { GOOGLE_LOGIN } from "@/core/config/supabase";
+import { GoogleMark } from "@/core/design/ui";
 import { Btn } from "@/core/shell";
-import { loginWithInviteCode, sendLoginLink } from "../actions";
+import { loginWithGoogle, loginWithInviteCode, sendLoginLink } from "../actions";
 import type { CodeLoginState, LoginState } from "../schema";
 
 const START: LoginState = { status: "idle" };
@@ -12,24 +15,73 @@ const CODE_START: CodeLoginState = { status: "idle" };
 const FIELD =
   "h-11 rounded-[10px] border border-hairline bg-paper px-3.5 text-[16px] text-ink placeholder:text-graphite focus:border-pine focus:outline-none";
 
-/** Students log in with their email and the invite code; admins use the emailed link. */
+type Way = "google" | "code" | "link";
+
+/**
+ * Everyone signs in with Google (owner request 27 Nov 2026). Students who joined with the class code
+ * can still use it; the emailed link is for admins.
+ */
 export function LoginForm() {
   const params = useSearchParams();
   const expired = params.get("expired") === "1";
-  const [useLink, setUseLink] = useState(expired);
+  const googleFailed = params.get("google") === "failed";
+  const [way, setWay] = useState<Way>(expired ? "link" : GOOGLE_LOGIN ? "google" : "code");
   const next = params.get("next") ?? "";
 
   return (
     <>
-      {useLink ? <LinkForm next={next} expired={expired} /> : <CodeForm next={next} />}
-      <button
-        type="button"
-        onClick={() => setUseLink(!useLink)}
-        className="mt-5 text-[14px] font-semibold text-graphite underline-offset-4 hover:text-ink hover:underline"
-      >
-        {useLink ? "Log in with an invite code" : "Email me a sign-in link instead"}
-      </button>
+      {GOOGLE_LOGIN ? (
+        <>
+          <form action={loginWithGoogle} className="mt-7">
+            <input type="hidden" name="next" value={next} />
+            <GoogleButton />
+          </form>
+          {googleFailed ? (
+            <p className="mt-3 text-sm font-semibold text-ink" role="alert">
+              Google didn’t let that through. Try again.
+            </p>
+          ) : null}
+
+          <div className="my-6 flex items-center gap-3 text-[13px] text-graphite" aria-hidden="true">
+            <span className="h-px flex-1 bg-hairline" />
+            or
+            <span className="h-px flex-1 bg-hairline" />
+          </div>
+        </>
+      ) : (
+        <div className="mt-7" />
+      )}
+
+      {way === "code" ? <CodeForm next={next} /> : null}
+      {way === "link" ? <LinkForm next={next} expired={expired} /> : null}
+
+      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+        {way !== "code" ? (
+          <button type="button" onClick={() => setWay("code")} className="text-[14px] font-semibold text-graphite underline-offset-4 hover:text-ink hover:underline">
+            Have a class code?
+          </button>
+        ) : null}
+        {way !== "link" ? (
+          <button type="button" onClick={() => setWay("link")} className="text-[14px] font-semibold text-graphite underline-offset-4 hover:text-ink hover:underline">
+            Email me a link
+          </button>
+        ) : null}
+      </div>
     </>
+  );
+}
+
+function GoogleButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="flex h-12 w-full items-center justify-center gap-3 rounded-[var(--fp-r-btn)] border border-control bg-paper text-[16px] font-bold text-ink transition-colors hover:bg-mist disabled:opacity-60"
+    >
+      <GoogleMark size={20} />
+      {pending ? "Opening Google…" : "Continue with Google"}
+    </button>
   );
 }
 
@@ -37,7 +89,7 @@ function CodeForm({ next }: { next: string }) {
   const [state, action, pending] = useActionState(loginWithInviteCode, CODE_START);
   const error = state.status === "error" ? state.message : null;
   return (
-    <form action={action} className="mt-7 flex flex-col gap-2 text-left" noValidate>
+    <form action={action} className="flex flex-col gap-2 text-left" noValidate>
       <input type="hidden" name="next" value={next} />
       <label htmlFor="code-email" className="text-[14px] font-semibold">
         Email
@@ -96,7 +148,7 @@ function LinkForm({ next, expired }: { next: string; expired: boolean }) {
   }
 
   return (
-    <form action={action} className="mt-7 flex flex-col gap-2 text-left" noValidate>
+    <form action={action} className="flex flex-col gap-2 text-left" noValidate>
       <input type="hidden" name="next" value={next} />
       {expired && state.status === "idle" ? (
         <p className="mb-2 rounded-[10px] border border-hairline bg-mist px-4 py-3 text-[14px] font-semibold text-ink" role="status">
