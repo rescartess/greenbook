@@ -3,6 +3,7 @@ import { cn } from "@/core/design/ui";
 import { Card } from "@/core/shell";
 import { ordinal } from "../banner";
 import type { Leaderboard, RankRow } from "../queries";
+import { RankingScroller } from "./RankingScroller";
 
 /** "64h 29m", or "12m" under an hour. */
 function hours(seconds: number) {
@@ -16,7 +17,7 @@ const STILL = 4;
 
 /**
  * The leaderboard on the dashboard (owner request 27 Nov 2026): everyone by time practicing,
- * scrolling up on its own like a ticker, pausing under the pointer. Each name opens that
+ * drifting up on its own and scrollable by hand (RankingScroller). Each name opens that
  * student's profile. The student's own row is marked.
  */
 export function RankingCard({ board, subject, className }: { board: Leaderboard; subject: string; className?: string }) {
@@ -36,16 +37,13 @@ export function RankingCard({ board, subject, className }: { board: Leaderboard;
       {board.rows.length === 0 ? (
         <p className="px-6 pb-6 text-[15px] text-graphite">Empty. For now.</p>
       ) : (
-        <div className="fp-ticker group relative h-[232px] overflow-hidden motion-reduce:overflow-y-auto">
-          <ol
-            className={cn("px-3", moving && "fp-ticker-run group-hover:[animation-play-state:paused] group-focus-within:[animation-play-state:paused]")}
-            style={moving ? { animationDuration: `${board.rows.length * 2.6}s` } : undefined}
-          >
+        <RankingScroller moving={moving}>
+          <ol className="px-3">
             {rows.map((r, i) => (
               <Row key={`${r.id}-${i}`} row={r} subject={subject} copy={i >= board.rows.length} />
             ))}
           </ol>
-        </div>
+        </RankingScroller>
       )}
     </Card>
   );

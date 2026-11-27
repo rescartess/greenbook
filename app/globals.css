@@ -900,13 +900,13 @@ html[data-design="strawberry"] .fp-accent {
 }
 
 /* Leaderboard ticker on the dashboard: the list (drawn twice) drifts up forever; edges fade. */
-@keyframes fp-ticker {
-  to {
-    transform: translateY(-50%);
-  }
+/* Leaderboard scroll box: thin scrollbar that only shows under the pointer. */
+.fp-scroll-quiet {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
 }
-.fp-ticker-run {
-  animation: fp-ticker 30s linear infinite;
+.fp-scroll-quiet:hover {
+  scrollbar-color: var(--color-hairline) transparent;
 }
 .fp-ticker {
   -webkit-mask-image: linear-gradient(transparent, #000 12%, #000 88%, transparent);
