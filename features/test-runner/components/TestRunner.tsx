@@ -25,15 +25,15 @@ import {
   QuestionMapGrid,
   QuestionMapPopover,
   QuestionView,
-  ToolButton,
   TypedAnswer,
   useHighlights,
+  useMathTools,
   useMounted,
   type MapItem,
 } from "@/core/question";
+import type { DirectionExample } from "@/core/config/subjects";
 import { abandonTest, finishModule, pauseTest, saveAnswer } from "../actions";
 import { type RunnerResponse, type TestState } from "../schema";
-import { Calculator, DESMOS_KEY, ReferenceSheet } from "./Tools";
 
 type Running = Extract<TestState, { status: "in_progress" }>;
 type View = { kind: "question"; index: number } | { kind: "review" };
@@ -49,8 +49,12 @@ type Props = {
   tools: readonly Tool[];
   /** 1 for Reading and Writing, 2 for Math, like the real test. */
   sectionNumber: number;
-  /** Short paragraphs shown under "Directions". */
+  /** Blocks shown under "Directions" (question text format). */
   directions: readonly string[];
+  /** Typed-answer examples under the directions (Math). */
+  directionExamples?: readonly DirectionExample[];
+  /** After the last module, go here instead of the results (the break before Math). */
+  afterHref?: string;
   /** Where "Save and exit" and "Delete and exit" go. */
   exitHref: string;
 };
@@ -66,6 +70,8 @@ export function TestRunner({
   tools,
   sectionNumber,
   directions,
+  directionExamples,
+  afterHref,
   exitHref,
 }: Props) {
   const router = useRouter();
@@ -85,7 +91,10 @@ export function TestRunner({
   const [crossOut, setCrossOut] = useState(false);
   const [finishing, setFinishing] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
-  const [panel, setPanel] = useState<"calculator" | "reference" | null>(null);
+  const math = useMathTools({
+    calculator: tools.includes("calculator"),
+    reference: tools.includes("reference"),
+  });
   const [highlighting, setHighlighting] = useState(false);
   const [split, setSplit] = useState(50);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -192,9 +201,9 @@ export function TestRunner({
       setFinishing(false);
       return;
     }
-    if (result.completed) router.replace(resultsHref);
+    if (result.completed) router.replace(afterHref ?? resultsHref);
     else router.refresh();
-  }, [amId, resultsHref, router]);
+  }, [afterHref, amId, resultsHref, router]);
 
   // Tick the clock; when time is up, finish the module (the server would close it anyway).
   const finishRef = useRef(finish);
@@ -241,7 +250,7 @@ export function TestRunner({
   const moduleLabel = `Module ${module.number}`;
 
   return (
-    <div className="exam min-h-dvh bg-paper font-sans">
+    <div className="exam min-h-dvh bg-paper font-sans" style={math.rootStyle}>
       <ExamTopBar
         left={
           <ExamTitle
@@ -255,6 +264,7 @@ export function TestRunner({
               </>
             }
             directions={directions}
+            examples={directionExamples}
           />
         }
         center={<ExamClock remaining={remaining} mounted={mounted} />}
@@ -268,28 +278,7 @@ export function TestRunner({
             ) : null}
             <FullscreenTool />
             <ThemeTool />
-            {tools.includes("calculator") && DESMOS_KEY ? (
-              <ToolButton
-                label="Calculator"
-                pressed={panel === "calculator"}
-                onClick={() =>
-                  setPanel((p) => (p === "calculator" ? null : "calculator"))
-                }
-              >
-                <path d="M6 3h12v18H6zM9 7h6M9 12h1M14 12h1M9 16h1M14 16h1" />
-              </ToolButton>
-            ) : null}
-            {tools.includes("reference") ? (
-              <ToolButton
-                label="Reference"
-                pressed={panel === "reference"}
-                onClick={() =>
-                  setPanel((p) => (p === "reference" ? null : "reference"))
-                }
-              >
-                <path d="M5 4h10l4 4v12H5zM9 11h6M9 15h4M14 4v5h5" />
-              </ToolButton>
-            ) : null}
+            {math.buttons}
             <MoreTool
               open={moreOpen}
               onToggle={() => {
@@ -468,20 +457,17 @@ export function TestRunner({
 
       {finishing ? (
         <ModuleOverScreen
-          title={module.isLast ? "This Test Is Over" : "This Module Is Over"}
+          title={module.isLast && !afterHref ? "This Test Is Over" : "This Module Is Over"}
           next={
             module.isLast
-              ? "Your results open in a moment."
+              ? afterHref
+                ? "Your break starts in a moment."
+                : "Your results open in a moment."
               : "The next module starts in a moment."
           }
         />
       ) : null}
-      {panel === "calculator" ? (
-        <Calculator onClose={() => setPanel(null)} />
-      ) : null}
-      {panel === "reference" ? (
-        <ReferenceSheet onClose={() => setPanel(null)} />
-      ) : null}
+      {math.panels}
       {highlights.active ? (
         <HighlightMenu
           active={highlights.active}

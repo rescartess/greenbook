@@ -5,6 +5,8 @@ import { useTheme } from "@/core/design/theme";
 import type { ActiveHighlight } from "./exam-hooks";
 import { HIGHLIGHT_COLORS, type HighlightColor } from "./highlights";
 import { cn } from "@/core/design/ui";
+import type { DirectionExample } from "@/core/config/subjects";
+import { RichLine, RichText } from "./RichText";
 
 /*
  * The pieces of the Bluebook-style exam screen, shared by the timed test and by practice.
@@ -23,12 +25,12 @@ export function ExamTopBar({
 }) {
   return (
     <header className="sticky top-0 z-30 bg-pine-tint font-sans">
-      <div className="mx-auto grid min-h-[84px] max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-8">
+      <div className="mx-auto grid min-h-[84px] max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 sm:gap-3 sm:px-8">
         <div className="relative min-w-0">{left}</div>
         <div className="flex flex-col items-center gap-1" aria-live="polite">
           {center}
         </div>
-        <div className="flex items-center justify-end gap-1 sm:gap-2">
+        <div className="flex items-center justify-end gap-0 sm:gap-2">
           {right}
         </div>
       </div>
@@ -48,7 +50,7 @@ export function ExamBottomBar({
   right: ReactNode;
 }) {
   return (
-    <footer className="fixed inset-x-0 bottom-0 z-30 bg-pine-tint font-sans">
+    <footer className="fixed bottom-0 left-[var(--exam-left,0px)] right-0 z-30 bg-pine-tint font-sans">
       <div className="border-t-[3px] border-dashed border-ink/70" />
       <div className="mx-auto grid h-[76px] max-w-[1600px] grid-cols-[auto_1fr] items-center gap-2 px-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-3 sm:px-8">
         <span className="hidden min-w-0 truncate text-[19px] font-medium sm:block">
@@ -67,9 +69,13 @@ export function ExamBottomBar({
 export function ExamTitle({
   title,
   directions,
+  examples,
 }: {
   title: ReactNode;
+  /** Blocks in the question text format (bold, "- " bullets, math). */
   directions?: readonly string[];
+  /** Typed-answer examples drawn as a table under the text (Math). */
+  examples?: readonly DirectionExample[];
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -91,23 +97,30 @@ export function ExamTitle({
           {open ? (
             <>
               {/* Dims the page between the bars; a click outside closes the directions. */}
-              <div aria-hidden="true" onClick={() => setOpen(false)} className="fixed inset-x-0 bottom-[79px] top-[87px] z-30 bg-ink/20" />
+              <div aria-hidden="true" onClick={() => setOpen(false)} className="fixed bottom-[79px] left-[var(--exam-left,0px)] right-0 top-[87px] z-30 bg-ink/20" />
+              {/* Like Bluebook: a wide card under the button with a small pointer, the text scrolls and Close stays put. */}
               <div
                 role="dialog"
                 aria-label="Directions"
                 onKeyDown={(e) => {
                   if (e.key === "Escape") setOpen(false);
                 }}
-                className="fixed left-3 top-[95px] z-40 flex max-h-[calc(100dvh-87px-79px-16px)] w-[min(680px,calc(100vw-24px))] flex-col overflow-y-auto rounded-[10px] border border-control bg-paper px-5 pb-5 pt-5 font-serif text-ink shadow-[0_8px_30px_rgb(0_0_0/0.18)] sm:left-6 sm:px-7"
+                className="fixed left-[calc(var(--exam-left,0px)+12px)] top-[95px] z-40 flex max-h-[calc(100dvh-87px-79px-16px)] w-[min(900px,calc(100vw-var(--exam-left,0px)-24px))] flex-col rounded-[10px] border border-control bg-paper font-serif text-ink shadow-[0_8px_30px_rgb(0_0_0/0.18)] sm:left-[calc(var(--exam-left,0px)+24px)]"
               >
-                <div className="text-[16px] leading-[1.65] sm:text-[17px]">
-                  {directions.map((d) => (
-                    <p key={d} className="mb-3 last:mb-0">
-                      {d}
-                    </p>
-                  ))}
+                <span
+                  aria-hidden="true"
+                  className="absolute -top-[9px] left-10 h-4 w-4 rotate-45 border-l border-t border-control bg-paper"
+                />
+                <div className="gb-scroll-visible min-h-0 flex-1 overflow-y-auto px-5 pt-6 sm:px-8">
+                  <div className="space-y-3 text-[16px] leading-[1.65] sm:text-[17px] [&_ul]:space-y-0.5 [&_ul]:pl-10 sm:[&_ul]:pl-14 [&_li]:marker:text-ink">
+                    {directions.map((d) => (
+                      <RichText key={d} source={d} className="space-y-3" />
+                    ))}
+                  </div>
+                  {examples?.length ? <DirectionExamples rows={examples} /> : null}
+                  <div className="h-5" />
                 </div>
-                <div className="mt-5 flex justify-end font-sans">
+                <div className="flex shrink-0 justify-end px-5 pb-5 pt-3 font-sans sm:px-8">
                   <button
                     type="button"
                     autoFocus
@@ -123,6 +136,46 @@ export function ExamTitle({
         </>
       ) : null}
     </>
+  );
+}
+
+/** The typed-answer examples under the Math directions: answer, forms that get credit, forms that don't. */
+function DirectionExamples({ rows }: { rows: readonly DirectionExample[] }) {
+  const chips = (items: readonly string[]) => (
+    <span className="flex flex-col items-center gap-2">
+      {items.map((v) => (
+        <code key={v} className="whitespace-pre rounded-[4px] bg-mist px-1.5 py-0.5 font-mono text-[15px] tracking-[0.12em] text-ink ring-1 ring-control">
+          {v}
+        </code>
+      ))}
+    </span>
+  );
+  return (
+    <figure className="mt-4">
+      <figcaption className="mb-2 text-center text-[16px] sm:text-[17px]">Examples</figcaption>
+      <div className="overflow-x-auto">
+        <table className="mx-auto border-collapse text-center text-[15px] leading-snug sm:text-[17px]">
+          <thead>
+            <tr>
+              <th scope="col" className="border border-ink px-3 py-3 align-bottom font-normal">Answer</th>
+              <th scope="col" className="border border-ink px-3 py-3 font-normal">Acceptable ways to<br />enter the answer</th>
+              <th scope="col" className="border border-ink px-3 py-3 font-normal">Won’t get credit</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.answer}>
+                <th scope="row" className="border border-ink px-5 py-4 font-normal">
+                  <RichLine source={r.answer} />
+                </th>
+                <td className="border border-ink px-6 py-4">{chips(r.accepted)}</td>
+                <td className="border border-ink px-6 py-4">{chips(r.rejected)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </figure>
   );
 }
 
@@ -210,9 +263,12 @@ export function ToolButton({
       type="button"
       aria-pressed={pressed}
       onClick={onClick}
+      // Pressed like Bluebook: a light box with a thick bar under the label.
       className={cn(
-        "flex flex-col items-center gap-1 rounded-lg px-2 py-1 text-[14px] font-medium",
-        pressed ? "bg-ink text-paper" : "hover:bg-paper",
+        "relative flex flex-col items-center gap-1 whitespace-nowrap rounded-t-lg px-1.5 py-1 text-[14px] font-medium sm:px-2",
+        pressed
+          ? "bg-paper/70 after:absolute after:inset-x-1 after:-bottom-1 after:h-[3px] after:rounded-full after:bg-ink"
+          : "rounded-b-lg hover:bg-paper",
       )}
     >
       <svg
@@ -775,7 +831,7 @@ export function QuestionMapPopover({
   footer?: ReactNode;
 }) {
   return (
-    <div className="fixed inset-x-3 bottom-[96px] z-40 mx-auto max-w-[760px] font-sans">
+    <div className="fixed bottom-[96px] left-[calc(var(--exam-left,0px)+12px)] right-3 z-40 mx-auto max-w-[760px] font-sans">
       <div
         className="relative rounded-xl border border-hairline bg-paper px-5 pb-6 pt-5 shadow-xl sm:px-10"
         role="dialog"

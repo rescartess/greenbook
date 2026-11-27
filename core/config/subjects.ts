@@ -26,9 +26,17 @@ export type Subject = {
   domainShares: Readonly<Record<string, string>>;
   /** Section number on the test screen (Reading and Writing comes first). */
   sectionNumber: number;
-  /** Shown under "Directions" on the test screen. */
+  /**
+   * Shown under "Directions" on the test screen, one block per item, in the question text format
+   * (core/question/rich-text.ts: **bold**, "- " bullet lines, \\( math \\)). Our own wording.
+   */
   directions: readonly string[];
+  /** Typed-answer examples drawn as a table under the directions (Math only). */
+  directionExamples?: readonly DirectionExample[];
 };
+
+/** One row of the typed-answer examples: the answer, ways that get credit, ways that don't. */
+export type DirectionExample = { answer: string; accepted: readonly string[]; rejected: readonly string[] };
 
 export const SUBJECTS: Record<SubjectSlug, Subject> = {
   english: {
@@ -72,10 +80,21 @@ export const SUBJECTS: Record<SubjectSlug, Subject> = {
     minutesPerModule: 35,
     tools: ["calculator", "reference"],
     sectionNumber: 2,
+    // Matches how typed answers are graded: each question stores its accepted forms (fraction,
+    // and the decimal cut or rounded to fit), and the grader also takes any number within 0.0005.
     directions: [
-      "Most questions have four answer choices; pick the one best answer. For the others, type your answer in the box.",
-      "Typed answers: up to 5 characters for a positive answer and 6 for a negative one. Fractions like 3/4 and decimals like 0.75 are both fine. If there are several right answers, enter one.",
-      "Reference has the formulas you may need. You can move between questions and change answers until the module ends. Unanswered questions count as wrong.",
+      "The questions in this section cover a wide range of important math skills.",
+      "You may use a calculator on every question. The reference sheet, the calculator and these directions stay available for the whole test.",
+      "Unless a question says otherwise:",
+      "- All variables and expressions stand for real numbers.\n- Figures are drawn to scale.\n- All figures lie in a plane.\n- The domain of a function \\(f\\) is the set of all real numbers \\(x\\) for which \\(f(x)\\) is a real number.",
+      "For **multiple-choice questions**, solve the problem and pick the correct choice. Each one has exactly one correct answer.",
+      "For **typed-answer questions**, solve the problem and type your answer in the box, following these rules:",
+      "- If you find **more than one correct answer**, type just one of them.\n- A **positive** answer can be up to 5 characters long; a **negative** answer up to 6, counting the minus sign.\n- If a **fraction** doesn’t fit, type its decimal instead.\n- If a **decimal** doesn’t fit, cut it off or round it at the fourth digit.\n- Type a **mixed number** such as \\(3\\tfrac{1}{2}\\) as an improper fraction (7/2) or as a decimal (3.5).\n- Leave out **symbols** such as percent signs, commas and dollar signs.",
+    ],
+    directionExamples: [
+      { answer: "3.5", accepted: ["3.5", "3.50", "7/2"], rejected: ["31/2", "3 1/2"] },
+      { answer: "\\(\\frac{2}{3}\\)", accepted: ["2/3", ".6666", ".6667", "0.666", "0.667"], rejected: ["0.66", ".66", "0.67", ".67"] },
+      { answer: "\\(-\\frac{1}{3}\\)", accepted: ["-1/3", "-.3333", "-0.333"], rejected: ["-.33", "-0.33"] },
     ],
     domains: [
       "Algebra",

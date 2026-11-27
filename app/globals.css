@@ -191,6 +191,20 @@
   font-family: "Noto Serif Variable", "Noto Serif", Georgia, serif;
 }
 
+/* Bluebook's panels (Directions, Reference) always show a grey scrollbar, so students see there's more. */
+.gb-scroll-visible {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-graphite) transparent;
+  scrollbar-gutter: stable;
+}
+.gb-scroll-visible::-webkit-scrollbar {
+  width: 8px;
+}
+.gb-scroll-visible::-webkit-scrollbar-thumb {
+  background: var(--color-graphite);
+  border-radius: 999px;
+}
+
 /* Passage highlights on exam screens (CSS Custom Highlight API): three colors and underline, like
    Bluebook. The one being edited is drawn darker. Fixed colors so text stays readable in dark mode. */
 ::highlight(gb-yellow) {

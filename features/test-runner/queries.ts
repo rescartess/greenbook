@@ -14,3 +14,46 @@ export async function getTestState(attemptId: string): Promise<TestState | null>
   }
   return parseTestState(data);
 }
+
+export type NextSection = {
+  /** The same month's Math adaptive test. */
+  mathSetId: string;
+  /** The English attempt's status and when it ended (the break runs 10 minutes from then). */
+  status: string;
+  finishedAt: string | null;
+};
+
+/**
+ * For an English adaptive full test: the same month's Math adaptive test, so the student gets a
+ * break and then goes straight on to Math, like the real SAT. Null for anything else.
+ */
+export async function nextSectionAfter(attemptId: string): Promise<NextSection | null> {
+  if (!isUuid(attemptId)) return null;
+  const supabase = await createDbClient();
+  const { data: attempt } = await supabase
+    .from("attempts")
+    .select("set_id, subject, status, finished_at")
+    .eq("id", attemptId)
+    .maybeSingle();
+  if (!attempt?.set_id || attempt.subject !== "english") return null;
+  const { data: set } = await supabase
+    .from("question_sets")
+    .select("kind, is_adaptive, month")
+    .eq("id", attempt.set_id)
+    .maybeSingle();
+  if (!set || set.kind !== "full_test" || !set.is_adaptive || !set.month) return null;
+  // Students only see published tests (database rules); the admin also sees drafts.
+  const { data: math } = await supabase
+    .from("question_sets")
+    .select("id")
+    .eq("kind", "full_test")
+    .eq("subject", "math")
+    .eq("is_adaptive", true)
+    .eq("month", set.month)
+    .order("published", { ascending: false })
+    .order("created_at")
+    .limit(1)
+    .maybeSingle();
+  if (!math) return null;
+  return { mathSetId: math.id, status: attempt.status, finishedAt: attempt.finished_at };
+}

@@ -29,6 +29,7 @@ import {
   QuestionView,
   TypedAnswer,
   useHighlights,
+  useMathTools,
   useMounted,
   type CheckFeedback,
   type MapItem,
@@ -110,6 +111,11 @@ export function PracticeRunner({
   const [exiting, setExiting] = useState<null | "save" | "delete">(null);
   const mainRef = useRef<HTMLElement>(null);
   const mounted = useMounted();
+  const subject = isSubjectSlug(state.subject) ? SUBJECTS[state.subject] : null;
+  const math = useMathTools({
+    calculator: subject?.tools.includes("calculator") ?? false,
+    reference: subject?.tools.includes("reference") ?? false,
+  });
 
   const current = view.kind === "question" ? questions[view.index] : null;
   const highlights = useHighlights(
@@ -286,7 +292,7 @@ export function PracticeRunner({
 
   const range = state.options ? rangeLabel(state.options) : null;
   const directions = [
-    ...(isSubjectSlug(state.subject) ? SUBJECTS[state.subject].directions : []),
+    ...(subject?.directions ?? []),
     checkEach
       ? "In this practice, pick an answer and then select Check to see if you’re right. Once checked, an answer can’t be changed."
       : "In this practice, your answers are checked when you finish, like the real test. You can change them until then.",
@@ -296,7 +302,7 @@ export function PracticeRunner({
   const currentResponse = current ? (responses[current.id] ?? EMPTY) : EMPTY;
 
   return (
-    <div className="exam min-h-dvh bg-paper font-sans">
+    <div className="exam min-h-dvh bg-paper font-sans" style={math.rootStyle}>
       <ExamTopBar
         left={
           <ExamTitle
@@ -311,6 +317,7 @@ export function PracticeRunner({
               </>
             }
             directions={directions}
+            examples={subject?.directionExamples}
           />
         }
         center={<ExamClock remaining={remaining} mounted={mounted} />}
@@ -324,6 +331,7 @@ export function PracticeRunner({
             ) : null}
             <FullscreenTool />
             <ThemeTool />
+            {math.buttons}
             <MoreTool
               open={moreOpen}
               onToggle={() => {
@@ -526,6 +534,7 @@ export function PracticeRunner({
           />
         </QuestionMapPopover>
       ) : null}
+      {math.panels}
       {highlights.active ? (
         <HighlightMenu
           active={highlights.active}

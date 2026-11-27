@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { SUBJECTS, isSubjectSlug } from "@/core/config/subjects";
 import { getCurrentUser } from "@/features/auth";
-import { getTestState } from "../queries";
+import { getTestState, nextSectionAfter } from "../queries";
 import { TestRunner } from "./TestRunner";
 
 export function TestRunnerPage({ attemptId }: { attemptId: Promise<string> }) {
@@ -20,6 +20,8 @@ async function Runner({ attemptId }: { attemptId: Promise<string> }) {
   const subject = isSubjectSlug(state.subject) ? state.subject : "english";
   const resultsHref = `/${subject}/results/${state.attemptId}`;
   if (state.status !== "in_progress") redirect(resultsHref);
+  // English adaptive test with a Math test of the same month: a break, then Math (like the real SAT).
+  const next = subject === "english" ? await nextSectionAfter(state.attemptId) : null;
 
   return (
     <TestRunner
@@ -31,6 +33,8 @@ async function Runner({ attemptId }: { attemptId: Promise<string> }) {
       tools={SUBJECTS[subject].tools}
       sectionNumber={SUBJECTS[subject].sectionNumber}
       directions={SUBJECTS[subject].directions}
+      directionExamples={SUBJECTS[subject].directionExamples}
+      afterHref={next ? `/test/${state.attemptId}/break` : undefined}
       exitHref={`/${subject}/full-tests`}
     />
   );

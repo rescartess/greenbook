@@ -1,6 +1,8 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { createDbClient } from "@/core/db/server";
+import { nextSectionAfter } from "./queries";
 import { saveErrorMessage } from "./schema";
 
 export type SaveResult = { ok: true } | { ok: false; message: string; reload: boolean };
@@ -49,4 +51,19 @@ export async function abandonTest(attemptId: string): Promise<{ ok: boolean }> {
   const supabase = await createDbClient();
   const { error } = await supabase.rpc("abandon_test", { p_attempt_id: attemptId });
   return { ok: !error };
+}
+
+/**
+ * "Resume Testing" on the break page: starts (or reopens) the same month's Math adaptive test.
+ * The Math test is looked up again here, so the browser can't pick a different one.
+ */
+export async function startNextSection(englishAttemptId: string): Promise<{ message: string }> {
+  const next = await nextSectionAfter(englishAttemptId);
+  if (!next) return { message: "There’s no Math section for this test." };
+  const supabase = await createDbClient();
+  const { data, error } = await supabase.rpc("start_full_test", { p_set_id: next.mathSetId });
+  if (error || !data) {
+    return { message: error?.code === "42501" ? "Sign in again to keep going." : "The Math section couldn’t start. Check your connection and try again." };
+  }
+  redirect(`/test/${data}`);
 }

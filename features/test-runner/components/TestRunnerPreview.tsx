@@ -117,6 +117,7 @@ function MathPreview() {
       tools={SUBJECTS.math.tools}
       sectionNumber={SUBJECTS.math.sectionNumber}
       directions={SUBJECTS.math.directions}
+      directionExamples={SUBJECTS.math.directionExamples}
       exitHref="/dev/exam/math"
     />
   );
