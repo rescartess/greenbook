@@ -124,4 +124,30 @@ export const SKILL_DOMAIN: Record<string, string> = {
   Transitions: "Expression of Ideas",
   Boundaries: "Standard English Conventions",
   "Form, Structure, and Sense": "Standard English Conventions",
+  "Linear Equations in One Variable": "Algebra",
+  "Linear Equations in Two Variables": "Algebra",
+  "Linear Functions": "Algebra",
+  "Systems of Two Linear Equations in Two Variables": "Algebra",
+  "Linear Inequalities in One or Two Variables": "Algebra",
+  "Nonlinear Functions": "Advanced Math",
+  "Nonlinear Equations in One Variable and Systems of Equations in Two Variables": "Advanced Math",
+  "Equivalent Expressions": "Advanced Math",
+  Percentages: "Problem-Solving and Data Analysis",
+  "Ratios, Rates, Proportional Relationships, and Units": "Problem-Solving and Data Analysis",
+  "One-Variable Data: Distributions and Measures of Center and Spread": "Problem-Solving and Data Analysis",
+  "Two-Variable Data: Models and Scatterplots": "Problem-Solving and Data Analysis",
+  "Probability and Conditional Probability": "Problem-Solving and Data Analysis",
+  "Inference from Sample Statistics and Margin of Error": "Problem-Solving and Data Analysis",
+  "Evaluating Statistical Claims: Observational Studies and Experiments": "Problem-Solving and Data Analysis",
+  "Area and Volume": "Geometry and Trigonometry",
+  "Lines, Angles, and Triangles": "Geometry and Trigonometry",
+  "Right Triangles and Trigonometry": "Geometry and Trigonometry",
+  Circles: "Geometry and Trigonometry",
 };
+
+const DOMAIN_BY_LOWER = new Map(Object.entries(SKILL_DOMAIN).map(([k, v]) => [k.toLowerCase(), v]));
+
+/** The SAT domain of a skill or topic name, whatever its capitals ("Linear functions" = "Linear Functions"). */
+export function skillDomain(name: string | null | undefined): string | null {
+  return name ? (DOMAIN_BY_LOWER.get(name.trim().toLowerCase()) ?? null) : null;
+}

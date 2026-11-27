@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import katex from "katex";
+import "katex/dist/katex.min.css";
 import { cn } from "@/core/design/ui";
 import { parseRichText, type Block, type Inline } from "./rich-text";
 
@@ -10,6 +12,8 @@ function renderInline(nodes: Inline[], keyPrefix = ""): ReactNode[] {
         return node.text;
       case "break":
         return <br key={key} />;
+      case "math":
+        return <MathText key={key} tex={node.tex} display={node.display} />;
       case "blank":
         return (
           <span
@@ -38,6 +42,24 @@ function renderInline(nodes: Inline[], keyPrefix = ""): ReactNode[] {
         );
     }
   });
+}
+
+/**
+ * Math in LaTeX, drawn by KaTeX on the server. KaTeX builds its own markup from the formula and
+ * escapes everything in it (no \href or other "trust" commands), so stored text still can't inject HTML.
+ */
+function MathText({ tex, display }: { tex: string; display: boolean }) {
+  const html = katex.renderToString(tex, {
+    displayMode: display,
+    throwOnError: false,
+    strict: "ignore",
+    output: "htmlAndMathml",
+  });
+  return display ? (
+    <span className="gb-math block overflow-x-auto py-1 text-center" dangerouslySetInnerHTML={{ __html: html }} />
+  ) : (
+    <span className="gb-math" dangerouslySetInnerHTML={{ __html: html }} />
+  );
 }
 
 function renderBlock(block: Block, i: number): ReactNode {
@@ -110,11 +132,9 @@ export function RichText({
 
 /** One line of formatted text without paragraph spacing, e.g. an answer choice. */
 export function RichLine({ source }: { source: string }) {
-  return (
-    <>
-      {parseRichText(source).flatMap((b) =>
-        b.kind === "paragraph" ? renderInline(b.children) : [],
-      )}
-    </>
-  );
+  const blocks = parseRichText(source);
+  const only = blocks.length === 1 && blocks[0].kind === "paragraph" && blocks[0].children.length === 1 ? blocks[0].children[0] : null;
+  // A choice that is just a formula is drawn full size (fractions as tall as on paper), like Bluebook.
+  if (only?.kind === "math") return <MathText tex={`\\displaystyle ${only.tex}`} display={false} />;
+  return <>{blocks.flatMap((b) => (b.kind === "paragraph" ? renderInline(b.children) : []))}</>;
 }

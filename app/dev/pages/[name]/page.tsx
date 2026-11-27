@@ -5,13 +5,14 @@ import { FullTestsPreview } from "@/features/full-tests";
 import { MistakeSetPreview, MistakesPreview } from "@/features/mistakes";
 import { MonthlyPreview, PracticeResultsPreview } from "@/features/practice";
 import { ResultPreview, ResultsPreview } from "@/features/results";
-import { TopicPreview, TopicsPreview } from "@/features/topics";
+import { MathTopicsPreview, TopicPreview, TopicsPreview } from "@/features/topics";
 
 export const metadata: Metadata = { title: "Page preview", robots: { index: false } };
 
 /** Local-only previews of the pages around the exam, with made-up data. Hidden in production. */
 const PAGES: Record<string, ComponentType> = {
   topics: TopicsPreview,
+  "math-topics": MathTopicsPreview,
   topic: TopicPreview,
   "full-tests": FullTestsPreview,
   results: ResultsPreview,

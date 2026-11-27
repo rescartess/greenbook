@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { Button, ButtonLink } from "@/core/design/ui";
 import { QuestionsOverview, ReviewScreen, type OverviewItem, type ReviewFilter, type ReviewItem } from "@/core/question";
-import { SKILL_DOMAIN, SUBJECTS, isSubjectSlug } from "@/core/config/subjects";
+import { SUBJECTS, isSubjectSlug, skillDomain } from "@/core/config/subjects";
 import { startTopicPractice, type StartState } from "../actions";
 import { numbersText } from "@/core/config/practice";
 import { rangeLabel, scorePractice, type PracticeState } from "../schema";
@@ -57,7 +57,7 @@ export function PracticeResults({ state, studentName, backHref, backLabel }: Pro
   const items: OverviewItem[] = rows.map((r, i) => ({
     ...r,
     section,
-    domain: state.questions[i].skill ? (SKILL_DOMAIN[state.questions[i].skill as string] ?? null) : null,
+    domain: skillDomain(state.questions[i].skill as string | null),
   }));
 
   return (

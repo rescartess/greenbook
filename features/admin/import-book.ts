@@ -2,20 +2,24 @@
  * The import file Claude prepares from a question book (format "greenbook-import-1"):
  * {
  *   format, book, subject, collection ("books" or "sqb", default "books"),
- *   topics: [{ topic: "<topic title>", items: [{ source, skill, difficulty, passage, prompt, choices, answer, explanation?, image }] }],
+ *   topics: [{ topic: "<topic title>", items: [{ source, skill, difficulty, type?, passage, prompt, choices, answer, accepted?, explanation?, image }] }],
  *   images: { "<storage path>": "<base64 picture>" }
  * }
  * Questions go to the end of the named topic, in order; questions already imported (same source) are skipped.
+ * type is "mcq" (default: choices, answer = a choice id) or "spr" (Math typed answer: no choices,
+ * answer = the book's answer, accepted = other forms that also count, e.g. "4.8" for "24/5").
  */
 
 export type ImportItem = {
   source: string;
   skill: string | null;
   difficulty: "easy" | "medium" | "hard";
+  type: "mcq" | "spr";
   passage: string | null;
   prompt: string;
   choices: { id: string; text: string }[];
   answer: string;
+  accepted: string[];
   explanation: string | null;
   image: string | null;
 };
@@ -54,10 +58,17 @@ export function parseImportBook(text: string): ImportBook {
       const choices = Array.isArray(it.choices) ? (it.choices as { id: string; text: string }[]) : [];
       if (typeof it.source !== "string" || !it.source) throw new Error(`${where} has no source.`);
       if (typeof it.prompt !== "string" || !it.prompt) throw new Error(`${where} has no question text.`);
-      if (choices.length < 2 || choices.some((c) => typeof c?.id !== "string" || typeof c?.text !== "string"))
-        throw new Error(`${where} has broken answer choices.`);
-      if (typeof it.answer !== "string" || !choices.some((c) => c.id === it.answer))
-        throw new Error(`${where} has no correct answer among its choices.`);
+      const type = it.type === "spr" ? "spr" : "mcq";
+      const accepted = Array.isArray(it.accepted) ? it.accepted.filter((a): a is string => typeof a === "string") : [];
+      if (type === "spr") {
+        if (choices.length > 0) throw new Error(`${where} is a typed answer but has answer choices.`);
+        if (typeof it.answer !== "string" || !it.answer.trim()) throw new Error(`${where} has no correct answer.`);
+      } else {
+        if (choices.length < 2 || choices.some((c) => typeof c?.id !== "string" || typeof c?.text !== "string"))
+          throw new Error(`${where} has broken answer choices.`);
+        if (typeof it.answer !== "string" || !choices.some((c) => c.id === it.answer))
+          throw new Error(`${where} has no correct answer among its choices.`);
+      }
       if (it.difficulty !== "easy" && it.difficulty !== "medium" && it.difficulty !== "hard")
         throw new Error(`${where} has no level.`);
       const image = typeof it.image === "string" && it.image ? it.image : null;
@@ -66,10 +77,12 @@ export function parseImportBook(text: string): ImportBook {
         source: it.source,
         skill: typeof it.skill === "string" ? it.skill : null,
         difficulty: it.difficulty,
+        type,
         passage: typeof it.passage === "string" && it.passage ? it.passage : null,
         prompt: it.prompt,
         choices,
         answer: it.answer,
+        accepted,
         explanation: typeof it.explanation === "string" && it.explanation ? it.explanation : null,
         image,
       } satisfies ImportItem;

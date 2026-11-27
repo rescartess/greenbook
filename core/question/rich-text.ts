@@ -7,12 +7,15 @@
  *   blank line = new paragraph, single line break = line break
  *   "- " at the start of every line = bullet list (student notes)
  *   "| a | b |" lines = table (first row is the header; the "|---|" row is skipped)
+ *   \( x^2 \) = math in a line, \[ x^2 \] = math on its own line (LaTeX, drawn with KaTeX).
+ *   Math is read before everything else, so * and _ inside it stay math.
  */
 
 export type Inline =
   | { kind: "text"; text: string }
   | { kind: "blank" }
   | { kind: "break" }
+  | { kind: "math"; tex: string; display: boolean }
   | { kind: "em" | "strong" | "u"; children: Inline[] };
 
 export type Block =
@@ -25,9 +28,10 @@ type Token =
   | { kind: "text"; text: string }
   | { kind: "blank" }
   | { kind: "break" }
+  | { kind: "math"; tex: string; display: boolean }
   | { kind: "mark"; mark: Mark; raw: string; close?: boolean };
 
-const TOKEN = /(\*\*|\*|<u>|<\/u>|_{3,}|\n)/g;
+const TOKEN = /(\\\(.+?\\\)|\\\[.+?\\\]|\*\*|\*|<u>|<\/u>|_{3,}|\n)/g;
 
 function tokenize(source: string): Token[] {
   const tokens: Token[] = [];
@@ -36,7 +40,9 @@ function tokenize(source: string): Token[] {
     const at = match.index ?? 0;
     if (at > last) tokens.push({ kind: "text", text: source.slice(last, at) });
     const raw = match[0];
-    if (raw === "\n") tokens.push({ kind: "break" });
+    if (raw.startsWith("\\(") || raw.startsWith("\\["))
+      tokens.push({ kind: "math", tex: raw.slice(2, -2).trim(), display: raw.startsWith("\\[") });
+    else if (raw === "\n") tokens.push({ kind: "break" });
     else if (raw.startsWith("___")) tokens.push({ kind: "blank" });
     else if (raw === "**") tokens.push({ kind: "mark", mark: "strong", raw });
     else if (raw === "*") tokens.push({ kind: "mark", mark: "em", raw });
@@ -64,6 +70,7 @@ export function parseInline(source: string): Inline[] {
 
   for (const token of tokenize(source)) {
     if (token.kind === "text") pushText(top().children, token.text);
+    else if (token.kind === "math") top().children.push(token);
     else if (token.kind === "blank" || token.kind === "break")
       top().children.push({ kind: token.kind });
     else {
@@ -145,7 +152,9 @@ export function toPlainText(source: string): string {
             ? "____"
             : n.kind === "break"
               ? " "
-              : flatten(n.children),
+              : n.kind === "math"
+                ? n.tex
+                : flatten(n.children),
       )
       .join("");
   return parseRichText(source)

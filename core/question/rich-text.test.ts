@@ -96,3 +96,28 @@ describe("parseChoices", () => {
     expect(parseChoices("A,B")).toEqual([]);
   });
 });
+
+describe("math", () => {
+  it("reads \\( \\) and \\[ \\] as math before any other mark", () => {
+    expect(parseInline("If \\(x_1 * 2 = 3\\), then *x* is")).toEqual([
+      { kind: "text", text: "If " },
+      { kind: "math", tex: "x_1 * 2 = 3", display: false },
+      { kind: "text", text: ", then " },
+      { kind: "em", children: [{ kind: "text", text: "x" }] },
+      { kind: "text", text: " is" },
+    ]);
+    expect(parseRichText("\\[\\frac{1}{2}\\]")).toEqual([
+      { kind: "paragraph", children: [{ kind: "math", tex: "\\frac{1}{2}", display: true }] },
+    ]);
+  });
+
+  it("keeps math inside table cells and in plain text", () => {
+    const [table] = parseRichText("| \\(x\\) | y |\n|---|---|\n| 0 | \\(n + 24\\) |");
+    expect(table).toMatchObject({ kind: "table", rows: [[[{ kind: "text", text: "0" }], [{ kind: "math", tex: "n + 24" }]]] });
+    expect(toPlainText("Find \\(2x\\).")).toBe("Find 2x.");
+  });
+
+  it("leaves a lone \\( as text", () => {
+    expect(parseInline("a \\( b")).toEqual([{ kind: "text", text: "a \\( b" }]);
+  });
+});

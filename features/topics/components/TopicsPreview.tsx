@@ -30,6 +30,26 @@ export function TopicsPreview() {
   );
 }
 
+export function MathTopicsPreview() {
+  const names = [
+    "Linear Equations in One Variable", "Linear Equations in Two Variables", "Linear Functions",
+    "Systems of Two Linear Equations in Two Variables", "Linear Inequalities in One or Two Variables", "Nonlinear Functions",
+    "Nonlinear Equations in One Variable and Systems of Equations in Two Variables", "Equivalent Expressions", "Percentages",
+    "Ratios, Rates, Proportional Relationships, and Units", "One-Variable Data: Distributions and Measures of Center and Spread",
+    "Two-Variable Data: Models and Scatterplots", "Probability and Conditional Probability",
+    "Inference from Sample Statistics and Margin of Error", "Evaluating Statistical Claims: Observational Studies and Experiments",
+    "Area and Volume", "Lines, Angles, and Triangles", "Right Triangles and Trigonometry", "Circles",
+  ];
+  const topics = names.map((n, i) => T(`m${i}`, n, 10 + ((i * 7) % 20), 8 + ((i * 5) % 25), (i * 11) % 40, i % 4 === 0 ? 9 : 0));
+  return (
+    <DevShell>
+      <TopicsFrame subject="math" collection="books">
+        <TopicGrid subject="math" topics={topics} />
+      </TopicsFrame>
+    </DevShell>
+  );
+}
+
 export function TopicPreview() {
   const items: TopicItem[] = Array.from({ length: 110 }, (_, i) => ({
     level: i < 33 ? "easy" : i < 73 ? "medium" : "hard",

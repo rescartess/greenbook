@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { COLLECTION_LABEL, SQB_CREDIT, type Collection } from "@/core/config/practice";
-import { SUBJECTS, type SubjectSlug } from "@/core/config/subjects";
+import { SUBJECTS, skillDomain, type SubjectSlug } from "@/core/config/subjects";
 import { CardSkeleton, Empty, PageTitle, SegmentLinks } from "@/core/shell";
 import { listTopics } from "../queries";
 import type { TopicSummary } from "../schema";
@@ -58,6 +58,28 @@ export function TopicGrid({ subject, topics }: { subject: SubjectSlug; topics: T
       </Empty>
     );
   }
+  // Math has 19 topics: show them under the four SAT areas, in the test's order.
+  const areas = SUBJECTS[subject].domains
+    .map((area) => ({ area, list: topics.filter((t) => skillDomain(t.title) === area) }))
+    .filter((g) => g.list.length > 0);
+  const rest = topics.filter((t) => !areas.some((g) => g.list.includes(t)));
+  if (subject !== "math" || areas.length < 2) return <TopicList subject={subject} topics={topics} />;
+  return (
+    <div className="space-y-10">
+      {areas.map((g) => (
+        <section key={g.area} aria-labelledby={`area-${g.area}`}>
+          <h2 id={`area-${g.area}`} className="mb-4 text-[20px] font-bold tracking-[-0.01em]">
+            {g.area}
+          </h2>
+          <TopicList subject={subject} topics={g.list} />
+        </section>
+      ))}
+      {rest.length ? <TopicList subject={subject} topics={rest} /> : null}
+    </div>
+  );
+}
+
+function TopicList({ subject, topics }: { subject: SubjectSlug; topics: TopicSummary[] }) {
   return (
     <ul className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
       {topics.map((t) => (
@@ -75,7 +97,7 @@ function TopicCard({ subject, topic }: { subject: SubjectSlug; topic: TopicSumma
   const share = ready ? Math.min(1, topic.done / topic.total) : 0;
   const body = (
     <>
-      <h2 className="text-[18px] font-bold leading-snug">{topic.title}</h2>
+      <h3 className="text-[18px] font-bold leading-snug">{topic.title}</h3>
       <p className="mt-1 text-[14px] text-graphite tabular-nums">
         {!topic.published ? "Hidden from students" : ready ? progress : "Questions coming soon"}
       </p>
