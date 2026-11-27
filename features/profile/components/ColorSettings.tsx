@@ -103,7 +103,7 @@ export function ColorSettings({ initial, compact = false }: { initial: UserColor
           {pending ? "Saving…" : "Save colors"}
         </Btn>
         <Btn tone="quiet" disabled={pending || (!colors.main && !colors.background)} onClick={() => pick({ main: null, background: null })}>
-          Use GreenBook colors
+          Use RainbowPrep colors
         </Btn>
         {message ? (
           <span role="status" className="text-[13px] font-semibold text-pine">

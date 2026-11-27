@@ -51,7 +51,7 @@ export function parseImportBook(text: string): ImportBook {
     throw new Error("This isn’t an import file. Choose the .json files whose names start with “GreenBook import”, not the book PDFs.");
   }
   const root = obj(raw);
-  if (!root || root.format !== "greenbook-import-1") throw new Error("This isn’t a GreenBook import file.");
+  if (!root || root.format !== "greenbook-import-1") throw new Error("This isn’t a RainbowPrep import file.");
   const topics = Array.isArray(root.topics) ? root.topics : [];
   const tests = Array.isArray(root.tests) ? root.tests : [];
   if (topics.length === 0 && tests.length === 0) throw new Error("The file has no questions.");

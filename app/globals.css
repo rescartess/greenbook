@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 /*
- * GreenBook design tokens.
+ * RainbowPrep design tokens (the root values are the exam screens' colors; the
+ * RainbowPrep look for every other page is the `.gb-colors` block further down).
  * Change a value here and every screen updates. Features must use these
  * names (bg-paper, text-ink, bg-pine...), never raw hex values.
  */
@@ -245,56 +246,181 @@
 }
 
 /*
- * GreenBook's own colors on the pages around the exam (owner request, 27 Nov 2026):
- * a bright green on near-black in dark mode, like monkeytype; a brighter green in light mode.
- * Only inside `.gb-colors` (side menu pages, admin, home, login, finished practice), so the
- * test and practice screens keep their test-day look. A student's own Design color
+ * RainbowPrep's look on the pages around the exam (owner request, 27 Nov 2026): strawberry pink
+ * as the main color, plum text, blush pages, rainbow stripes, rainbow titles, emoji stickers and
+ * strawberries. Only inside `.gb-colors` (side menu pages, admin, home, login, finished practice),
+ * so the test and practice screens keep their Bluebook look. A student's own Design color
  * (UserColorsStyle, later in the page) still wins over these.
  */
+:root {
+  --rp-red: #ff4d6d;
+  --rp-orange: #ff9f1c;
+  --rp-yellow: #ffd60a;
+  --rp-green: #2ecc71;
+  --rp-blue: #3a86ff;
+  --rp-violet: #8b5cf6;
+  --rp-rainbow: linear-gradient(90deg, var(--rp-red), var(--rp-orange), var(--rp-yellow), var(--rp-green), var(--rp-blue), var(--rp-violet));
+  /* Deeper bands for rainbow letters on light pages, so the words stay readable. */
+  --rp-rainbow-ink: linear-gradient(90deg, #e11d48, #ea580c, #ca8a04, #16a34a, #2563eb, #7c3aed);
+  --rp-sticker-edge: #ffffff;
+}
+[data-theme="dark"] {
+  --rp-rainbow-ink: linear-gradient(90deg, #ff6b8b, #ffae42, #ffe14d, #4ee28d, #5c9dff, #a98bff);
+  --rp-sticker-edge: #fff4f8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --rp-rainbow-ink: linear-gradient(90deg, #ff6b8b, #ffae42, #ffe14d, #4ee28d, #5c9dff, #a98bff);
+  }
+}
+
 .gb-colors {
-  --gb-canvas: #eef5ec;
-  --gb-mist: #f1f7ef;
-  --gb-hairline: #dde9da;
-  --gb-control: #cfe0cb;
-  --gb-ink: #0f1f12;
-  --gb-ink-soft: #33483a;
-  --gb-graphite: #55695a;
-  --gb-pine: #12801f;
+  --gb-paper: #ffffff;
+  --gb-canvas: #fff4f8;
+  --gb-mist: #fff0f6;
+  --gb-hairline: #f6dbe6;
+  --gb-control: #efc6d6;
+  --gb-ink: #2a1030;
+  --gb-ink-soft: #553a5c;
+  --gb-graphite: #7a5d80;
+  --gb-pine: #d6246e;
   --gb-pine-ink: #ffffff;
-  --gb-pine-soft: #7fd68a;
-  --gb-pine-tint: #e6f6e4;
+  --gb-pine-soft: #ff9ec0;
+  --gb-pine-tint: #ffe5ef;
 }
 
 [data-theme="dark"] .gb-colors {
-  --gb-paper: #0a1a0b;
-  --gb-mist: #0f2510;
-  --gb-canvas: #030603;
-  --gb-ink: #d4f7cc;
-  --gb-ink-soft: #a9dca0;
-  --gb-graphite: #62b35a;
-  --gb-hairline: #163416;
-  --gb-control: #1f4a1f;
-  --gb-pine: #3cff2a;
-  --gb-pine-ink: #031203;
-  --gb-pine-soft: #1e7a18;
-  --gb-pine-tint: #123a12;
+  --gb-paper: #1c1328;
+  --gb-mist: #251a35;
+  --gb-canvas: #110b1a;
+  --gb-ink: #fbeaff;
+  --gb-ink-soft: #dcc6e6;
+  --gb-graphite: #b79fc4;
+  --gb-hairline: #33254a;
+  --gb-control: #46345f;
+  --gb-pine: #ff6fa3;
+  --gb-pine-ink: #1a0712;
+  --gb-pine-soft: #a8406b;
+  --gb-pine-tint: #3a1830;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .gb-colors {
-    --gb-paper: #0a1a0b;
-    --gb-mist: #0f2510;
-    --gb-canvas: #030603;
-    --gb-ink: #d4f7cc;
-    --gb-ink-soft: #a9dca0;
-    --gb-graphite: #62b35a;
-    --gb-hairline: #163416;
-    --gb-control: #1f4a1f;
-    --gb-pine: #3cff2a;
-    --gb-pine-ink: #031203;
-    --gb-pine-soft: #1e7a18;
-    --gb-pine-tint: #123a12;
+    --gb-paper: #1c1328;
+    --gb-mist: #251a35;
+    --gb-canvas: #110b1a;
+    --gb-ink: #fbeaff;
+    --gb-ink-soft: #dcc6e6;
+    --gb-graphite: #b79fc4;
+    --gb-hairline: #33254a;
+    --gb-control: #46345f;
+    --gb-pine: #ff6fa3;
+    --gb-pine-ink: #1a0712;
+    --gb-pine-soft: #a8406b;
+    --gb-pine-tint: #3a1830;
   }
+}
+
+/* Words painted in rainbow (the "Rainbow" in the logo, page titles). */
+@utility rp-rainbow-text {
+  background-image: var(--rp-rainbow-ink);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* A plain rainbow band: stripes, progress fills, score bars. */
+@utility rp-rainbow-bar {
+  background-image: var(--rp-rainbow);
+}
+
+/* Emoji stickers: a white die-cut edge and a soft shadow, a little tilted. */
+@utility rp-sticker {
+  display: inline-block;
+  line-height: 1;
+  filter: drop-shadow(1.5px 0 0 var(--rp-sticker-edge)) drop-shadow(-1.5px 0 0 var(--rp-sticker-edge))
+    drop-shadow(0 1.5px 0 var(--rp-sticker-edge)) drop-shadow(0 -1.5px 0 var(--rp-sticker-edge))
+    drop-shadow(0 3px 4px rgba(42, 16, 48, 0.22));
+  transform: rotate(var(--rp-tilt, -8deg));
+  transition: transform 0.25s ease;
+}
+
+@keyframes rp-bob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -6px; }
+}
+@keyframes rp-wiggle {
+  0%, 100% { transform: rotate(var(--rp-tilt, -8deg)) scale(1.12); }
+  25% { transform: rotate(calc(var(--rp-tilt, -8deg) - 10deg)) scale(1.12); }
+  75% { transform: rotate(calc(var(--rp-tilt, -8deg) + 10deg)) scale(1.12); }
+}
+.rp-bob {
+  animation: rp-bob 4.5s ease-in-out infinite;
+}
+.rp-sticker:hover,
+a:hover > .rp-sticker,
+button:hover > .rp-sticker {
+  animation: rp-wiggle 0.5s ease-in-out;
+  transform: rotate(var(--rp-tilt, -8deg)) scale(1.12);
+}
+
+/* Page titles in rainbow letters (not on exam screens). */
+.gb-colors h1:not(.exam *) {
+  background-image: var(--rp-rainbow-ink);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+  padding-bottom: 0.06em;
+}
+
+/* Cards wear a short rainbow ribbon on their top edge. */
+.rp-card {
+  position: relative;
+}
+.rp-card::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 18px;
+  right: 18px;
+  height: 4px;
+  border-radius: 0 0 4px 4px;
+  background-image: var(--rp-rainbow);
+  pointer-events: none;
+}
+
+/* Main buttons: the main color melting into violet, with a candy press edge. */
+.rp-btn-primary {
+  background-image: linear-gradient(135deg, var(--gb-pine), color-mix(in srgb, var(--gb-pine) 55%, #7c3aed));
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--gb-pine) 70%, #2a1030), 0 6px 14px color-mix(in srgb, var(--gb-pine) 30%, transparent);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s ease;
+}
+.rp-btn-primary:hover {
+  filter: brightness(1.08) saturate(1.1);
+}
+.rp-btn-primary:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--gb-pine) 70%, #2a1030);
+}
+
+/* Answer-sheet bubbles fill in rainbow order. */
+.rp-band-0 { background: var(--rp-red); }
+.rp-band-1 { background: var(--rp-orange); }
+.rp-band-2 { background: var(--rp-yellow); }
+.rp-band-3 { background: var(--rp-green); }
+.rp-band-4 { background: var(--rp-blue); }
+.rp-band-5 { background: var(--rp-violet); }
+
+/* Home page hero: soft rainbow clouds behind the headline. */
+.rp-hero {
+  background:
+    radial-gradient(60% 70% at 0% 0%, color-mix(in srgb, var(--rp-red) 16%, transparent), transparent 70%),
+    radial-gradient(50% 60% at 100% 0%, color-mix(in srgb, var(--rp-blue) 14%, transparent), transparent 70%),
+    radial-gradient(60% 60% at 50% 100%, color-mix(in srgb, var(--rp-yellow) 16%, transparent), transparent 70%),
+    var(--gb-paper);
 }
 
 /* Math in questions (KaTeX, see core/question/RichText.tsx): a little smaller than KaTeX's default

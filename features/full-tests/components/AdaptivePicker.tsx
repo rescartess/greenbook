@@ -14,7 +14,7 @@ export function AdaptivePicker({ tests }: { tests: FullTestRow[] }) {
   const test = tests.find((t) => t.id === id) ?? tests[0];
   if (!test) return null;
   return (
-    <section aria-labelledby="adaptive-title" className="rounded-[14px] border border-hairline bg-paper p-5 sm:p-6">
+    <section aria-labelledby="adaptive-title" className="rp-card rounded-[18px] border border-hairline bg-paper p-5 sm:p-6">
       <h2 id="adaptive-title" className="text-[20px] font-bold">Adaptive full test</h2>
       <p className="mt-1 max-w-[60ch] text-[15px] text-graphite">
         Choose a month. Your Module 1 score decides whether Module 2 is easier or harder, like on test day.

@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { Logo } from "@/core/design/ui";
-import { BtnLink } from "@/core/shell";
+import { BtnLink, RainbowStripe, Sticker } from "@/core/shell";
 
 export default function NotFound() {
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-canvas px-6 text-center">
+    <main className="gb-colors flex min-h-dvh flex-col items-center justify-center gap-6 bg-canvas px-6 text-center">
+      <RainbowStripe />
       <Link href="/" className="text-ink">
         <Logo size={34} />
       </Link>
+      <Sticker emoji="🍓" size={64} tilt={-12} bob />
       <div>
         <h1 className="text-[28px] font-bold tracking-[-0.01em]">This page doesn’t exist</h1>
         <p className="mt-2 text-[16px] text-graphite">The link may be old, or the page was moved.</p>

@@ -31,7 +31,7 @@ function DashboardLoading() {
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.7fr_1fr]" aria-busy="true">
       {[0, 1, 2, 3].map((i) => (
-        <div key={i} className="h-[248px] rounded-[14px] border border-hairline bg-paper" />
+        <div key={i} className="h-[248px] rp-card rounded-[18px] border border-hairline bg-paper" />
       ))}
     </div>
   );

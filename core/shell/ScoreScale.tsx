@@ -1,6 +1,6 @@
 /**
  * The moment of the redesign: a score placed on the 200–800 section scale (or 400–1600 total).
- * A pine fill up to the score, a dark marker at the score, and an optional grey marker for an earlier one.
+ * A rainbow fill up to the score, a dark marker at the score, and an optional grey marker for an earlier one.
  */
 export function ScoreScale({
   value,
@@ -18,7 +18,7 @@ export function ScoreScale({
   return (
     <div role="img" aria-label={`${value} on a scale from ${min} to ${max}${earlier != null ? `, earlier ${earlier}` : ""}`}>
       <div className="relative h-2.5 rounded-[5px] bg-mist ring-1 ring-hairline ring-inset">
-        <div className="absolute inset-y-0 left-0 rounded-[5px] bg-pine" style={{ width: at(value) }} />
+        <div className="rp-rainbow-bar absolute inset-y-0 left-0 rounded-[5px]" style={{ width: at(value) }} />
         {earlier != null ? (
           <span className="absolute -top-1.5 h-[22px] w-0.5 -translate-x-1/2 rounded-[1px] bg-graphite/70" style={{ left: at(earlier) }} />
         ) : null}

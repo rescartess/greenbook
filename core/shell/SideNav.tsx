@@ -4,9 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ENABLED_FEATURES } from "@/core/config/features";
 import { isSubjectSlug } from "@/core/config/subjects";
-import { Icon, LogoMark, cn } from "@/core/design/ui";
+import { LogoMark, cn } from "@/core/design/ui";
 import type { ShellBadges, ShellUser } from "@/core/layout/types";
 import { ThemeButton } from "./ThemeButton";
+import { Sticker } from "./stickers";
 
 function useNavState() {
   const pathname = usePathname();
@@ -32,14 +33,16 @@ export function SideNav({
 }) {
   const { subject, activePath } = useNavState();
   return (
-    <aside className="sticky top-0 hidden h-dvh w-16 shrink-0 flex-col border-r border-hairline bg-paper px-2 py-5 sm:flex nav:w-[248px] nav:px-3">
+    <aside className="sticky top-0 hidden h-dvh w-16 shrink-0 flex-col border-r border-hairline bg-paper px-2 pb-5 pt-7 sm:flex nav:w-[248px] nav:px-3">
       <Link
         href={`/${subject}/dashboard`}
-        aria-label="GreenBook dashboard"
+        aria-label="RainbowPrep dashboard"
         className="mb-6 flex items-center justify-center gap-2.5 text-ink nav:justify-start nav:px-2"
       >
         <LogoMark size={28} />
-        <span className="hidden text-[17px] font-bold nav:inline">GreenBook</span>
+        <span className="hidden text-[19px] font-black tracking-tight nav:inline">
+          <span className="rp-rainbow-text">Rainbow</span>Prep
+        </span>
       </Link>
 
       <nav aria-label="Main" className="flex flex-col gap-0.5">
@@ -53,13 +56,14 @@ export function SideNav({
               aria-current={active ? "page" : undefined}
               title={f.label}
               className={cn(
-                "relative flex h-9 items-center justify-center gap-2.5 rounded-lg text-[15px] transition-colors nav:justify-start nav:px-2.5",
+                "relative flex h-10 items-center justify-center gap-2.5 rounded-[12px] text-[15px] transition-colors nav:justify-start nav:px-2.5",
                 active
-                  ? "bg-mist font-semibold text-ink ring-1 ring-hairline ring-inset"
-                  : "font-medium text-ink-soft hover:bg-mist hover:text-ink",
+                  ? "bg-pine-tint font-extrabold text-ink ring-1 ring-pine-soft ring-inset"
+                  : "font-semibold text-ink-soft hover:bg-pine-tint hover:text-ink",
               )}
             >
-              <Icon name={f.icon} size={18} className={active ? "text-pine" : "text-graphite"} />
+              {active ? <span aria-hidden="true" className="rp-rainbow-bar absolute inset-y-1.5 left-0 hidden w-1 rounded-r-full nav:block" style={{ backgroundImage: "linear-gradient(180deg, var(--rp-red), var(--rp-orange), var(--rp-yellow), var(--rp-green), var(--rp-blue), var(--rp-violet))" }} /> : null}
+              <Sticker emoji={f.emoji} size={18} tilt={active ? -10 : 0} />
               <span className="sr-only nav:not-sr-only nav:flex-1">{f.label}</span>
               {badge ? (
                 <>
@@ -73,6 +77,12 @@ export function SideNav({
       </nav>
 
       <div className="flex-1" />
+
+      <div aria-hidden="true" className="mb-4 hidden items-center gap-2 rounded-[14px] border border-dashed border-pine-soft bg-pine-tint px-3 py-2.5 nav:flex">
+        <Sticker emoji="🍓" size={22} tilt={-14} bob />
+        <span className="text-[13px] font-bold text-ink-soft">Stay sweet, keep going</span>
+        <Sticker emoji="🌈" size={18} tilt={8} className="ml-auto" />
+      </div>
 
       <div className="flex flex-col items-center gap-2 border-t border-hairline pt-4 nav:flex-row nav:items-center nav:gap-2.5 nav:px-1">
         {user ? (
@@ -137,10 +147,10 @@ export function BottomTabs() {
             aria-current={active ? "page" : undefined}
             className={cn(
               "flex min-w-0 flex-1 flex-col items-center gap-1 rounded-lg py-1 text-[11px]",
-              active ? "font-semibold text-pine" : "font-medium text-ink-soft",
+              active ? "bg-pine-tint font-extrabold text-pine" : "font-semibold text-ink-soft",
             )}
           >
-            <Icon name={f.icon} size={20} />
+            <Sticker emoji={f.emoji} size={20} tilt={active ? -10 : 0} />
             <span className="truncate">{f.shortLabel}</span>
           </Link>
         );

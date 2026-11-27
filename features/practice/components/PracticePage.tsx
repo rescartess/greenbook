@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { SUBJECTS, isSubjectSlug } from "@/core/config/subjects";
 import { Logo } from "@/core/design/ui";
-import { ThemeButton } from "@/core/shell";
+import { RainbowStripe, ThemeButton } from "@/core/shell";
 import { getCurrentUser } from "@/features/auth";
 import { getPracticeState } from "../queries";
 import { PracticeResults } from "./PracticeResults";
@@ -63,7 +63,8 @@ async function Practice({ attemptId }: { attemptId: Promise<string> }) {
 export function FinishedFrame({ subject, children }: { subject: string; children: React.ReactNode }) {
   return (
     <div className="gb-colors min-h-dvh bg-canvas">
-      <header className="border-b border-hairline bg-paper">
+      <RainbowStripe />
+      <header className="border-b border-hairline bg-paper pt-1.5">
         <div className="mx-auto flex h-14 max-w-[1440px] items-center justify-between gap-3 px-4 sm:px-8">
           <Link href={`/${subject}/dashboard`} className="text-ink" aria-label="Dashboard">
             <Logo size={28} />

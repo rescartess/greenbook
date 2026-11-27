@@ -65,7 +65,7 @@ function FixedTests({ tests }: { tests: FullTestRow[] }) {
         const letter = /\s([A-Z])$/.exec(test.title)?.[1] ?? null;
         return (
           <li key={test.id}>
-            <article className="flex h-full flex-col rounded-[14px] border border-hairline bg-paper p-5">
+            <article className="flex h-full flex-col rp-card rounded-[18px] border border-hairline bg-paper p-5">
               <div className="flex items-start justify-between gap-3">
                 <h3 className="text-[18px] font-bold leading-snug">{test.month ? monthName(test) : test.title}</h3>
                 {letter ? (

@@ -87,7 +87,7 @@ export function ResultsBoard({ subject, attempts, retake }: { subject: string; a
       </div>
 
       {shown.length === 0 ? (
-        <p className="rounded-[14px] border border-hairline bg-paper px-6 py-10 text-[15px] text-ink-soft">
+        <p className="rp-card rounded-[18px] border border-hairline bg-paper px-6 py-10 text-[15px] text-ink-soft">
           {q ? `Nothing called “${query.trim()}”.` : filter === "unfinished" ? "Nothing unfinished. Everything you started is done." : "Nothing here yet."}
         </p>
       ) : (
@@ -107,7 +107,7 @@ function ResultCard({ attempt, subject, when, retake }: { attempt: AttemptSummar
   const v = cardView(attempt, subject);
   const [state, action, pending] = useActionState(retake.bind(null, attempt.id), { message: null });
   return (
-    <article className="flex h-full flex-col rounded-[14px] border border-hairline bg-paper p-5">
+    <article className="flex h-full flex-col rp-card rounded-[18px] border border-hairline bg-paper p-5">
       <div className="flex items-center justify-between gap-3">
         <p className="text-[13px] text-graphite tabular-nums">{when}</p>
         <span
@@ -142,7 +142,7 @@ function ResultCard({ attempt, subject, when, retake }: { attempt: AttemptSummar
               <span className="font-semibold tabular-nums">{r.value}</span>
             </p>
             <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-mist" aria-hidden="true">
-              <div className={cn("h-full rounded-full", v.finished ? "bg-pine" : "bg-graphite/45")} style={{ width: `${r.share * 100}%` }} />
+              <div className={cn("h-full rounded-full", v.finished ? "rp-rainbow-bar" : "bg-graphite/45")} style={{ width: `${r.share * 100}%` }} />
             </div>
           </li>
         ))}
@@ -151,7 +151,7 @@ function ResultCard({ attempt, subject, when, retake }: { attempt: AttemptSummar
       <div className="mt-auto flex gap-2.5 pt-5">
         <Link
           href={v.primary.href}
-          className="inline-flex h-10 flex-1 items-center justify-center rounded-[10px] bg-pine text-[15px] font-bold text-pine-ink transition-colors hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pine"
+          className="inline-flex h-10 flex-1 items-center justify-center rp-btn-primary rounded-[12px] bg-pine text-[15px] font-extrabold text-pine-ink transition-colors hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pine"
         >
           {v.primary.label}
         </Link>

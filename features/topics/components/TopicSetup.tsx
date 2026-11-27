@@ -102,7 +102,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
           }
         >
           <div className="h-1 overflow-hidden rounded-full bg-mist" aria-hidden="true">
-            <div className="h-full rounded-full bg-pine" style={{ width: `${total ? (answered / total) * 100 : 0}%` }} />
+            <div className="rp-rainbow-bar h-full rounded-full" style={{ width: `${total ? (answered / total) * 100 : 0}%` }} />
           </div>
 
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -160,7 +160,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
         <input type="hidden" name="minutes" value={timed ? minutes : ""} />
         <input type="hidden" name="name" value={name} />
 
-        <section className="rounded-[14px] border border-hairline bg-paper p-5 sm:p-6">
+        <section className="rp-card rounded-[18px] border border-hairline bg-paper p-5 sm:p-6">
           <div className="rounded-[10px] bg-mist px-5 py-5 text-center">
             <p className="text-[34px] font-bold leading-tight tracking-[-0.01em] tabular-nums">
               {count === 0 ? "Nothing yet" : numbersText(safeFrom, to).replace(/^q/, "Q")}
@@ -254,7 +254,7 @@ export function TopicSetup({ topic, subject, startAction }: Props) {
 
 function Section({ title, aside, children }: { title: string; aside?: ReactNode; children: ReactNode }) {
   return (
-    <section className="rounded-[14px] border border-hairline bg-paper p-5 sm:p-6">
+    <section className="rp-card rounded-[18px] border border-hairline bg-paper p-5 sm:p-6">
       <div className="mb-4 flex items-baseline justify-between gap-3">
         <h2 className="text-[17px] font-bold">{title}</h2>
         {aside}

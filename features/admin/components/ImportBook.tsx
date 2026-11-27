@@ -324,7 +324,7 @@ export function ImportBook({ topics }: { topics: TopicOption[] }) {
           <p className="font-bold">{step.label}</p>
           <div className="mt-3 h-2 overflow-hidden rounded-full bg-mist">
             <div
-              className="h-full rounded-full bg-pine transition-[width]"
+              className="rp-rainbow-bar h-full rounded-full transition-[width]"
               style={{
                 width: `${step.total ? Math.round((step.done / step.total) * 100) : 100}%`,
               }}

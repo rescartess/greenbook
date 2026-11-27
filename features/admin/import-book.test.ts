@@ -33,7 +33,7 @@ describe("import files", () => {
 
   it("explains what is wrong", () => {
     expect(() => parseImportBook("nope")).toThrow(/not the book PDFs/);
-    expect(() => parseImportBook(file({ format: "x" }))).toThrow(/isn’t a GreenBook import file/);
+    expect(() => parseImportBook(file({ format: "x" }))).toThrow(/isn’t a RainbowPrep import file/);
     expect(() => parseImportBook(file({}, { answer: "D" }))).toThrow(/no correct answer/);
     expect(() => parseImportBook(file({}, { difficulty: "tricky" }))).toThrow(/no level/);
     expect(() => parseImportBook(file({ images: {} }))).toThrow(/picture that isn’t in the file/);

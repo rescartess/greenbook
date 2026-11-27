@@ -33,7 +33,7 @@ export const ROASTS: readonly string[] = [
   "No cap, your Transitions are mid. Fix them.",
   "Bro is scrolling TikTok while the SAT is scrolling toward him.",
   "Sigma students do 20 questions before breakfast.",
-  "POV: you opened GreenBook and actually studied. Be that POV.",
+  "POV: you opened RainbowPrep and actually studied. Be that POV.",
   "Delulu is not the solulu. Practice is the solulu.",
   "It's giving 'I'll start tomorrow'. It's been giving that for a month.",
   "Main character energy, side character score.",

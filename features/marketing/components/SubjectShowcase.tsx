@@ -18,7 +18,7 @@ export function SubjectShowcase() {
   const [subject, setSubject] = useState<SubjectSlug>("english");
   const s = SUBJECTS[subject];
   return (
-    <div className="rounded-[14px] border border-hairline bg-paper p-5 sm:p-6">
+    <div className="rp-card rounded-[18px] border border-hairline bg-paper p-5 sm:p-6">
       <div role="radiogroup" aria-label="Subject" className="flex w-fit rounded-[10px] border border-hairline bg-mist p-[3px]">
         {SUBJECT_SLUGS.map((slug) => (
           <button
@@ -29,7 +29,7 @@ export function SubjectShowcase() {
             onClick={() => setSubject(slug)}
             className={cn(
               "rounded-[7px] px-4 py-1.5 text-[14px] font-semibold transition-colors",
-              slug === subject ? "bg-paper text-ink shadow-[0_1px_2px_rgb(0_0_0/0.06)] ring-1 ring-hairline" : "text-ink-soft hover:text-ink",
+              slug === subject ? "rp-btn-primary bg-pine text-pine-ink" : "text-ink-soft hover:text-ink",
             )}
           >
             {SUBJECTS[slug].label}

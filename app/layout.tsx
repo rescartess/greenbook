@@ -9,7 +9,7 @@ import "./globals.css";
 import { THEME_SCRIPT } from "@/core/layout";
 
 export const metadata: Metadata = {
-  title: { default: "GreenBook, free SAT practice", template: "%s | GreenBook" },
+  title: { default: "RainbowPrep, free SAT practice 🌈", template: "%s | RainbowPrep" },
   description: "Adaptive SAT practice tests, practice by topic and every mistake saved. Free for every student.",
 };
 
