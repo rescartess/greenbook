@@ -320,7 +320,8 @@
   --fp-mark-fg: #ffffff;
   --fp-mark-dot: #f5c542;
 }
-:where([data-theme="dark"]) .gb-colors {
+:where([data-theme="dark"]) .gb-colors,
+.gb-colors .fp-dark {
   --gb-paper: #131a2a;
   --gb-canvas: #0b101c;
   --gb-mist: #182136;
@@ -375,7 +376,8 @@
   --fp-r-btn: 12px;
   --fp-r-card: 18px;
 }
-:where([data-design="strawberry"][data-theme="dark"]) .gb-colors {
+:where([data-design="strawberry"][data-theme="dark"]) .gb-colors,
+:where([data-design="strawberry"]) .gb-colors .fp-dark {
   --gb-paper: #1c1328;
   --gb-mist: #251a35;
   --gb-canvas: #110b1a;
@@ -430,7 +432,8 @@
   --fp-mark-fg: #f6ecdf;
   --fp-mark-dot: #c79a5b;
 }
-:where([data-design="premium"][data-theme="dark"]) .gb-colors {
+:where([data-design="premium"][data-theme="dark"]) .gb-colors,
+:where([data-design="premium"]) .gb-colors .fp-dark {
   --gb-paper: #1b1510;
   --gb-canvas: #0e0a07;
   --gb-mist: #231b14;
@@ -496,7 +499,8 @@
   --fp-pastel-3: #d6eedd;
   --fp-pastel-4: #dde0f6;
 }
-:where([data-design="study"][data-theme="dark"]) .gb-colors {
+:where([data-design="study"][data-theme="dark"]) .gb-colors,
+:where([data-design="study"]) .gb-colors .fp-dark {
   --gb-paper: #17201b;
   --gb-canvas: #0e1411;
   --gb-mist: #1c2721;
@@ -891,13 +895,41 @@ html[data-design="premium"] .fp-dial {
   background-image: radial-gradient(70% 90% at 100% 0%, rgb(217 178 122 / 0.28), transparent 70%);
 }
 
-/* The founder's photo on the home page: a glow in the design's main color behind it, a deep shadow. */
-.fp-photo-glow {
-  background: radial-gradient(60% 55% at 55% 45%, color-mix(in srgb, var(--gb-pine) 40%, transparent), transparent 72%);
-  pointer-events: none;
+/* Home page photo sections (owner request 28 Nov 2026): always in the design's dark colors, even in
+   light mode (.fp-dark above), so the photos melt into the page instead of sitting on it. */
+.fp-dark {
+  color-scheme: dark;
+  background: var(--gb-canvas);
+  color: var(--gb-ink);
 }
-.fp-photo {
-  box-shadow: 0 40px 90px -40px rgb(0 0 0 / 0.55);
+/* A photo that is part of the page: behind it, a soft light in the design's main color; its blacks
+   become that same light/background (lighten), and its edges fade out. No edge can show, in any
+   design, because the light ends in the page's own background color well inside the box. */
+.fp-blend {
+  /* Position comes from the element's own classes (relative, or absolute on wide screens). */
+  isolation: isolate;
+  --fp-tint: radial-gradient(
+    closest-side at var(--fp-glow-at, 60% 40%),
+    color-mix(in srgb, var(--gb-pine) var(--fp-glow, 12%), var(--gb-canvas)),
+    var(--gb-canvas) 100%
+  );
+  background: var(--fp-tint);
+}
+.fp-blend img {
+  -webkit-mask-image: var(--fp-blend-mask);
+  mask-image: var(--fp-blend-mask);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+.fp-blend::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--fp-tint);
+  mix-blend-mode: lighten;
+  /* A part of the photo that must keep its own colors (the TV screen) can be cut out of this layer. */
+  clip-path: var(--fp-keep, none);
 }
 
 /* The accent words in the headline. */

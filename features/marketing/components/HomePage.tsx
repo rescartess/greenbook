@@ -4,7 +4,7 @@ import { SQB_CREDIT } from "@/core/config/practice";
 import { Logo } from "@/core/design/ui";
 import { BerryStripe, BtnLink, DesignPicker, Sprinkles, Sticker, ThemeButton } from "@/core/shell";
 import founder from "@/public/home/founder.jpg";
-import { BubbleField } from "./BubbleField";
+import screen from "@/public/home/screen.jpg";
 import { Faq } from "./Faq";
 import { Showcase } from "./Showcase";
 
@@ -22,13 +22,22 @@ const NAV = [
   { href: "#faq", label: "FAQ" },
 ];
 
-/** What matters most, on the photo. A few words each. */
-const ON_PHOTO = [
-  { text: "The real test screen", place: "lg:-left-10 lg:top-[14%]" },
-  { text: "Adaptive modules", place: "lg:-right-8 lg:top-[34%]" },
-  { text: "Mistakes stay", place: "lg:-left-14 lg:top-[58%]" },
-  { text: "Ranked by right answers", place: "lg:-right-10 lg:bottom-[14%]" },
-];
+/** Where each photo fades into the page (CSS mask layers, all must be opaque to show). */
+const HERO_FADE = [
+  "linear-gradient(to right, transparent 0%, #000 38%)",
+  "linear-gradient(to top, transparent 0%, #000 34%)",
+  "linear-gradient(to bottom, transparent 0%, #000 14%)",
+  "linear-gradient(to left, transparent 0%, #000 10%)",
+].join(", ");
+const SCREEN_FADE = [
+  "linear-gradient(to left, transparent 0%, #000 22%)",
+  "linear-gradient(to top, transparent 0%, #000 28%)",
+  "linear-gradient(to bottom, transparent 0%, #000 22%)",
+  "linear-gradient(to right, transparent 0%, #000 12%)",
+].join(", ");
+/** The TV screen inside screen.jpg (percent of the picture): keeps its own colors. */
+const SCREEN_KEEP =
+  "polygon(evenodd, 0 0, 100% 0, 100% 100%, 0 100%, 0 0, 52.4% 17.8%, 100% 14.7%, 100% 49.3%, 52% 45.7%, 52.4% 17.8%)";
 
 function Title({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <h2 className={`text-[40px] font-extrabold leading-[1] tracking-[-0.045em] sm:text-[64px] ${className}`}>{children}</h2>;
@@ -64,22 +73,36 @@ export function HomePage() {
         </nav>
       </header>
 
-      {/* Hero: the line, the photo, the features on it */}
-      <section className="relative px-5 pb-24 pt-10 sm:px-8 sm:pt-16 lg:pb-32">
-        <BubbleField className="fp-bubble-mask pointer-events-none absolute inset-x-0 top-0 hidden justify-start opacity-25 md:flex" />
-        <div className="relative mx-auto grid max-w-[1200px] items-center gap-14 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-20">
-          <div>
-            <h1 className="text-[64px] font-extrabold leading-[0.9] tracking-[-0.055em] sm:text-[112px] lg:text-[128px]">
+      {/* Hero (always dark, so the photo melts into it): the founder, the name, the line. */}
+      <section className="fp-dark relative -mt-[88px] overflow-hidden pt-[88px] sm:-mt-[96px] sm:pt-[96px]">
+        <div className="relative mx-auto grid max-w-[1440px] lg:min-h-[min(100dvh,980px)] lg:grid-cols-12">
+          {/* The photo: right side on wide screens, top on phones. Its edges fade into the page. */}
+          <figure
+            className="fp-blend relative lg:absolute lg:inset-y-0 lg:right-0 lg:w-[60%]"
+            style={{ "--fp-blend-mask": HERO_FADE, "--fp-glow-at": "58% 36%", "--fp-glow": "14%" } as React.CSSProperties}
+          >
+            <Image
+              src={founder}
+              alt="The founder of QuantumTest, leaning back in his chair"
+              priority
+              placeholder="blur"
+              sizes="(min-width: 1024px) 60vw, 100vw"
+              className="h-[62svh] w-full object-cover object-[60%_30%] lg:h-full"
+            />
+          </figure>
+
+          <div className="relative z-10 -mt-24 px-5 pb-20 sm:-mt-32 sm:px-8 lg:col-span-7 lg:mt-0 lg:flex lg:flex-col lg:justify-center lg:px-[120px] lg:pb-16 lg:pt-6">
+            <p className="text-[64px] font-extrabold leading-[0.9] tracking-[-0.055em] sm:text-[104px] lg:text-[116px]">
               They not
               <br />
               <span className="fp-accent">like us.</span>
-            </h1>
-            <p className="mt-8 max-w-[460px] text-[20px] leading-snug text-ink-soft sm:text-[24px]">
+            </p>
+            <p className="mt-7 max-w-[420px] text-[20px] leading-snug text-ink-soft sm:text-[22px]">
               We don’t sell hope.
               <br />
               We give it.
             </p>
-            <div className="mt-10 flex flex-wrap items-center gap-3">
+            <div className="mt-9 flex flex-wrap items-center gap-3">
               <BtnLink href="/login" className="h-12 px-8 text-[16px]">
                 Start
                 <Sticker emoji="🍓" size={18} tilt={0} />
@@ -89,45 +112,45 @@ export function HomePage() {
               </BtnLink>
             </div>
           </div>
-
-          <figure className="relative mx-auto w-full max-w-[460px]">
-            {/* A soft glow in the design's main color behind the photo. */}
-            <div aria-hidden="true" className="fp-photo-glow absolute -inset-10 rounded-[48px] blur-3xl" />
-            <div className="fp-photo relative overflow-hidden rounded-[var(--fp-r-card)] border border-hairline">
-              <Image
-                src={founder}
-                alt="The founder of QuantumTest, leaning back in his chair"
-                priority
-                placeholder="blur"
-                sizes="(min-width: 1024px) 460px, 92vw"
-                className="h-auto w-full"
-              />
-              <figcaption className="absolute bottom-4 left-4 rounded-full bg-black/45 px-3 py-1 font-mono text-[12px] text-white/85 backdrop-blur-sm">
-                Founder.
-              </figcaption>
-            </div>
-            <ul className="mt-4 flex flex-wrap gap-2 lg:mt-0">
-              {ON_PHOTO.map((f) => (
-                <li key={f.text} className={`fp-glass flex items-center gap-2 rounded-full border border-hairline px-3.5 py-2 text-[13px] font-semibold text-ink lg:absolute ${f.place}`}>
-                  <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-pine" />
-                  {f.text}
-                </li>
-              ))}
-            </ul>
-          </figure>
         </div>
+
+        {/* The name, huge, sitting on the photo's faded edge: one piece with the picture. */}
+        <h1
+          className="fp-masthead pointer-events-none relative z-10 mx-auto -mt-6 max-w-[1440px] select-none whitespace-nowrap px-5 text-center text-[15vw] font-extrabold leading-[0.78] tracking-[-0.065em] sm:px-8 lg:-mt-[150px] lg:text-[min(16.5vw,232px)]"
+        >
+          <span className="fp-word-1">Quantum</span>
+          <span className="fp-word-2">Test</span>
+        </h1>
       </section>
 
-      {/* Why us */}
-      <section id="why" className="relative scroll-mt-24 px-5 pb-28 sm:px-8 sm:pb-36">
-        <div className="mx-auto max-w-[1200px] text-[48px] font-extrabold leading-[0.98] tracking-[-0.05em] sm:text-[88px] lg:text-[104px]">
-          <p className="text-graphite">Why us?</p>
-          <p>
-            <Link href="/login" className="fp-accent underline decoration-[0.06em] underline-offset-[0.12em] transition-opacity hover:opacity-80">
-              Explore.
-            </Link>
-          </p>
-          <p>Not another prep site.</p>
+      {/* Second page: the dashboard on the screen. Why us? Explore. */}
+      <section id="why" className="fp-dark relative scroll-mt-24 overflow-hidden">
+        <div className="relative mx-auto grid max-w-[1440px] items-center lg:min-h-[min(100dvh,940px)] lg:grid-cols-12">
+          <figure
+            className="fp-blend relative lg:col-span-7"
+            style={{ "--fp-blend-mask": SCREEN_FADE, "--fp-glow-at": "28% 46%", "--fp-glow": "10%", "--fp-keep": SCREEN_KEEP } as React.CSSProperties}
+          >
+            <Image
+              src={screen}
+              alt="The founder pointing a light at a screen that shows the QuantumTest dashboard in the Nerd design"
+              placeholder="blur"
+              sizes="(min-width: 1024px) 58vw, 100vw"
+              className="h-auto w-full"
+            />
+          </figure>
+          <div className="relative z-10 -mt-16 px-5 pb-24 text-[52px] font-extrabold leading-[0.96] tracking-[-0.05em] sm:px-8 sm:text-[80px] lg:col-span-5 lg:mt-0 lg:pb-0 lg:pl-0 lg:pr-[120px] lg:text-[84px]">
+            <p className="text-graphite">Why us?</p>
+            <p>
+              <Link href="/login" className="fp-accent underline decoration-[0.06em] underline-offset-[0.12em] transition-opacity hover:opacity-80">
+                Explore.
+              </Link>
+            </p>
+            <p>
+              Not another
+              <br />
+              prep site.
+            </p>
+          </div>
         </div>
       </section>
 
