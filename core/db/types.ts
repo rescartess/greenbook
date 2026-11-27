@@ -567,6 +567,8 @@ export type Database = {
       }
       finish_practice: { Args: { p_attempt_id: string }; Returns: undefined }
       get_my_banner: { Args: { p_subject: string }; Returns: Json }
+      get_student_profile: { Args: { p_user: string; p_subject: string }; Returns: Json }
+      list_leaderboard: { Args: { p_subject: string; p_limit?: number }; Returns: Json }
       get_mistakes: { Args: { p_subject: string }; Returns: Json }
       get_practice_state: { Args: { p_attempt_id: string }; Returns: Json }
       retry_mistake: { Args: { p_answer: string; p_question_id: string }; Returns: Json }

@@ -898,3 +898,17 @@ html[data-design="strawberry"] .fp-accent {
   -webkit-mask-image: radial-gradient(50% 55% at 52% 18%, #000 0%, transparent 80%);
   mask-image: radial-gradient(50% 55% at 52% 18%, #000 0%, transparent 80%);
 }
+
+/* Leaderboard ticker on the dashboard: the list (drawn twice) drifts up forever; edges fade. */
+@keyframes fp-ticker {
+  to {
+    transform: translateY(-50%);
+  }
+}
+.fp-ticker-run {
+  animation: fp-ticker 30s linear infinite;
+}
+.fp-ticker {
+  -webkit-mask-image: linear-gradient(transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(transparent, #000 12%, #000 88%, transparent);
+}

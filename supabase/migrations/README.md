@@ -35,3 +35,4 @@ only way students write activity, and each one checks the caller owns the attemp
 Helper functions live in the `private` schema and can't be called from the website.
 - 0017 SQB collection: question_sets.collection ('books'/'sqb'), 10 SQB topic sets, list_topics(subject, collection), get_topic returns collection, imports keep the explanation.
 - 0018 get_mistakes also returns the practice (question set) each mistake comes from, so Mistakes lists practices first.
+- 0025 leaderboard: list_leaderboard and get_student_profile (read-only public stats: name, photo, bio, time practicing, questions answered, best score, rank; no email or role; admins hidden)

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/core/design/ui";
 import { ordinal, practiceTime, topPercent } from "../banner";
-import type { Banner, DashboardData } from "../queries";
+import type { Banner } from "../queries";
 
 const SCALE_MIN = 200;
 const SCALE_MAX = 800;
@@ -18,13 +18,16 @@ export function ProfileBanner({
   avatarUrl,
   banner,
   score,
+  scoreLabel = "latest",
   bio,
 }: {
   name: string;
   initials: string;
   avatarUrl: string | null;
   banner: Banner;
-  score: DashboardData["score"];
+  score: { value: number; changeSinceFirst: number | null } | null;
+  /** Word next to the score bar: "latest" on your own dashboard, "best" on someone else's profile. */
+  scoreLabel?: string;
   bio: ReactNode;
 }) {
   const share = score ? (score.value - SCALE_MIN) / (SCALE_MAX - SCALE_MIN) : 0;
@@ -52,7 +55,7 @@ export function ProfileBanner({
               <div className="h-full rounded-full bg-pine" style={{ width: `${Math.max(0, Math.min(1, share)) * 100}%` }} />
             </div>
             <span className="text-graphite">
-              {score ? `latest${score.changeSinceFirst ? ` ${score.changeSinceFirst > 0 ? "+" : ""}${score.changeSinceFirst}` : ""}/800` : "no test yet"}
+              {score ? `${scoreLabel}${score.changeSinceFirst ? ` ${score.changeSinceFirst > 0 ? "+" : ""}${score.changeSinceFirst}` : ""}/800` : "no test yet"}
             </span>
           </div>
         </div>

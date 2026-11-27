@@ -2,6 +2,7 @@ import "server-only";
 import { isFeatureEnabled } from "@/core/config/features";
 import { ESTIMATED_SCORES, SUBJECTS, type SubjectSlug } from "@/core/config/subjects";
 import { createDbClient } from "@/core/db/server";
+import { avatarUrl } from "@/core/shell";
 
 export type DashboardData = {
   resume: { title: string; detail: string; progress: number; done: number; total: number; href: string } | null;
@@ -163,5 +164,70 @@ export async function getBanner(subject: SubjectSlug): Promise<Banner> {
     bestScore: typeof d.bestScore === "number" ? d.bestScore : null,
     rank: num(d.rank, 1),
     students: Math.max(1, num(d.students, 1)),
+  };
+}
+
+export type RankRow = {
+  id: string;
+  rank: number;
+  name: string;
+  avatarUrl: string | null;
+  seconds: number;
+  answered: number;
+  bestScore: number | null;
+  me: boolean;
+};
+
+export type Leaderboard = { students: number; rows: RankRow[] };
+
+const num = (v: unknown, f = 0) => (typeof v === "number" && Number.isFinite(v) ? v : f);
+const str = (v: unknown, f = "") => (typeof v === "string" ? v : f);
+
+/** Everyone, ranked by time practicing, plus the student's own row (migration 0025). */
+export async function getLeaderboard(subject: SubjectSlug): Promise<Leaderboard> {
+  const supabase = await createDbClient();
+  const { data, error } = await supabase.rpc("list_leaderboard", { p_subject: subject, p_limit: 50 });
+  if (error || !data || typeof data !== "object" || Array.isArray(data)) return { students: 0, rows: [] };
+  const d = data as { students?: unknown; rows?: unknown };
+  const rows = Array.isArray(d.rows) ? d.rows : [];
+  return {
+    students: num(d.students),
+    rows: rows.map((r) => {
+      const x = (r ?? {}) as Record<string, unknown>;
+      return {
+        id: str(x.id),
+        rank: num(x.rank, 1),
+        name: str(x.name, "Student"),
+        avatarUrl: avatarUrl(typeof x.avatar === "string" ? x.avatar : null),
+        seconds: num(x.seconds),
+        answered: num(x.answered),
+        bestScore: typeof x.bestScore === "number" ? x.bestScore : null,
+        me: x.me === true,
+      };
+    }),
+  };
+}
+
+export type StudentProfile = Banner & { id: string; name: string; avatarUrl: string | null; me: boolean };
+
+/** Another student's public profile, or null when there is no such student (migration 0025). */
+export async function getStudentProfile(id: string, subject: SubjectSlug): Promise<StudentProfile | null> {
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
+  const supabase = await createDbClient();
+  const { data, error } = await supabase.rpc("get_student_profile", { p_user: id, p_subject: subject });
+  if (error || !data || typeof data !== "object" || Array.isArray(data)) return null;
+  const x = data as Record<string, unknown>;
+  return {
+    id: str(x.id),
+    name: str(x.name, "Student"),
+    avatarUrl: avatarUrl(typeof x.avatar === "string" ? x.avatar : null),
+    me: x.me === true,
+    joined: typeof x.joined === "string" ? x.joined : null,
+    bio: typeof x.bio === "string" ? x.bio : null,
+    seconds: num(x.seconds),
+    answered: num(x.answered),
+    bestScore: typeof x.bestScore === "number" ? x.bestScore : null,
+    rank: num(x.rank, 1),
+    students: Math.max(1, num(x.students, 1)),
   };
 }

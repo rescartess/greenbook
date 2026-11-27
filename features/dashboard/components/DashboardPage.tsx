@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import { SUBJECTS, type SubjectSlug } from "@/core/config/subjects";
-import { cn } from "@/core/design/ui";
-import { BtnLink, Bubbles, Card, PageTitle } from "@/core/shell";
+import { Card, PageTitle } from "@/core/shell";
 import { getCurrentUser } from "@/features/auth";
 import { BioEditor, ColorSettings, getLook } from "@/features/profile";
-import { getBanner, getDashboard, type DashboardData } from "../queries";
+import { getBanner, getDashboard, getLeaderboard, type DashboardData } from "../queries";
+import { RankingCard } from "./RankingCard";
 import { ProfileBanner } from "./ProfileBanner";
 import { pickRoast } from "../roasts";
 import { RoastCard } from "./RoastCard";
@@ -12,8 +12,6 @@ import { RoastCard } from "./RoastCard";
 /** An SAT section is scored from 200 to 800 (English and Math alike). */
 const SCALE_MIN = 200;
 const SCALE_MAX = 800;
-/** Up to this many questions, progress is drawn as answer bubbles; above it, as a thin bar. */
-const MAX_BUBBLES = 40;
 
 /** The dashboard frame shows at once; the student's own numbers stream in. */
 export function DashboardPage({ subject }: { subject: SubjectSlug }) {
@@ -38,12 +36,13 @@ function DashboardLoading() {
 }
 
 async function DashboardContent({ subject }: { subject: SubjectSlug }) {
-  const [data, look, user, banner] = await Promise.all([getDashboard(subject), getLook(), getCurrentUser(), getBanner(subject)]);
+  const [data, look, user, banner, board] = await Promise.all([getDashboard(subject), getLook(), getCurrentUser(), getBanner(subject), getLeaderboard(subject)]);
   return (
     <DashboardView
       subject={subject}
       data={data}
       roast={pickRoast()}
+      ranking={<RankingCard board={board} subject={subject} />}
       top={
         <ProfileBanner
           name={user.name}
@@ -63,12 +62,15 @@ export function DashboardView({
   data,
   roast,
   top,
+  ranking,
   design,
 }: {
   subject: SubjectSlug;
   data: DashboardData;
   roast: string;
   top?: React.ReactNode;
+  /** The leaderboard (owner request 27 Nov 2026: it took the place of "Continue where you left off"). */
+  ranking?: React.ReactNode;
   design?: React.ReactNode;
 }) {
   const measured = data.domains.filter((d) => d.accuracy !== null).map((d) => d.accuracy!);
@@ -83,11 +85,8 @@ export function DashboardView({
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.7fr_1fr]">
         {top ?? (data.score ? <ScoreCard score={data.score} className="lg:col-span-2" /> : null)}
-        {data.resume ? <ContinueCard resume={data.resume} /> : null}
-        {data.resume ? <RoastCard first={roast} /> : null}
-
-
-        {data.resume ? null : <RoastCard first={roast} className="lg:col-span-2" />}
+        {ranking}
+        <RoastCard first={roast} className={ranking ? undefined : "lg:col-span-2"} />
 
         {design ? (
           <Card className="lg:col-span-2">
@@ -144,28 +143,6 @@ function ScoreCard({ score, className }: { score: NonNullable<DashboardData["sco
         ) : null}
       </div>
       {score.estimated ? <p className="mt-4 text-[13px] text-graphite">Estimated from your answers, not an official score</p> : null}
-    </Card>
-  );
-}
-
-function ContinueCard({ resume, className }: { resume: NonNullable<DashboardData["resume"]>; className?: string }) {
-  return (
-    <Card className={cn("flex flex-col", className)}>
-      <p className="text-[14px] font-medium text-ink-soft">Unfinished business</p>
-      <h2 className="mt-1.5 text-[24px] font-bold leading-tight">{resume.title}</h2>
-      <p className="mt-1 text-[15px] text-ink-soft tabular-nums">{resume.detail}</p>
-      <div className="mb-5 mt-5">
-        {resume.total > 0 && resume.total <= MAX_BUBBLES ? (
-          <Bubbles done={resume.done} total={resume.total} label={resume.detail} />
-        ) : (
-          <div className="h-1.5 overflow-hidden rounded-[3px] bg-mist">
-            <div className="h-full rounded-[3px] bg-pine" style={{ width: `${Math.round(resume.progress * 100)}%` }} />
-          </div>
-        )}
-      </div>
-      <div className="mt-auto">
-        <BtnLink href={resume.href}>Resume</BtnLink>
-      </div>
     </Card>
   );
 }
