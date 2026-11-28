@@ -895,41 +895,50 @@ html[data-design="premium"] .fp-dial {
   background-image: radial-gradient(70% 90% at 100% 0%, rgb(217 178 122 / 0.28), transparent 70%);
 }
 
-/* Home page photo sections (owner request 28 Nov 2026): always in the design's dark colors, even in
-   light mode (.fp-dark above), so the photos melt into the page instead of sitting on it. */
+/* Home page sections that stay in the design's dark colors, even in light mode. */
 .fp-dark {
   color-scheme: dark;
   background: var(--gb-canvas);
   color: var(--gb-ink);
 }
-/* A photo that is part of the page: behind it, a soft light in the design's main color; its blacks
-   become that same light/background (lighten), and its edges fade out. No edge can show, in any
-   design, because the light ends in the page's own background color well inside the box. */
-.fp-blend {
-  /* Position comes from the element's own classes (relative, or absolute on wide screens). */
+/* Home page product pieces (owner request 28 Nov 2026: features instead of the photos). The test screen
+   leans back a little in 3D over a soft light in the design's main color; the hero fades out at the
+   bottom under the big name. */
+.fp-stack {
   isolation: isolate;
-  --fp-tint: radial-gradient(
-    closest-side at var(--fp-glow-at, 60% 40%),
-    color-mix(in srgb, var(--gb-pine) var(--fp-glow, 12%), var(--gb-canvas)),
-    var(--gb-canvas) 100%
-  );
-  background: var(--fp-tint);
 }
-.fp-blend img {
-  -webkit-mask-image: var(--fp-blend-mask);
-  mask-image: var(--fp-blend-mask);
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
-}
-.fp-blend::after {
+.fp-stack::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -22% -14%;
+  z-index: -1;
   pointer-events: none;
-  background: var(--fp-tint);
-  mix-blend-mode: lighten;
-  /* A part of the photo that must keep its own colors (the TV screen) can be cut out of this layer. */
-  clip-path: var(--fp-keep, none);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--gb-pine) 26%, transparent), transparent);
+}
+.fp-tilt {
+  transform: perspective(1400px) rotateX(6deg);
+  transform-origin: 50% 60%;
+  border-radius: 14px;
+  box-shadow: 0 40px 90px -40px rgb(0 0 0 / 0.7);
+}
+@media (min-width: 1280px) {
+  .fp-tilt {
+    transform: perspective(1800px) rotateY(-14deg) rotateX(6deg) rotateZ(1deg);
+  }
+}
+.fp-fade-bottom {
+  -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
+}
+@media (min-width: 1280px) {
+  .fp-fade-bottom {
+    -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent 96%);
+    mask-image: linear-gradient(to bottom, #000 70%, transparent 96%);
+  }
+}
+/* Feature tiles: a faint light in the main color from the top corner. */
+.fp-tile {
+  background-image: radial-gradient(90% 70% at 100% 0%, color-mix(in srgb, var(--gb-pine) 12%, transparent), transparent 70%);
 }
 
 /* The accent words in the headline. */
