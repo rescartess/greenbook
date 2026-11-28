@@ -47,7 +47,7 @@ export function Showcase() {
       <div className="fp-float relative z-30 mt-3 rounded-[18px] border border-hairline bg-paper p-5 lg:absolute lg:right-0 lg:top-[300px] lg:mt-0 lg:w-[300px]">
         <p className="text-[13px] font-semibold text-graphite">Design</p>
         <div className="mt-2 flex flex-wrap gap-1.5">
-          {["Default", "Strawberry", "Premium", "Nerd"].map((d, i) => (
+          {["Default", "Strawberry", "Premium", "Nerd", "Winter"].map((d, i) => (
             <span key={d} className={`rounded-full px-3 py-1 text-[13px] font-semibold ${i === 0 ? "rp-btn-primary bg-pine text-pine-ink" : "border border-hairline text-ink-soft"}`}>
               {d}
             </span>

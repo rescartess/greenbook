@@ -83,6 +83,7 @@ export function Empty({ title, children, action }: { title: string; children?: R
   return (
     <Card className="px-6 py-10 sm:px-8">
       <Sticker emoji="🍓" size={34} tilt={-12} className="mb-3" />
+      <Sticker design="winter" emoji="⛄" size={34} tilt={-8} className="mb-3" />
       <p className="text-[17px] font-bold">{title}</p>
       {children ? <p className="mt-1.5 max-w-xl text-[15px] text-ink-soft">{children}</p> : null}
       {action ? <div className="mt-5">{action}</div> : null}

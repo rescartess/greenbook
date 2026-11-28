@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { SubjectSegment } from "./SubjectSegment";
-import { Sticker, titleEmoji } from "./stickers";
+import { Sticker, titleEmoji, winterEmoji } from "./stickers";
 
 /**
  * Page title for the logged-in pages around the exam: rainbow letters with an emoji sticker.
@@ -37,6 +37,7 @@ export function PageTitle({
         <div className="flex items-center gap-3">
           <h1 className="text-[28px] leading-tight tracking-[-0.01em] sm:text-[34px]">{title}</h1>
           <Sticker emoji={emoji ?? titleEmoji(title)} size={30} tilt={10} className="shrink-0" />
+          <Sticker design="winter" emoji={winterEmoji(title)} size={28} tilt={8} className="shrink-0" />
         </div>
         {subtitle ? <p className="mt-1 max-w-2xl text-[15px] text-graphite">{subtitle}</p> : null}
       </div>

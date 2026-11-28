@@ -27,4 +27,4 @@ export function ThemeToggle({ className }: { className?: string }) {
  * Runs before the first paint so a saved theme never flashes. Someone who never chose gets dark
  * (owner request 28 Nov 2026: dark is the default for new visitors); "system" follows the device.
  */
-export const THEME_SCRIPT = `(function(){try{var d=document.documentElement,t=localStorage.getItem("theme");if(t==="dark"||t==="light")d.setAttribute("data-theme",t);else if(t!=="system")d.setAttribute("data-theme","dark");var g=localStorage.getItem("design");if(g==="rainbow")g="strawberry";if(g==="strawberry"||g==="premium"||g==="study")d.setAttribute("data-design",g)}catch(e){}})()`;
+export const THEME_SCRIPT = `(function(){try{var d=document.documentElement,t=localStorage.getItem("theme");if(t==="dark"||t==="light")d.setAttribute("data-theme",t);else if(t!=="system")d.setAttribute("data-theme","dark");var g=localStorage.getItem("design");if(g==="rainbow")g="strawberry";if(g==="strawberry"||g==="premium"||g==="study"||g==="winter")d.setAttribute("data-design",g)}catch(e){}})()`;

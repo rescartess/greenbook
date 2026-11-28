@@ -2,14 +2,16 @@ import type { CSSProperties } from "react";
 import { cn } from "@/core/design/ui";
 
 /**
- * Strawberry-design stickers (owner request, 27 Nov 2026; shown only in the Strawberry design): emoji with a white die-cut edge,
- * a soft shadow and a small tilt. They wiggle when hovered. Decoration only: hidden from screen readers.
+ * Design stickers (owner request, 27 Nov 2026): emoji with a white die-cut edge, a soft shadow and a
+ * small tilt. They wiggle when hovered. Shown only in their design: Strawberry (default) or Winter
+ * (`design="winter"`, 28 Nov 2026). Decoration only: hidden from screen readers.
  */
 export function Sticker({
   emoji,
   size = 24,
   tilt = -8,
   bob = false,
+  design = "strawberry",
   className,
   style,
 }: {
@@ -18,13 +20,15 @@ export function Sticker({
   tilt?: number;
   /** Float gently up and down. */
   bob?: boolean;
+  /** Which design shows it. */
+  design?: "strawberry" | "winter";
   className?: string;
   style?: CSSProperties;
 }) {
   return (
     <span
       aria-hidden="true"
-      className={cn("rp-sticker rp-only select-none", bob && "rp-bob", className)}
+      className={cn("rp-sticker select-none", design === "winter" ? "wm-only" : "rp-only", bob && "rp-bob", className)}
       style={{ fontSize: size, ["--rp-tilt" as string]: `${tilt}deg`, ...style }}
     >
       {emoji}
@@ -66,6 +70,18 @@ export function Sprinkles({ roomy = false }: { roomy?: boolean }) {
       ))}
     </div>
   );
+}
+
+/** Pick a Winter sticker for a page title from its words. */
+export function winterEmoji(title: string): string {
+  const t = title.toLowerCase();
+  if (t.includes("dashboard")) return "🎄";
+  if (t.includes("full test") || t.includes("test")) return "🎁";
+  if (t.includes("topic")) return "⛄";
+  if (t.includes("result") || t.includes("score")) return "🎆";
+  if (t.includes("mistake")) return "🧤";
+  if (t.includes("profile")) return "🦌";
+  return "❄️";
 }
 
 /** Pick a sticker for a page title from its words. */

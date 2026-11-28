@@ -13,13 +13,15 @@ type MarkProps = {
 /**
  * The QuantumTest mark: a "Q" ring with a short tail and a small particle in orbit.
  * Its colors follow the design (`--fp-mark-*` in app/globals.css); the Strawberry design shows a
- * strawberry instead.
+ * strawberry instead, and Winter a wreath (the ring) with a red ribbon (the tail) and a gold star
+ * (the particle).
  */
 export function LogoMark({ size = 32, variant = "tile", className }: MarkProps) {
   return (
     <>
-      <QuantumMark size={size} variant={variant} className={cn("rp-hide", className)} />
+      <QuantumMark size={size} variant={variant} className={cn("rp-hide wm-hide", className)} />
       <StrawberryMark size={size} variant={variant} className={cn("rp-only", className)} />
+      <WreathMark size={size} variant={variant} className={cn("wm-only", className)} />
     </>
   );
 }
@@ -60,6 +62,26 @@ function StrawberryMark({ size = 32, variant = "tile", className }: MarkProps) {
       {/* leaves and stem */}
       <path d="M100 74 L 58 50 L 84 56 L 70 24 L 100 46 L 130 24 L 116 56 L 142 50 Z" fill="#2ECC71" stroke="#1F9E55" strokeWidth="4" strokeLinejoin="round" />
       <path d="M100 46 C 100 34 104 24 112 16" stroke="#1F9E55" strokeWidth="8" strokeLinecap="round" fill="none" />
+    </svg>
+  );
+}
+
+/** Winter: the Q as a Christmas wreath, its tail a red ribbon, its particle a gold star. */
+function WreathMark({ size = 32, variant = "tile", className }: MarkProps) {
+  const berries = [[60, 70], [128, 66], [52, 120], [92, 142], [138, 116]];
+  return (
+    <svg width={size} height={size} viewBox="0 0 200 200" aria-hidden="true" className={cn("shrink-0", className)}>
+      <path d={TILE} fill={variant === "tile" ? "#0D2A4A" : "#FFFFFF"} fillOpacity={variant === "tile" ? 1 : 0.18} />
+      {/* wreath */}
+      <circle cx="94" cy="96" r="44" fill="none" stroke="#1F8A52" strokeWidth="28" />
+      <circle cx="94" cy="96" r="44" fill="none" stroke="#3DDC84" strokeWidth="8" strokeDasharray="6 14" strokeLinecap="round" />
+      {size > 24
+        ? berries.map(([x, y]) => <circle key={`${x}-${y}`} cx={x} cy={y} r="7" fill="#FF4D5E" />)
+        : null}
+      {/* ribbon tail */}
+      <path d="M106 126 Q 128 150 156 144" stroke="#E0243F" strokeWidth="22" strokeLinecap="round" fill="none" />
+      {/* star */}
+      <path d="M154 26 l 7 15 16 2 -12 11 3 16 -14 -8 -14 8 3 -16 -12 -11 16 -2 Z" fill="#FFD23F" />
     </svg>
   );
 }

@@ -4,12 +4,16 @@ import { DESIGNS, useDesign, type Design } from "@/core/design/theme";
 import { cn } from "@/core/design/ui";
 
 /** How each design looks, drawn small. Fixed sample colors (light mode), not theme tokens. */
-const LOOK: Record<Design, { name: string; text: string; canvas: string; card: string; line: string; accent: string; extra?: "berry" | "gold" | "grid" }> = {
+const LOOK: Record<Design, { name: string; text: string; canvas: string; card: string; line: string; accent: string; extra?: "berry" | "gold" | "grid" | "snow" }> = {
   default: { name: "Default", text: "Bluebook white and blue", canvas: "#f4f6fa", card: "#ffffff", line: "#e1e5ec", accent: "#2e46b8" },
   strawberry: { name: "Strawberry", text: "Pink, sweet, full of stickers", canvas: "#fff4f8", card: "#ffffff", line: "#f6dbe6", accent: "#d6246e", extra: "berry" },
   premium: { name: "Premium", text: "Sand, bronze and espresso", canvas: "#e6d6c5", card: "#f8f1e9", line: "#dcc9b5", accent: "#1d1510", extra: "gold" },
   study: { name: "Nerd", text: "Cream graph paper and green", canvas: "#f6f3ea", card: "#ffffff", line: "#e6e0d2", accent: "#157a3c", extra: "grid" },
+  winter: { name: "Winter", text: "Snow, lights and New Year", canvas: "#dcebf8", card: "#ffffff", line: "#cddcea", accent: "#c41e3a", extra: "snow" },
 };
+
+const THUMB_BULBS = ["#ff4d5e", "#ffd23f", "#3ddc84", "#5cc8ff", "#ff9f1c", "#ff4d5e", "#ffd23f"];
+const THUMB_FLAKES = [[8, 46], [22, 12], [40, 58], [64, 30], [90, 52], [112, 18], [134, 44], [150, 62]];
 
 function Thumb({ d }: { d: Design }) {
   const l = LOOK[d];
@@ -29,6 +33,7 @@ function Thumb({ d }: { d: Design }) {
           <span className="absolute inset-x-3 top-0 h-px" style={{ background: "linear-gradient(90deg,transparent,#9a6b3a,transparent)" }} />
         ) : null}
         {l.extra === "grid" ? <span className="absolute -right-3 -top-3 h-9 w-9 rounded-full" style={{ background: "#f9e4bd" }} /> : null}
+        {l.extra === "snow" ? <span className="absolute inset-x-2 -top-px h-[5px] rounded-b-[4px] bg-white shadow-[0_1px_1px_rgb(40_80_130/0.3)]" /> : null}
         <span className="absolute left-2.5 top-3 h-1.5 w-12 rounded-full" style={{ background: l.accent, opacity: 0.85 }} />
         <span className="absolute left-2.5 top-6 h-1 w-20 rounded-full" style={{ background: l.line }} />
         <span
@@ -36,7 +41,20 @@ function Thumb({ d }: { d: Design }) {
           style={{ background: l.accent, borderRadius: d === "default" || d === "premium" ? 999 : 4 }}
         />
         {d === "strawberry" ? <span className="absolute bottom-1 right-2 text-[14px] leading-none">🍓</span> : null}
+        {d === "winter" ? <span className="absolute bottom-1 right-2 text-[14px] leading-none">🎄</span> : null}
       </span>
+      {l.extra === "snow" ? (
+        <>
+          {THUMB_FLAKES.map(([x, y]) => (
+            <span key={`${x}-${y}`} className="absolute h-1 w-1 rounded-full bg-white shadow-[0_0_1px_rgb(40_80_130/0.5)]" style={{ left: x, top: y }} />
+          ))}
+          <span className="absolute inset-x-1 top-1 flex justify-between">
+            {THUMB_BULBS.map((c, i) => (
+              <span key={i} className="wm-bulb h-[6px] w-[4px] rounded-b-full" style={{ background: c, color: c, marginTop: i % 2 ? 3 : 0, animationDelay: `${-i * 0.35}s` }} />
+            ))}
+          </span>
+        </>
+      ) : null}
     </span>
   );
 }
@@ -78,7 +96,7 @@ export function DesignPicker({ className, variant = "tiles" }: { className?: str
     <fieldset className={className}>
       <legend className="text-[15px] font-bold">Design</legend>
       <p className="text-[13px] text-graphite">Changes every page except the test and practice screens. Saved on this device</p>
-      <div role="radiogroup" aria-label="Design" className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div role="radiogroup" aria-label="Design" className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {DESIGNS.map((d) => {
           const on = d === design;
           return (

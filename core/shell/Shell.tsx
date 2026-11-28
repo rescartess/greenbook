@@ -5,6 +5,7 @@ import { BottomTabs } from "./SideNav";
 import { ProfileLink } from "./ProfileLink";
 import { ThemeButton } from "./ThemeButton";
 import { BerryStripe, Sprinkles } from "./stickers";
+import { WinterScene } from "./winter";
 
 /**
  * The logged-in frame around the exam pages: a flush side panel (laptops), an icon rail
@@ -16,6 +17,7 @@ export function Shell({ nav, children }: { nav: ReactNode; children: ReactNode }
     <div className="gb-colors relative flex min-h-dvh bg-canvas">
       <Sprinkles />
       <BerryStripe />
+      <WinterScene />
       {nav}
       <main className="relative min-w-0 flex-1 px-4 pb-28 pt-4 sm:px-8 sm:pb-12 sm:pt-8 nav:px-10">
         <div className="mx-auto max-w-[1280px]">

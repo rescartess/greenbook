@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { SQB_CREDIT } from "@/core/config/practice";
 import { Logo } from "@/core/design/ui";
-import { BerryStripe, BtnLink, DesignPicker, Sprinkles, Sticker, ThemeButton } from "@/core/shell";
+import { BerryStripe, BtnLink, DesignPicker, Fireworks, Sprinkles, Sticker, ThemeButton, Village, WinterScene } from "@/core/shell";
 import { FeatureGrid, HeroStack } from "./Features";
 import { Showcase } from "./Showcase";
 
@@ -27,6 +27,7 @@ export function HomePage() {
     <div className="gb-colors fp-display relative min-h-dvh overflow-x-clip bg-canvas">
       <Sprinkles roomy />
       <BerryStripe />
+      <WinterScene roomy />
 
       <header className="sticky top-3 z-40 px-3 sm:top-4 sm:px-6">
         <nav className="fp-glass mx-auto flex h-14 max-w-[1200px] items-center justify-between gap-3 rounded-full border border-hairline pl-4 pr-2 sm:h-16 sm:pl-6">
@@ -54,6 +55,7 @@ export function HomePage() {
 
       {/* Hero (always dark): the line on the left, the real test screen on the right, the name across. */}
       <section className="fp-dark fp-hero relative -mt-[88px] overflow-hidden pt-[88px] sm:-mt-[96px] sm:pt-[96px]">
+        <Fireworks />
         <div className="relative mx-auto grid max-w-[1440px] xl:min-h-[min(100dvh,940px)] xl:grid-cols-12">
           <div className="relative z-10 px-5 pb-14 pt-16 sm:px-8 sm:pt-24 lg:px-12 xl:col-span-6 xl:flex xl:flex-col xl:justify-center xl:px-[120px] xl:pb-40 xl:pt-6">
             <p className="text-[64px] font-extrabold leading-[0.9] tracking-[-0.055em] sm:text-[104px] lg:text-[clamp(88px,8vw,116px)]">
@@ -65,6 +67,7 @@ export function HomePage() {
               <BtnLink href="/login" className="h-12 px-8 text-[16px]">
                 Start
                 <Sticker emoji="🍓" size={18} tilt={0} />
+                <Sticker design="winter" emoji="🎁" size={18} tilt={0} />
               </BtnLink>
               <BtnLink href="#why" tone="quiet" className="h-12 px-7 text-[16px]">
                 Why us?
@@ -138,7 +141,8 @@ export function HomePage() {
 
       {/* Closing */}
       <section className="relative px-3 pb-6 sm:px-6">
-        <div className="fp-ink-card mx-auto flex max-w-[1248px] flex-col items-start justify-between gap-10 overflow-hidden rounded-[28px] px-6 py-20 sm:px-12 sm:py-28 lg:flex-row lg:items-end">
+        <div className="fp-ink-card fp-closing relative mx-auto flex max-w-[1248px] flex-col items-start justify-between gap-10 overflow-hidden rounded-[28px] px-6 py-20 sm:px-12 sm:py-28 lg:flex-row lg:items-end">
+          <Village className="pointer-events-none absolute inset-x-0 bottom-0 opacity-90" />
           <div>
             <h2 className="text-[64px] font-extrabold leading-[0.9] tracking-[-0.055em] sm:text-[120px] lg:text-[144px]">Your choice.</h2>
             <p className="mt-7 text-[20px] leading-snug opacity-70 sm:text-[24px]">
@@ -166,7 +170,7 @@ export function HomePage() {
               <Link href="/terms" className="hover:text-ink">Terms</Link>
             </p>
             <p>
-              © 2026 QuantumTest<span className="rp-only"> · made with 🍓</span>
+              © 2026 QuantumTest<span className="rp-only"> · made with 🍓</span><span className="wm-only"> · Happy New Year 🎆</span>
             </p>
           </div>
         </div>

@@ -27,6 +27,7 @@ const MOTTOS = {
   strawberry: "Stay sweet, stay slay.",
   premium: "Breaking the stereotype!",
   study: "Einstein on steroids.",
+  winter: "Stay frosty.",
 } as const;
 
 export function SideNav({
@@ -91,7 +92,12 @@ export function SideNav({
         <span className="text-[13px] font-bold text-ink-soft">{MOTTOS.strawberry}</span>
         <Sticker emoji="🌸" size={18} tilt={8} className="ml-auto" />
       </div>
-      <p aria-hidden="true" className="fp-motto rp-hide mb-4 hidden rounded-[14px] border border-dashed border-pine-soft bg-pine-tint px-3.5 py-3 text-[13px] font-bold text-ink-soft nav:block">
+      <div aria-hidden="true" className="wm-only mb-4 hidden items-center gap-2 rounded-[14px] border border-dashed border-pine-soft bg-pine-tint px-3 py-2.5 nav:flex">
+        <Sticker design="winter" emoji="⛄" size={22} tilt={-10} bob />
+        <span className="text-[13px] font-bold text-ink-soft">{MOTTOS.winter}</span>
+        <Sticker design="winter" emoji="🎄" size={18} tilt={6} className="ml-auto" />
+      </div>
+      <p aria-hidden="true" className="fp-motto rp-hide wm-hide mb-4 hidden rounded-[14px] border border-dashed border-pine-soft bg-pine-tint px-3.5 py-3 text-[13px] font-bold text-ink-soft nav:block">
         <span data-motto="default">{MOTTOS.default}</span>
         <span data-motto="premium">{MOTTOS.premium}</span>
         <span data-motto="study">{MOTTOS.study}</span>
