@@ -42,16 +42,28 @@ describe("invite code", () => {
     expect((await password("other@test.local", "SAT2026")).p).not.toBe(a.p);
   });
 
-  it("sets that password on an existing student account", async () => {
-    await anon();
-    const { p } = await password(`${S1.slice(0, 8)}@test.local`, "SAT2026");
+  it("never changes the password of an account that joined another way (Google, emailed link)", async () => {
     await t.actAsOwner();
-    const row = await t.one<{ ok: boolean; confirmed: boolean }>(
-      `select encrypted_password = extensions.crypt($2, encrypted_password) ok, email_confirmed_at is not null confirmed
-       from auth.users where id = $1`,
-      [S1, p],
-    );
-    expect(row).toEqual({ ok: true, confirmed: true });
+    await t.db.query(`update auth.users set encrypted_password = extensions.crypt('their-own', extensions.gen_salt('bf', 4)) where id = $1`, [S1]);
+    const before = await t.one<{ pw: string }>(`select encrypted_password pw from auth.users where id = $1`, [S1]);
+    await anon();
+    await expect(password(`${S1.slice(0, 8)}@test.local`, "SAT2026")).rejects.toThrow(/signs in another way/);
+    await t.actAsOwner();
+    await t.db.query(`update auth.users set encrypted_password = null where id = $1`, [S1]);
+    await anon();
+    await expect(password(`${S1.slice(0, 8)}@test.local`, "SAT2026")).rejects.toThrow(/signs in another way/);
+    await t.actAsOwner();
+    await t.db.query(`update auth.users set encrypted_password = $2 where id = $1`, [S1, before.pw]);
+  });
+
+  it("lets a class-code student back in with the same password", async () => {
+    await anon();
+    const email = "coder@test.local";
+    const { p } = await password(email, "SAT2026");
+    await t.actAsOwner();
+    await t.db.query(`insert into auth.users (email, encrypted_password) values ($1, extensions.crypt($2, extensions.gen_salt('bf', 4)))`, [email, p]);
+    await anon();
+    expect((await password(email, "sat2026")).p).toBe(p);
   });
 
   it("can't be used to get into an admin account", async () => {

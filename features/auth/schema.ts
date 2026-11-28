@@ -40,6 +40,8 @@ export function codeErrorMessage(dbCode: string | undefined): string {
       return "That email address doesn’t look right.";
     case "P0013":
       return "This account logs in with an emailed link. Choose “Email me a sign-in link” below.";
+    case "P0015":
+      return "This email already has an account. Use Continue with Google, the way you joined.";
     default:
       return "We couldn’t log you in. Try again in a minute.";
   }

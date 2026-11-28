@@ -36,3 +36,4 @@ Helper functions live in the `private` schema and can't be called from the websi
 - 0017 SQB collection: question_sets.collection ('books'/'sqb'), 10 SQB topic sets, list_topics(subject, collection), get_topic returns collection, imports keep the explanation.
 - 0018 get_mistakes also returns the practice (question set) each mistake comes from, so Mistakes lists practices first.
 - 0025 leaderboard: list_leaderboard and get_student_profile (read-only public stats: name, photo, bio, time practicing, questions answered, best score, rank; no email or role; admins hidden)
+- 0029 invite code: never changes the password of an existing account (closes an account takeover); P0015 for accounts that join with Google or a link. Also revokes PUBLIC/anon EXECUTE on bump_question_version.
