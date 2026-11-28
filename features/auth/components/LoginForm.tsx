@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { useSearchParams } from "next/navigation";
-import { GOOGLE_LOGIN } from "@/core/config/supabase";
+import { CLASS_CODE_LOGIN, GOOGLE_LOGIN } from "@/core/config/supabase";
 import { GoogleMark } from "@/core/design/ui";
 import { Btn } from "@/core/shell";
 import { loginWithGoogle, loginWithInviteCode, sendLoginLink } from "../actions";
@@ -18,14 +18,14 @@ const FIELD =
 type Way = "google" | "code" | "link";
 
 /**
- * Everyone signs in with Google (owner request 27 Nov 2026). Students who joined with the class code
- * can still use it; the emailed link is for admins.
+ * Everyone signs in with Google (owner request 27 Nov 2026). The class code is switched off
+ * (`CLASS_CODE_LOGIN`, 28 Nov 2026); the emailed link is for admins.
  */
 export function LoginForm() {
   const params = useSearchParams();
   const expired = params.get("expired") === "1";
   const googleFailed = params.get("google") === "failed";
-  const [way, setWay] = useState<Way>(expired ? "link" : GOOGLE_LOGIN ? "google" : "code");
+  const [way, setWay] = useState<Way>(expired ? "link" : GOOGLE_LOGIN || !CLASS_CODE_LOGIN ? "google" : "code");
   const next = params.get("next") ?? "";
 
   return (
@@ -56,7 +56,7 @@ export function LoginForm() {
       {way === "link" ? <LinkForm next={next} expired={expired} /> : null}
 
       <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
-        {way !== "code" ? (
+        {CLASS_CODE_LOGIN && way !== "code" ? (
           <button type="button" onClick={() => setWay("code")} className="text-[14px] font-semibold text-graphite underline-offset-4 hover:text-ink hover:underline">
             Have a class code?
           </button>

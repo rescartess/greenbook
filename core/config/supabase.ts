@@ -23,6 +23,13 @@ export const AUTH_ENABLED = SUPABASE_URL !== "" && SUPABASE_PUBLISHABLE_KEY !== 
  */
 export const GOOGLE_LOGIN = true;
 
+/**
+ * "Have a class code?" on the login page. Off since 28 Nov 2026 (owner request): everyone signs in
+ * with Google; the code itself was switched off in the database too (Admin › Student login, empty).
+ * To bring it back: set a code there and turn this on.
+ */
+export const CLASS_CODE_LOGIN = false;
+
 /** Where a signed-in student lands by default. */
 export const HOME_AFTER_LOGIN = "/english/dashboard";
 
