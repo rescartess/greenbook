@@ -73,7 +73,7 @@ export function HomePage() {
           </div>
 
           {/* The product where the photo was: it fades into the page at the bottom, under the name. */}
-          <div className="fp-fade-bottom relative max-h-[640px] overflow-hidden px-5 pb-10 sm:max-h-none sm:overflow-visible sm:px-14 sm:pb-20 sm:pt-10 xl:col-span-6 xl:flex xl:items-center xl:pb-36 xl:pl-12 xl:pr-[96px] xl:pt-0">
+          <div className="fp-fade-bottom relative px-5 pb-10 sm:px-14 sm:pb-20 sm:pt-10 xl:col-span-6 xl:flex xl:items-center xl:pb-36 xl:pl-12 xl:pr-[96px] xl:pt-0">
             <HeroStack />
           </div>
         </div>

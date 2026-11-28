@@ -926,14 +926,10 @@ html[data-design="premium"] .fp-dial {
     transform: perspective(1800px) rotateY(-14deg) rotateX(6deg) rotateZ(1deg);
   }
 }
-.fp-fade-bottom {
-  -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
-}
 @media (min-width: 1280px) {
   .fp-fade-bottom {
-    -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent 96%);
-    mask-image: linear-gradient(to bottom, #000 70%, transparent 96%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 99%);
+    mask-image: linear-gradient(to bottom, #000 80%, transparent 99%);
   }
 }
 /* Feature tiles: a faint light in the main color from the top corner. */

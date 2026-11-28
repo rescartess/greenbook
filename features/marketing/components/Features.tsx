@@ -1,31 +1,107 @@
 import { cn } from "@/core/design/ui";
 import { ScoreScale } from "@/core/shell";
-import { TestScreenPreview } from "./TestScreenPreview";
 
 /**
  * The home page's product pieces (owner request 28 Nov 2026: the founder's photos came off the home page,
- * the site's features took their place). Everything shown is something the site really does; numbers
+ * the site's features took their place; the hero shows the dashboard profile and leaderboard). Everything shown is something the site really does; numbers
  * are a sample student's, marked as a sample for screen readers. Desmos is not shown until its key is set.
  */
 
-/** Hero: the real test screen, tilted, with the score and the adaptive step floating next to it. */
+const BOARD: [number, string, string, number, boolean][] = [
+  [1, "Madina Y.", "MY", 11420, false],
+  [2, "Timur A.", "TA", 8375, false],
+  [3, "Aziza K.", "AK", 6450, true],
+  [4, "Dilnoza R.", "DR", 5283, false],
+  [5, "Sardor Y.", "SY", 4192, false],
+];
+
+/**
+ * Hero (owner request 28 Nov 2026: "show off the unique dashboard profile stats + leaderboard"): the
+ * dashboard's profile banner and the leaderboard, drawn like the real ones (ProfileBanner and
+ * RankingCard in features/dashboard) with a sample student, tilted, the leaderboard floating on its corner.
+ */
 export function HeroStack() {
   return (
-    <div role="img" aria-label="The QuantumTest test screen, a sample score of 690 and the adaptive step to a harder Module 2" className="fp-stack relative mx-auto w-full max-w-[760px]">
-      <div className="fp-tilt relative">
-        <TestScreenPreview />
+    <div
+      role="img"
+      aria-label="A sample student's dashboard: photo, name, latest score, time practicing, questions answered, best full test, bio, all-time ranking and the leaderboard"
+      className="fp-stack relative mx-auto w-full max-w-[700px] sm:pb-24 xl:pb-16"
+    >
+      <div className="fp-tilt grid gap-2.5 rounded-[18px] font-mono">
+        <section className="rounded-[14px] border border-hairline bg-paper p-5 sm:p-6">
+          <div className="flex items-center gap-4">
+            <span className="fp-avatar flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-full text-[22px] font-bold ring-2 ring-pine/60 ring-offset-2 ring-offset-paper">AK</span>
+            <div className="min-w-0">
+              <p className="truncate text-[26px] leading-tight text-ink sm:text-[30px]">Aziza K.</p>
+              <p className="mt-1 text-[13px] text-graphite">Joined 24 Nov 2026</p>
+            </div>
+          </div>
+          <div className="mt-5 flex items-center gap-3 text-[14px] tabular-nums">
+            <span className="text-[18px] text-ink">690</span>
+            <span className="h-2 flex-1 overflow-hidden rounded-full bg-mist">
+              <span className="block h-full rounded-full bg-pine" style={{ width: `${((690 - 200) / 600) * 100}%` }} />
+            </span>
+            <span className="text-graphite">latest +80/800</span>
+          </div>
+          <dl className="mt-6 grid grid-cols-3 gap-2 border-t border-hairline pt-5 sm:gap-3">
+            {[
+              ["time practicing", "64:29:44"],
+              ["questions answered", "9,010"],
+              ["best full test", "720"],
+            ].map(([l, v]) => (
+              <div key={l} className="flex min-w-0 flex-col">
+                <dt className="text-[11px] leading-tight text-graphite sm:text-[12px]">{l}</dt>
+                <dd className="text-[16px] leading-tight text-ink tabular-nums sm:text-[26px]">{v}</dd>
+              </div>
+            ))}
+          </dl>
+          <div className="mt-5 rounded-[12px] bg-mist px-4 py-3">
+            <p className="text-[12px] text-graphite">bio</p>
+            <p className="mt-0.5 text-[15px] text-ink">Faster than the speed of light.</p>
+          </div>
+        </section>
+        <section className="flex items-center gap-4 rounded-[14px] border border-hairline bg-paper px-5 py-4 sm:px-6">
+          <p className="flex items-baseline gap-2">
+            <span className="text-[36px] leading-none text-ink tabular-nums">3rd</span>
+            <span className="text-[12px] text-graphite tabular-nums">of 41</span>
+          </p>
+          <div className="min-w-0 text-[12px] leading-snug text-graphite sm:text-[13px]">
+            <p className="text-ink-soft">All-time ranking</p>
+            <p>6,450 correct · Top 8%</p>
+          </div>
+        </section>
       </div>
 
-      <div className="fp-float absolute -bottom-[6%] -left-6 z-10 hidden w-[250px] rounded-[18px] border border-hairline bg-paper p-5 sm:block lg:-left-10">
-        <p className="text-[12px] font-semibold text-graphite">Reading and Writing</p>
-        <p className="mt-1 text-[40px] font-extrabold leading-none tracking-[-0.04em] tabular-nums">690</p>
-        <div className="mt-4">
-          <ScoreScale value={690} earlier={610} />
+      <div className="fp-float relative mt-3 rounded-[18px] border border-hairline bg-paper p-2 pt-4 sm:absolute sm:-bottom-10 sm:-right-8 sm:mt-0 sm:w-[300px] xl:-bottom-14 xl:-right-16 xl:w-[290px]">
+        <div className="flex items-baseline justify-between gap-3 px-3 pb-2">
+          <div>
+            <p className="text-[16px] font-bold">Leaderboard</p>
+            <p className="text-[12px] text-graphite">Most correct in English</p>
+          </div>
+          <p className="text-[12px] text-graphite tabular-nums">
+            You: <span className="font-bold text-ink">3rd</span>
+          </p>
         </div>
-      </div>
-
-      <div className="fp-float absolute -right-6 top-[-7%] z-10 hidden rounded-[16px] border border-hairline bg-paper px-4 py-3 sm:block">
-        <Route />
+        <ol>
+          {BOARD.map(([rank, name, initials, correct, me]) => (
+            <li
+              key={rank}
+              className={cn(
+                "flex items-center gap-3 rounded-[12px] px-3 py-1.5",
+                me && "bg-pine-tint ring-1 ring-inset ring-pine-soft",
+                rank === 2 && "mt-1 border-t border-hairline pt-2",
+              )}
+            >
+              <span className={cn("w-4 shrink-0 text-right text-[13px] font-bold tabular-nums", rank <= 3 ? "text-pine" : "text-graphite")}>{rank}</span>
+              <span className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ring-1 ring-hairline", me ? "fp-avatar" : "bg-mist text-ink-soft")}>{initials}</span>
+              <span className="min-w-0 flex-1 truncate text-[14px] font-semibold">
+                {name}
+                {me ? <span className="ml-1.5 text-[11px] font-semibold text-pine">you</span> : null}
+              </span>
+              <span className="shrink-0 font-mono text-[12px] text-graphite tabular-nums">{correct.toLocaleString("en-US")}</span>
+            </li>
+          ))}
+        </ol>
       </div>
     </div>
   );

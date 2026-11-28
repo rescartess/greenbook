@@ -1,11 +1,11 @@
 /**
- * The home page hero picture: real pieces of the dashboard, laid over each other like a collage
- * (owner request 27 Nov 2026: show the features, not a question). Sample student, sample numbers,
- * marked as a sample for screen readers.
+ * "Make it yours." on the home page: the profile pieces a student sets, laid over each other like a
+ * collage: photo, bio (being edited), all-time rank, design and colors, and a roast. Since 28 Nov 2026
+ * the hero shows the stats and the leaderboard, so this part shows what students change.
  */
 export function Showcase() {
   return (
-    <div role="img" aria-label="A sample student dashboard: profile, bio, ranking, score and a roast" className="relative mx-auto w-full max-w-[600px] lg:h-[470px]">
+    <div role="img" aria-label="A sample student profile: photo, bio being edited, all-time rank, design and colors, and a roast" className="relative mx-auto w-full max-w-[600px] lg:h-[470px]">
       {/* Profile, the centerpiece */}
       <div className="fp-float relative z-10 rounded-[22px] border border-hairline bg-paper p-6 font-mono lg:absolute lg:left-0 lg:top-12 lg:w-[400px]">
         <div className="flex items-center gap-4">
@@ -24,18 +24,13 @@ export function Showcase() {
             <path d="M4 20h4L19 9l-4-4L4 16v4z" />
           </svg>
         </div>
-        <dl className="mt-5 grid grid-cols-3 gap-3 tabular-nums">
-          {[
-            ["64:29", "practicing"],
-            ["9,010", "answered"],
-            ["1480", "best"],
-          ].map(([v, l]) => (
-            <div key={l}>
-              <dd className="text-[20px] leading-none">{v}</dd>
-              <dt className="mt-1.5 text-[11px] text-graphite">{l}</dt>
-            </div>
-          ))}
-        </dl>
+        <div className="mt-4 flex items-center gap-2 text-[12px] text-graphite">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+            <circle cx="12" cy="13" r="3.5" />
+          </svg>
+          Change photo
+        </div>
       </div>
 
       {/* Ranking */}
@@ -48,21 +43,21 @@ export function Showcase() {
         </p>
       </div>
 
-      {/* Score */}
+      {/* Design and colors */}
       <div className="fp-float relative z-30 mt-3 rounded-[18px] border border-hairline bg-paper p-5 lg:absolute lg:right-0 lg:top-[300px] lg:mt-0 lg:w-[300px]">
-        <div className="flex items-baseline justify-between">
-          <p className="text-[44px] font-extrabold leading-none tracking-[-0.04em] tabular-nums">1480</p>
-          <p className="text-[13px] font-bold text-correct">+140</p>
+        <p className="text-[13px] font-semibold text-graphite">Design</p>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {["Default", "Strawberry", "Premium", "Nerd"].map((d, i) => (
+            <span key={d} className={`rounded-full px-3 py-1 text-[13px] font-semibold ${i === 0 ? "rp-btn-primary bg-pine text-pine-ink" : "border border-hairline text-ink-soft"}`}>
+              {d}
+            </span>
+          ))}
         </div>
-        <div className="mt-4">
-          <div className="relative h-2.5 rounded-full bg-mist ring-1 ring-inset ring-hairline">
-            <div className="rp-rainbow-bar absolute inset-y-0 left-0 rounded-full" style={{ width: `${((1480 - 400) / 1200) * 100}%` }} />
-            <span className="absolute -top-1.5 h-[22px] w-0.5 -translate-x-1/2 rounded-[1px] bg-graphite/60" style={{ left: `${((1340 - 400) / 1200) * 100}%` }} />
-          </div>
-          <div className="mt-2 flex justify-between text-[12px] text-graphite tabular-nums">
-            <span>400</span>
-            <span>1600</span>
-          </div>
+        <p className="mt-4 text-[13px] font-semibold text-graphite">Colors</p>
+        <div className="mt-2 flex items-center gap-2">
+          {["bg-pine", "bg-pine-soft", "bg-correct", "bg-incorrect", "bg-ink"].map((c) => (
+            <span key={c} className={`h-6 w-6 rounded-full ring-2 ring-paper ${c}`} />
+          ))}
         </div>
       </div>
 
