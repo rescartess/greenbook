@@ -9,9 +9,9 @@ import { Showcase } from "./Showcase";
 
 /**
  * The first page visitors see (owner request 28 Nov 2026, third pass): the founder's photo, very few
- * words, cold and certain ("They not like us." / "We don't sell hope. We give it." / "Why us?
- * Explore. Not another prep site." / "Your choice."). The most important features float on the
- * photo; then the design dial, profiles, questions and a closing banner. Lessons in CLAUDE.md.
+ * words, cold and certain ("They not like us." / "Why us?
+ * Explore. Not another prep site." / "Your choice. We don't sell hope. We give it."). The most important features float on the
+ * photo; then the design dial, profiles and a closing banner. Lessons in CLAUDE.md.
  */
 
 const NAV = [
@@ -81,7 +81,7 @@ export function HomePage() {
           >
             <Image
               src={founder}
-              alt="The founder of QuantumTest, leaning back in a chair at a desk"
+              alt="The founder of QuantumTest, leaning back in his chair"
               priority
               placeholder="blur"
               sizes="(min-width: 1024px) 60vw, 100vw"
@@ -95,12 +95,7 @@ export function HomePage() {
               <br />
               <span className="fp-accent">like us.</span>
             </p>
-            <p className="mt-7 max-w-[420px] text-[20px] leading-snug text-ink-soft sm:text-[22px]">
-              We don’t sell hope.
-              <br />
-              We give it.
-            </p>
-            <div className="mt-9 flex flex-wrap items-center gap-3">
+            <div className="mt-10 flex flex-wrap items-center gap-3">
               <BtnLink href="/login" className="h-12 px-8 text-[16px]">
                 Start
                 <Sticker emoji="🍓" size={18} tilt={0} />
@@ -182,7 +177,14 @@ export function HomePage() {
       {/* Closing */}
       <section className="relative px-3 pb-6 sm:px-6">
         <div className="fp-ink-card mx-auto flex max-w-[1248px] flex-col items-start justify-between gap-10 overflow-hidden rounded-[28px] px-6 py-20 sm:px-12 sm:py-28 lg:flex-row lg:items-end">
-          <h2 className="text-[64px] font-extrabold leading-[0.9] tracking-[-0.055em] sm:text-[120px] lg:text-[144px]">Your choice.</h2>
+          <div>
+            <h2 className="text-[64px] font-extrabold leading-[0.9] tracking-[-0.055em] sm:text-[120px] lg:text-[144px]">Your choice.</h2>
+            <p className="mt-7 text-[20px] leading-snug opacity-70 sm:text-[24px]">
+              We don’t sell hope.
+              <br />
+              We give it.
+            </p>
+          </div>
           <Link href="/login" className="fp-label inline-flex h-14 shrink-0 items-center rounded-[var(--fp-r-btn)] bg-paper px-8 text-[17px] font-bold text-ink transition-transform hover:-translate-y-0.5">
             Start
           </Link>
