@@ -5,7 +5,6 @@ import { Logo } from "@/core/design/ui";
 import { BerryStripe, BtnLink, DesignPicker, Sprinkles, Sticker, ThemeButton } from "@/core/shell";
 import founder from "@/public/home/founder.jpg";
 import screen from "@/public/home/screen.jpg";
-import { Faq } from "./Faq";
 import { Showcase } from "./Showcase";
 
 /**
@@ -19,7 +18,6 @@ const NAV = [
   { href: "#why", label: "Why us" },
   { href: "#designs", label: "Designs" },
   { href: "#profiles", label: "Profiles" },
-  { href: "#faq", label: "FAQ" },
 ];
 
 /** Where each photo fades into the page (CSS mask layers, all must be opaque to show). */
@@ -83,7 +81,7 @@ export function HomePage() {
           >
             <Image
               src={founder}
-              alt="The founder of QuantumTest, leaning back in his chair"
+              alt="The founder of QuantumTest, leaning back in a chair at a desk"
               priority
               placeholder="blur"
               sizes="(min-width: 1024px) 60vw, 100vw"
@@ -178,18 +176,6 @@ export function HomePage() {
             <span className="text-graphite">Photo. Bio. Rank.</span>
           </Title>
           <Showcase />
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section id="faq" className="relative scroll-mt-24 border-t border-hairline px-5 py-24 sm:px-8 sm:py-32">
-        <div className="mx-auto grid max-w-[1200px] gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
-          <Title>
-            Asked.
-            <br />
-            <span className="text-graphite">Answered.</span>
-          </Title>
-          <Faq />
         </div>
       </section>
 
