@@ -34,7 +34,7 @@ describe("invite code", () => {
 
   it("refuses a wrong code and gives the same password for the right one, any case", async () => {
     await anon();
-    await expect(password("new@test.local", "WRONG1")).rejects.toThrow(/Wrong invite code/);
+    expect((await password("new@test.local", "WRONG1")).p).toBeNull(); // counted, so it returns null (0030)
     const a = await password("New@Test.local", "sat2026");
     const b = await password("new@test.local", "SAT2026");
     expect(a.p).toHaveLength(64);

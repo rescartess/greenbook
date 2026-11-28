@@ -564,6 +564,7 @@ export type Database = {
         Returns: string
       }
       admin_create_test: { Args: { p_minutes: number; p_subject: string; p_title: string }; Returns: string }
+      delete_my_account: { Args: never; Returns: undefined }
       check_practice_answer: {
         Args: { p_answer: string; p_attempt_module_id: string; p_question_id: string }
         Returns: Json

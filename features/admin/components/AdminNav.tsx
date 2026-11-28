@@ -12,9 +12,10 @@ const LINKS = [
     match: (p: string) => p === "/admin" || ["/admin/tests", "/admin/modules", "/admin/questions"].some((s) => p.startsWith(s)),
   },
   { href: "/admin/import", label: "Import", match: (p: string) => p.startsWith("/admin/import") },
+  { href: "/admin/backup", label: "Backup", match: (p: string) => p.startsWith("/admin/backup") },
 ];
 
-/** The admin's main menu: Students, Tests, Import. */
+/** The admin's main menu: Students, Tests, Import, Backup. */
 export function AdminNav() {
   return <AdminNavLinks path={usePathname()} />;
 }

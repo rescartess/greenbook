@@ -24,3 +24,9 @@ Writes go through database functions (`supabase/migrations/..._admin_tools.sql`)
 - Data: `admin_list_students` and `admin_get_student` (migration 0026), admin only, read only, never answers.
   Labels in `student-format.ts`, times in Tashkent time.
 - The top menu (`AdminNav`): Students, Tests, Import.
+
+## Backup (28 Nov 2026)
+`/admin/backup`: one button downloads `QuantumTest backup <date>.zip` with every question, answer, explanation, picture, topic and full test (no student data).
+- `<Subject> topics (QuantumTest).json`, `<Subject> topics (SQB).json`, `<Subject> full tests.json`: import files that `/admin/import` loads back (topics first, then tests; tests come back hidden, publish the ones listed in manifest.json).
+- `raw.json`: the exact rows (ids, drafts, questions in no set). `manifest.json`: counts and what was published. `README.txt`: restore steps.
+- `backup.ts` arranges the rows (tested in `backup.test.ts`, which also checks the files pass the import checker); `BackupPanel.tsx` reads the tables 1,000 rows at a time, copies the pictures and zips with fflate.

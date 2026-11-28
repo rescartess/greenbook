@@ -6,6 +6,7 @@ import { getProfile, type Profile } from "../queries";
 import { AppearanceSwitch } from "./AppearanceSwitch";
 import { AvatarPicker } from "./AvatarPicker";
 import { ColorSettings } from "./ColorSettings";
+import { DeleteAccount } from "./DeleteAccount";
 import { NameForm, TargetForm, TestDateForm } from "./ProfileForms";
 
 /** Profile: the student's name, goal, look of the site and account details. */
@@ -50,7 +51,7 @@ export function ProfileView({ profile, signOutAction }: { profile: Profile; sign
               {profile.email}
             </p>
             <p className="text-[13px] text-graphite">
-              You log in with this email{profile.role === "student" ? " and the invite code" : ""}. To change it, ask your teacher.
+              You log in with this email. It can’t be changed here.
             </p>
           </div>
           <TargetForm target={profile.target} />
@@ -100,7 +101,7 @@ export function ProfileView({ profile, signOutAction }: { profile: Profile; sign
             {[
               ["Role", profile.role === "admin" ? "Admin" : "Student"],
               ["Member since", profile.memberSince ?? "Not known"],
-              ["Login", profile.role === "admin" ? "Emailed link" : "Email and invite code"],
+              ["Login", profile.role === "admin" ? "Emailed link" : "Google or class code"],
             ].map(([k, v]) => (
               <div key={k} className="flex justify-between gap-4 border-t border-hairline py-3 first:border-t-0">
                 <dt className="text-ink-soft">{k}</dt>
@@ -115,6 +116,7 @@ export function ProfileView({ profile, signOutAction }: { profile: Profile; sign
               </Btn>
             </form>
           ) : null}
+          {signOutAction && profile.role === "student" ? <DeleteAccount /> : null}
         </Card>
       </div>
     </div>

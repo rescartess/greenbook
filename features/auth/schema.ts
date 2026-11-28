@@ -42,6 +42,8 @@ export function codeErrorMessage(dbCode: string | undefined): string {
       return "This account logs in with an emailed link. Choose “Email me a sign-in link” below.";
     case "P0015":
       return "This email already has an account. Use Continue with Google, the way you joined.";
+    case "P0016":
+      return "Too many wrong codes. Wait 10 minutes and try again.";
     default:
       return "We couldn’t log you in. Try again in a minute.";
   }

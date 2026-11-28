@@ -5,7 +5,7 @@ import { Logo } from "@/core/design/ui";
 import { ThemeButton } from "@/core/shell";
 
 const CONTACT = "ravshanbekrahmonov91@gmail.com";
-const UPDATED = "27 November 2026";
+const UPDATED = "28 November 2026";
 
 function Frame({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -64,7 +64,7 @@ export function PrivacyPage() {
       <section>
         <h2>Leaving</h2>
         <p>
-          Want your account and data deleted? Email <a className="font-semibold text-pine underline underline-offset-4" href={`mailto:${CONTACT}`}>{CONTACT}</a> from the address you sign in with.
+          Delete your account any time: Profile › Delete my account. Your scores, answers, mistakes and photo go with it. Need help? Email <a className="font-semibold text-pine underline underline-offset-4" href={`mailto:${CONTACT}`}>{CONTACT}</a> from the address you sign in with.
         </p>
       </section>
     </Frame>

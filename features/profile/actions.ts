@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { createDbClient } from "@/core/db/server";
 import { avatarUrl } from "@/core/shell";
 import { parseBio, parseColor, parseName, parseTarget, parseTestDate, type ProfileFormState } from "./schema";
@@ -110,4 +111,24 @@ export async function saveBio(text: string): Promise<ProfileFormState & { bio?: 
   if (error) return { ok: false, message: "It couldn’t be saved. Try again." };
   revalidatePath("/", "layout");
   return { ok: true, message: "Saved", bio: parsed.bio };
+}
+
+/**
+ * Deletes the student's account for good (migration 0030): the photo files first (only the
+ * student can remove them), then the account with every score, answer and mistake. Admins can't.
+ */
+export async function deleteAccount(): Promise<ProfileFormState> {
+  const { supabase, id } = await userId();
+  if (!id) return { ok: false, message: "Log in again first." };
+  const { data: files } = await supabase.storage.from("avatars").list(id);
+  if (files?.length) await supabase.storage.from("avatars").remove(files.map((f) => `${id}/${f.name}`));
+  const { error } = await supabase.rpc("delete_my_account");
+  if (error) {
+    return {
+      ok: false,
+      message: error.code === "42501" ? "This account can’t be deleted here." : "It couldn’t be deleted. Try again.",
+    };
+  }
+  await supabase.auth.signOut({ scope: "local" });
+  redirect("/");
 }

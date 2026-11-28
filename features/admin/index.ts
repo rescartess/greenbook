@@ -6,5 +6,6 @@ export { AdminQuestionPage } from "./components/AdminQuestionPage";
 export { AdminQuestionEditPage } from "./components/AdminQuestionEditPage";
 export { AdminNewTestPage, AdminAddQuestionPage, AdminImportPage } from "./components/AdminModulePages";
 export { ImportBookPage } from "./components/ImportBookPage";
+export { BackupPage } from "./components/BackupPage";
 export { StudentsPage } from "./components/StudentsPage";
 export { StudentDetailPage } from "./components/StudentDetailPage";

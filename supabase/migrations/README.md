@@ -37,3 +37,4 @@ Helper functions live in the `private` schema and can't be called from the websi
 - 0018 get_mistakes also returns the practice (question set) each mistake comes from, so Mistakes lists practices first.
 - 0025 leaderboard: list_leaderboard and get_student_profile (read-only public stats: name, photo, bio, time practicing, questions answered, best score, rank; no email or role; admins hidden)
 - 0029 invite code: never changes the password of an existing account (closes an account takeover); P0015 for accounts that join with Google or a link. Also revokes PUBLIC/anon EXECUTE on bump_question_version.
+- 0030 security hardening: no table rights for anon; no TRUNCATE/REFERENCES/TRIGGER for authenticated; display_name 1–40; delete_my_account(); wrong class codes counted (private.code_failures) and limited to 20 per 10 minutes (P0016).

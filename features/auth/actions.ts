@@ -72,7 +72,8 @@ export async function loginWithInviteCode(_prev: CodeLoginState, formData: FormD
     p_email: parsed.email,
     p_code: parsed.code,
   });
-  if (error || !password) return { status: "error", message: codeErrorMessage(error?.code) };
+  // A wrong code comes back as null (the database counts it to stop guessing; 0030).
+  if (error || !password) return { status: "error", message: codeErrorMessage(error ? error.code : "P0011") };
 
   const signIn = await supabase.auth.signInWithPassword({ email: parsed.email, password });
   if (signIn.error) {
