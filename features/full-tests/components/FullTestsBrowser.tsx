@@ -75,7 +75,7 @@ function AdaptivePicker({ tests }: { tests: FullTestRow[] }) {
   const test = tests.find((t) => t.id === id) ?? tests[0];
   if (!test) return null;
   return (
-    <section aria-labelledby="adaptive-title" className="rp-card rounded-[var(--fp-r-card)] border border-hairline bg-paper p-5 sm:p-6">
+    <section aria-labelledby="adaptive-title" className="rp-card relative z-20 rounded-[var(--fp-r-card)] border border-hairline bg-paper p-5 sm:p-6">
       <h2 id="adaptive-title" className="text-[20px] font-bold">
         Adaptive full test
       </h2>
@@ -88,7 +88,7 @@ function AdaptivePicker({ tests }: { tests: FullTestRow[] }) {
           <MonthPicker labelledBy="month-label" tests={tests} value={test.id} onChange={setId} />
         </div>
         <div className="sm:w-64">
-          <StartTestButton key={test.id} setId={test.id} label={test.inProgressId ? "Continue exam" : "Start exam"} />
+          <StartTestButton key={test.id} test={test} title={`${monthName(test)} adaptive`} />
         </div>
       </div>
       <p className="mt-3 text-[14px] text-graphite tabular-nums">
@@ -270,7 +270,7 @@ function FixedTests({ tests }: { tests: FullTestRow[] }) {
                 </p>
               ) : null}
               <div className="mt-auto pt-5">
-                <StartTestButton setId={test.id} label={test.inProgressId ? "Continue exam" : "Start exam"} />
+                <StartTestButton test={test} title={`${test.month ? monthName(test) : test.title}${letter ? ` · ${letter}` : ""}`} />
               </div>
             </article>
           </li>

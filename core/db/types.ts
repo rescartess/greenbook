@@ -77,6 +77,7 @@ export type Database = {
           id: string
           kind: string
           mode: string
+          part: string
           raw_correct: number | null
           scaled_score: number | null
           set_id: string | null
@@ -93,6 +94,7 @@ export type Database = {
           id?: string
           kind?: string
           mode: string
+          part?: string
           raw_correct?: number | null
           scaled_score?: number | null
           set_id?: string | null
@@ -109,6 +111,7 @@ export type Database = {
           id?: string
           kind?: string
           mode?: string
+          part?: string
           raw_correct?: number | null
           scaled_score?: number | null
           set_id?: string | null
@@ -642,6 +645,7 @@ export type Database = {
         Returns: undefined
       }
       start_full_test: { Args: { p_set_id: string }; Returns: string }
+      start_test_part: { Args: { p_set_id: string; p_part?: string; p_tier?: string | null }; Returns: string }
     }
     Enums: {
       [_ in never]: never

@@ -13,14 +13,14 @@ export async function removeAttempt(attemptId: string, subject: string): Promise
 }
 
 /**
- * "Retake": starts the same thing again. A full test or monthly set starts over; a topic practice
+ * "Retake": starts the same thing again. A full test (or the same single module) or monthly set starts over; a topic practice
  * starts the same level, range, checking and timer, under the same name.
  */
 export async function retakeAttempt(attemptId: string, _prev: { message: string | null }, _form: FormData): Promise<{ message: string | null }> {
   const supabase = await createDbClient();
   const { data: a } = await supabase
     .from("attempts")
-    .select("set_id, check_mode, options, name, question_sets(kind)")
+    .select("set_id, check_mode, options, name, part, question_sets(kind), attempt_modules(modules(tier))")
     .eq("id", attemptId)
     .maybeSingle();
   if (!a?.set_id) return { message: "This can’t be started again. Open it from Topics or Full tests." };
@@ -28,7 +28,11 @@ export async function retakeAttempt(attemptId: string, _prev: { message: string 
   const o = (a.options && typeof a.options === "object" && !Array.isArray(a.options) ? a.options : {}) as Record<string, unknown>;
 
   let started: { data: string | null; error: unknown };
-  if (kind === "full_test") started = await supabase.rpc("start_full_test", { p_set_id: a.set_id });
+  if (kind === "full_test") {
+    // The same part again: the whole test, Module 1 only, or the same Module 2 (hard or easy).
+    const tier = a.attempt_modules?.[0]?.modules?.tier === "easier" ? "easier" : "harder";
+    started = await supabase.rpc("start_test_part", { p_set_id: a.set_id, p_part: a.part, p_tier: a.part === "module2" ? tier : null });
+  }
   else if (kind === "monthly") started = await supabase.rpc("start_practice", { p_set_id: a.set_id });
   else {
     const from = typeof o.from === "number" ? o.from : 1;

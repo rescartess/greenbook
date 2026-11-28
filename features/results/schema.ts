@@ -115,6 +115,8 @@ export type AttemptSummary = {
   setTitle: string;
   setKind: "full_test" | "topic" | "monthly";
   name: string | null;
+  /** Which part of a full test: the whole test, or one module alone. */
+  part: "full" | "module1" | "module2";
   status: "in_progress" | "completed";
   options: { difficulty: string; from: number; to: number } | null;
   startedAt: string;
@@ -139,6 +141,7 @@ export function parseAttempts(json: unknown): AttemptSummary[] {
         setTitle: str(a.setTitle) ?? "Practice",
         setKind: kind,
         name: str(a.name),
+        part: a.part === "module1" || a.part === "module2" ? a.part : "full",
         status: a.status === "completed" ? "completed" : "in_progress",
         options: o && typeof o.from === "number" && typeof o.to === "number" ? { difficulty: str(o.difficulty) ?? "all", from: o.from, to: o.to } : null,
         startedAt: str(a.startedAt) ?? "",
@@ -180,7 +183,9 @@ export function cardView(a: AttemptSummary, subject: string): CardView {
   const correct = a.modules.reduce((s, m) => s + (m.correct ?? 0), 0);
   const range = a.options ? numbersText(a.options.from, a.options.to) : "";
   const kindLabel =
-    a.setKind === "full_test" ? "Full test" : a.setKind === "monthly" ? "Monthly set" : `Topic: ${a.setTitle}`;
+    a.setKind === "full_test"
+      ? a.part === "module1" ? "Module 1 only" : a.part === "module2" ? "Module 2 only" : "Full test"
+      : a.setKind === "monthly" ? "Monthly set" : `Topic: ${a.setTitle}`;
 
   const stats: CardView["stats"] = !finished
     ? [

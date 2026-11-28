@@ -2,6 +2,8 @@ import "server-only";
 import { createDbClient } from "@/core/db/server";
 import type { SubjectSlug } from "@/core/config/subjects";
 
+export type PartSize = { questions: number; minutes: number };
+
 export type FullTestRow = {
   id: string;
   title: string;
@@ -14,6 +16,8 @@ export type FullTestRow = {
   minutes: number;
   /** "Module 1", "Module 2 Hard"... in order, for the test card. */
   moduleNames: string[];
+  /** Questions and minutes of Module 1 and of each Module 2, for "Module 1 only" / "Module 2 only". */
+  parts: { module1: PartSize | null; harder: PartSize | null; easier: PartSize | null };
   inProgressId: string | null;
   last: { attemptId: string; score: number | null; raw: number | null; finishedAt: string } | null;
 };
@@ -36,7 +40,7 @@ export async function listFullTests(subject: SubjectSlug): Promise<FullTestRow[]
   const { data: attempts } = userId
     ? await supabase
         .from("attempts")
-        .select("id, set_id, status, scaled_score, raw_correct, finished_at")
+        .select("id, set_id, status, part, scaled_score, raw_correct, finished_at")
         .eq("user_id", userId)
         .eq("subject", subject)
         .order("started_at", { ascending: false })
@@ -48,7 +52,12 @@ export async function listFullTests(subject: SubjectSlug): Promise<FullTestRow[]
       [...set.modules].filter((m) => m.module_number === n).sort((a, b) => a.sort_order - b.sort_order)[0];
     const taken = [firstOf(1), firstOf(2)].filter(Boolean);
     const mine = (attempts ?? []).filter((a) => a.set_id === set.id);
-    const done = mine.find((a) => a.status === "completed" && a.finished_at);
+    // "Last score" is the last full test; a single module has no 200–800 score.
+    const done = mine.find((a) => a.status === "completed" && a.finished_at && a.part === "full");
+    const size = (m: (typeof set.modules)[number] | undefined): PartSize | null =>
+      m ? { questions: m.module_questions[0]?.count ?? 0, minutes: Math.round((m.time_limit_sec ?? 0) / 60) } : null;
+    const second = (tier: string) =>
+      [...set.modules].filter((m) => m.module_number === 2).sort((a, b) => Number(b.tier === tier) - Number(a.tier === tier) || Number(b.tier === "standard") - Number(a.tier === "standard") || a.sort_order - b.sort_order)[0];
     const tiers = new Set(set.modules.filter((m) => m.module_number === 2).map((m) => m.tier));
     return {
       id: set.id,
@@ -59,6 +68,11 @@ export async function listFullTests(subject: SubjectSlug): Promise<FullTestRow[]
       moduleNames: [...set.modules]
         .sort((a, b) => a.module_number - b.module_number || a.sort_order - b.sort_order)
         .map((m) => `Module ${m.module_number}${m.module_number === 2 && m.tier !== "standard" ? (m.tier === "harder" ? " Hard" : " Easy") : ""}`),
+      parts: {
+        module1: size(firstOf(1)),
+        harder: size(second("harder")),
+        easier: tiers.has("easier") && tiers.has("harder") ? size(second("easier")) : null,
+      },
       questions: taken.reduce((sum, m) => sum + (m?.module_questions[0]?.count ?? 0), 0),
       minutes: Math.round(taken.reduce((sum, m) => sum + (m?.time_limit_sec ?? 0), 0) / 60),
       inProgressId: mine.find((a) => a.status === "in_progress")?.id ?? null,

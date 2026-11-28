@@ -32,10 +32,11 @@ export async function nextSectionAfter(attemptId: string): Promise<NextSection |
   const supabase = await createDbClient();
   const { data: attempt } = await supabase
     .from("attempts")
-    .select("set_id, subject, status, finished_at")
+    .select("set_id, subject, status, finished_at, part")
     .eq("id", attemptId)
     .maybeSingle();
-  if (!attempt?.set_id || attempt.subject !== "english") return null;
+  // Only after the whole English test, not after one module taken alone.
+  if (!attempt?.set_id || attempt.subject !== "english" || attempt.part !== "full") return null;
   const { data: set } = await supabase
     .from("question_sets")
     .select("kind, is_adaptive, month")
