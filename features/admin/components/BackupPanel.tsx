@@ -75,12 +75,19 @@ export function BackupPanel() {
 
       const paths = [...new Set(plan.files.flatMap((f) => f.images))];
       const pictures = new Map<string, string>();
-      for (const [i, path] of paths.entries()) {
-        setStep({ label: "Copying pictures", done: i, total: paths.length });
-        const { data, error } = await db.storage.from(QUESTION_IMAGE_BUCKET).download(path);
-        if (error || !data) throw new Error(`Picture ${path} couldn’t be copied: ${error?.message ?? "empty"}`);
-        pictures.set(path, await toBase64(data));
-      }
+      // 8 at a time: much faster than one by one, gentle on the storage server.
+      let copied = 0;
+      const queue = [...paths];
+      const worker = async () => {
+        for (let path = queue.shift(); path; path = queue.shift()) {
+          const { data, error } = await db.storage.from(QUESTION_IMAGE_BUCKET).download(path);
+          if (error || !data) throw new Error(`Picture ${path} couldn’t be copied: ${error?.message ?? "empty"}`);
+          pictures.set(path, await toBase64(data));
+          copied += 1;
+          setStep({ label: "Copying pictures", done: copied, total: paths.length });
+        }
+      };
+      await Promise.all(Array.from({ length: 8 }, worker));
 
       setStep({ label: "Packing the zip file", done: 0, total: 1 });
       const files: Zippable = {
